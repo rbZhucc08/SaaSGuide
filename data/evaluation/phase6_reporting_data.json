@@ -1,0 +1,17 @@
+{
+  "period": "2026-09-01/2026-09-07",
+  "risks": [
+    {"id":"R-001","date":"2026-09-01","level":"high","status":"confirmed","false_positive":false,"resolution_hours":48},
+    {"id":"R-002","date":"2026-09-02","level":"medium","status":"dismissed","false_positive":true,"resolution_hours":12},
+    {"id":"R-003","date":"2026-09-03","level":"high","status":"observing","false_positive":false,"resolution_hours":null},
+    {"id":"R-004","date":"2026-09-04","level":"low","status":"dismissed","false_positive":true,"resolution_hours":5},
+    {"id":"R-005","date":"2026-09-05","level":"medium","status":"confirmed","false_positive":false,"resolution_hours":24},
+    {"id":"R-006","date":"2026-09-05","level":"high","status":"confirmed","false_positive":false,"resolution_hours":30}
+  ],
+  "actions": [
+    {"id":"A-001","title":"补充接口评审材料","owner_role":"技术负责人","due_date":"2026-09-03","status":"completed"},
+    {"id":"A-002","title":"开通测试账号","owner_role":"测试负责人","due_date":"2026-09-06","status":"in_progress"},
+    {"id":"A-003","title":"更新联调计划","owner_role":"项目负责人","due_date":"2026-09-07","status":"open"},
+    {"id":"A-004","title":"确认验收窗口","owner_role":"客户成功角色","due_date":"2026-09-04","status":"open"}
+  ]
+}

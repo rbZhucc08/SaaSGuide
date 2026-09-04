@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any, Callable
 from uuid import uuid4
 
-from flask import Flask, jsonify, request, send_from_directory, url_for
+from flask import Flask, Response, jsonify, request, send_file, send_from_directory, url_for
 from database.store import StoreError, create_action, dashboard as action_dashboard, seed_demo, transition_action
 
 from deepseek_ask_build import DeepSeekError, ModelOutputError, evaluate_brief
@@ -41,6 +41,9 @@ from services.risk_rules.deterministic_scan import (
 from services.retrieval.knowledge_base import answer as knowledge_answer
 from services.retrieval.knowledge_base import evaluate as evaluate_knowledge
 from services.retrieval.knowledge_base import load_documents
+from services.reporting.metrics import calculate as calculate_report
+from services.reporting.metrics import csv_bytes as report_csv_bytes
+from services.reporting.metrics import load_dataset as load_report_dataset
 from validate_data import RISK_FILE, validate_risk_data
 
 
@@ -59,6 +62,8 @@ EVIDENCE_PREVIEWS: dict[str, dict[str, Any]] = {}
 KNOWLEDGE_FILE = PROJECT_DIR / "knowledge" / "documents" / "policies.json"
 PHASE4_EVALUATION_FILE = PROJECT_DIR / "data" / "evaluation" / "phase4_questions.json"
 DEMO_DATABASE = GENERATED_DIR / "saasguide-demo.db"
+PHASE6_DATA_FILE = PROJECT_DIR / "data" / "evaluation" / "phase6_reporting_data.json"
+PHASE6_XLSX_FILE = PROJECT_DIR / "data" / "reports" / "weekly-risk-report.xlsx"
 ALLOWED_SAMPLE_FILES = {
     "valid_project_tasks_cn.xlsx",
     "invalid_missing_owner.xlsx",
@@ -91,6 +96,9 @@ PUBLIC_FILES = {
     "action-tracker.html",
     "action-tracker.css",
     "action-tracker.js",
+    "reports.html",
+    "reports.css",
+    "reports.js",
 }
 
 
@@ -346,6 +354,11 @@ def create_app(
     @app.get("/action-tracker.html")
     def action_tracker():
         return send_from_directory(PROJECT_DIR, "action-tracker.html")
+
+    @app.get("/reports")
+    @app.get("/reports.html")
+    def reports():
+        return send_from_directory(PROJECT_DIR, "reports.html")
 
     @app.get("/assets/<path:filename>")
     def assets(filename: str):
@@ -662,6 +675,27 @@ def create_app(
             return jsonify({"message": "行动状态和审计事件已更新", "action": action})
         except StoreError as error:
             return jsonify({"error": str(error), "code": "transition_invalid"}), 400
+
+    @app.get("/api/reports/weekly")
+    def weekly_report():
+        try:
+            return jsonify(calculate_report(load_report_dataset(PHASE6_DATA_FILE)))
+        except (OSError, ValueError, json.JSONDecodeError):
+            return jsonify({"error": "报告数据无法读取", "code": "report_unavailable"}), 500
+
+    @app.get("/downloads/weekly-risk-report.csv")
+    def download_weekly_csv():
+        try:
+            result = calculate_report(load_report_dataset(PHASE6_DATA_FILE))
+            return Response(report_csv_bytes(result), mimetype="text/csv", headers={"Content-Disposition": "attachment; filename=weekly-risk-report.csv"})
+        except (OSError, ValueError, json.JSONDecodeError):
+            return jsonify({"error": "CSV 报告无法生成", "code": "report_unavailable"}), 500
+
+    @app.get("/downloads/weekly-risk-report.xlsx")
+    def download_weekly_xlsx():
+        if not PHASE6_XLSX_FILE.exists():
+            return jsonify({"error": "XLSX 报告尚未生成", "code": "xlsx_not_generated"}), 404
+        return send_file(PHASE6_XLSX_FILE, as_attachment=True, download_name="weekly-risk-report.xlsx")
 
     @app.errorhandler(413)
     def request_too_large(_error):
