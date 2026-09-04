@@ -37,6 +37,9 @@ from services.risk_rules.deterministic_scan import (
     save_human_decision,
     scan_project,
 )
+from services.retrieval.knowledge_base import answer as knowledge_answer
+from services.retrieval.knowledge_base import evaluate as evaluate_knowledge
+from services.retrieval.knowledge_base import load_documents
 from validate_data import RISK_FILE, validate_risk_data
 
 
@@ -52,6 +55,8 @@ PHASE2_EXPECTED_FILE = PROJECT_DIR / "data" / "evaluation" / "phase2_expected_re
 RISK_DECISION_FILE = GENERATED_DIR / "risk-decisions.jsonl"
 EVIDENCE_REVIEW_FILE = GENERATED_DIR / "evidence-reviews.jsonl"
 EVIDENCE_PREVIEWS: dict[str, dict[str, Any]] = {}
+KNOWLEDGE_FILE = PROJECT_DIR / "knowledge" / "documents" / "policies.json"
+PHASE4_EVALUATION_FILE = PROJECT_DIR / "data" / "evaluation" / "phase4_questions.json"
 ALLOWED_SAMPLE_FILES = {
     "valid_project_tasks_cn.xlsx",
     "invalid_missing_owner.xlsx",
@@ -78,6 +83,9 @@ PUBLIC_FILES = {
     "evidence-intake.html",
     "evidence-intake.css",
     "evidence-intake.js",
+    "knowledge-base.html",
+    "knowledge-base.css",
+    "knowledge-base.js",
 }
 
 
@@ -323,6 +331,11 @@ def create_app(
     @app.get("/evidence-intake.html")
     def evidence_intake():
         return send_from_directory(PROJECT_DIR, "evidence-intake.html")
+
+    @app.get("/knowledge-base")
+    @app.get("/knowledge-base.html")
+    def knowledge_base():
+        return send_from_directory(PROJECT_DIR, "knowledge-base.html")
 
     @app.get("/assets/<path:filename>")
     def assets(filename: str):
@@ -586,6 +599,29 @@ def create_app(
             return jsonify({"message": "人工核对已记录；未写回任务或正式风险", "record": record}), 201
         except TextEvidenceError as error:
             return jsonify({"error": str(error), "code": error.code}), error.status
+
+    @app.post("/api/knowledge/answer")
+    def answer_from_knowledge():
+        payload = request.get_json(silent=True)
+        if not isinstance(payload, dict) or not isinstance(payload.get("question"), str):
+            return jsonify({"error": "请求必须包含 question 文字", "code": "question_required"}), 400
+        try:
+            return jsonify(knowledge_answer(payload["question"], load_documents(KNOWLEDGE_FILE)))
+        except (OSError, ValueError, json.JSONDecodeError):
+            app.logger.exception("Unable to query knowledge base")
+            return jsonify({"error": "知识库当前无法读取", "code": "knowledge_unavailable"}), 500
+
+    @app.post("/api/knowledge/evaluate")
+    def evaluate_knowledge_base():
+        try:
+            documents = load_documents(KNOWLEDGE_FILE)
+            cases = json.loads(PHASE4_EVALUATION_FILE.read_text(encoding="utf-8"))
+            result = evaluate_knowledge(documents, cases)
+            result["scope"] = "fixed_simulated_dataset"
+            return jsonify(result)
+        except (OSError, ValueError, json.JSONDecodeError):
+            app.logger.exception("Unable to evaluate knowledge base")
+            return jsonify({"error": "知识库评测无法运行", "code": "evaluation_unavailable"}), 500
 
     @app.errorhandler(413)
     def request_too_large(_error):
