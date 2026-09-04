@@ -25,6 +25,12 @@ from services.ingestion.xlsx_import import (
     save_pending_upload,
     suggest_mapping,
 )
+from services.risk_rules.deterministic_scan import (
+    RiskScanError,
+    evaluate_candidates,
+    save_human_decision,
+    scan_project,
+)
 from validate_data import RISK_FILE, validate_risk_data
 
 
@@ -35,6 +41,9 @@ PENDING_IMPORT_DIR = GENERATED_DIR / "imports" / "pending"
 RAW_DATA_DIR = PROJECT_DIR / "data" / "raw"
 NORMALIZED_DATA_DIR = PROJECT_DIR / "data" / "normalized"
 SAMPLE_DATA_DIR = PROJECT_DIR / "data" / "samples"
+PHASE2_SAMPLE_FILE = PROJECT_DIR / "data" / "evaluation" / "phase2_project_timeline.json"
+PHASE2_EXPECTED_FILE = PROJECT_DIR / "data" / "evaluation" / "phase2_expected_results.json"
+RISK_DECISION_FILE = GENERATED_DIR / "risk-decisions.jsonl"
 ALLOWED_SAMPLE_FILES = {
     "valid_project_tasks_cn.xlsx",
     "invalid_missing_owner.xlsx",
@@ -42,6 +51,7 @@ ALLOWED_SAMPLE_FILES = {
     "invalid_dependencies.xlsx",
 }
 RISK_WRITE_LOCK = threading.Lock()
+RISK_DECISION_LOCK = threading.Lock()
 PUBLIC_FILES = {
     "index.html",
     "styles.css",
@@ -54,6 +64,9 @@ PUBLIC_FILES = {
     "data-sources.html",
     "data-sources.css",
     "data-sources.js",
+    "risk-radar.html",
+    "risk-radar.css",
+    "risk-radar.js",
 }
 
 
@@ -271,6 +284,7 @@ def create_app(
     pending_import_dir: Path = PENDING_IMPORT_DIR,
     raw_data_dir: Path = RAW_DATA_DIR,
     normalized_data_dir: Path = NORMALIZED_DATA_DIR,
+    risk_decision_file: Path = RISK_DECISION_FILE,
 ) -> Flask:
     app = Flask(__name__, static_folder=None)
     app.config["MAX_CONTENT_LENGTH"] = 3 * 1024 * 1024
@@ -288,6 +302,11 @@ def create_app(
     @app.get("/data-sources.html")
     def data_sources():
         return send_from_directory(PROJECT_DIR, "data-sources.html")
+
+    @app.get("/risk-radar")
+    @app.get("/risk-radar.html")
+    def risk_radar():
+        return send_from_directory(PROJECT_DIR, "risk-radar.html")
 
     @app.get("/assets/<path:filename>")
     def assets(filename: str):
@@ -455,6 +474,62 @@ def create_app(
         except OSError:
             app.logger.exception("Unable to persist confirmed XLSX import")
             return jsonify({"error": "确认后的导入文件无法保存", "code": "import_save_failed"}), 500
+
+    @app.post("/api/risk-scans/sample")
+    def scan_evaluation_sample():
+        try:
+            document = json.loads(PHASE2_SAMPLE_FILE.read_text(encoding="utf-8"))
+            expected = json.loads(PHASE2_EXPECTED_FILE.read_text(encoding="utf-8"))
+            result = scan_project(document)
+            result["evaluation"] = evaluate_candidates(result["candidates"], expected)
+            result["sample_mode"] = True
+            return jsonify(result)
+        except RiskScanError as error:
+            return jsonify({"error": str(error), "code": error.code}), error.status
+        except (OSError, json.JSONDecodeError):
+            app.logger.exception("Unable to read Phase 2 evaluation fixture")
+            return jsonify({"error": "固定评测样本无法读取", "code": "evaluation_fixture_failed"}), 500
+
+    @app.post("/api/risk-scans/latest")
+    def scan_latest_import():
+        if request.content_length and request.content_length > MAX_JSON_REQUEST_BYTES:
+            return jsonify({"error": "风险扫描请求过长，最大允许 64 KB", "code": "request_too_large"}), 413
+        payload = request.get_json(silent=True) or {}
+        if not isinstance(payload, dict):
+            return jsonify({"error": "请求必须是 JSON 对象", "code": "invalid_request"}), 400
+        normalized_files = sorted(
+            normalized_data_dir.glob("*.json"), key=lambda item: item.stat().st_mtime, reverse=True
+        )
+        if not normalized_files:
+            return jsonify({"error": "尚无已确认的统一项目 JSON，请先完成 XLSX 导入", "code": "normalized_import_not_found"}), 404
+        try:
+            document = json.loads(normalized_files[0].read_text(encoding="utf-8"))
+            result = scan_project(document, payload.get("as_of"))
+            result["evaluation"] = None
+            result["sample_mode"] = False
+            return jsonify(result)
+        except RiskScanError as error:
+            return jsonify({"error": str(error), "code": error.code}), error.status
+        except (OSError, json.JSONDecodeError):
+            app.logger.exception("Unable to read latest normalized import")
+            return jsonify({"error": "最近的统一项目 JSON 无法读取", "code": "normalized_import_invalid"}), 500
+
+    @app.post("/api/risk-scans/decisions")
+    def record_risk_decision():
+        if request.content_length and request.content_length > MAX_JSON_REQUEST_BYTES:
+            return jsonify({"error": "人工决策请求过长，最大允许 64 KB", "code": "request_too_large"}), 413
+        payload = request.get_json(silent=True)
+        if not isinstance(payload, dict):
+            return jsonify({"error": "请求必须是 JSON 对象", "code": "invalid_request"}), 400
+        try:
+            with RISK_DECISION_LOCK:
+                record = save_human_decision(risk_decision_file, payload)
+            return jsonify({"message": "人工选择已记录", "record": record}), 201
+        except RiskScanError as error:
+            return jsonify({"error": str(error), "code": error.code}), error.status
+        except OSError:
+            app.logger.exception("Unable to save human risk decision")
+            return jsonify({"error": "人工选择无法保存", "code": "decision_save_failed"}), 500
 
     @app.errorhandler(413)
     def request_too_large(_error):

@@ -15,8 +15,11 @@
 - 提供可选的四步页面导览。
 - 保留一个后台 ASK / BUILD 引导生成实验，入口为 `/builder`。
 - 在独立的 `/data-sources` 页面导入项目任务 XLSX，完成列映射、校验、预览、人工确认和标准化 JSON 保存。
+- 在独立的 `/risk-radar` 页面运行确定性风险规则，查看原始证据、固定评测指标，并记录确认、观察、驳回或误报选择。
 
 ## 核心流程
+
+V1 的主动风险分析：
 
 ```text
 用户填写风险事实
@@ -32,6 +35,22 @@ DeepSeek 返回 ASK 或 PLAN
 备份旧数据并写入 risk-data.json
         ↓
 页面重新统计并展示新风险
+```
+
+V2 当前的数据发现流程：
+
+```text
+项目任务 XLSX
+        ↓
+列映射、校验与人工确认
+        ↓
+统一项目 JSON（保留来源与行号）
+        ↓
+Python 确定性规则与去重
+        ↓
+带原始证据的候选风险
+        ↓
+人工确认 / 观察 / 驳回 / 标记误报
 ```
 
 ## 本地运行
@@ -54,6 +73,7 @@ $env:DEEPSEEK_API_KEY = '你的密钥'
 
 - V1 风险看板：`http://127.0.0.1:4173/`
 - V2-P1 数据源：`http://127.0.0.1:4173/data-sources`
+- V2-P2 风险雷达：`http://127.0.0.1:4173/risk-radar`
 
 ## 检查方式
 
@@ -66,13 +86,15 @@ $env:DEEPSEEK_API_KEY = '你的密钥'
 等价的分项命令：
 
 ```powershell
-& '.\.venv\Scripts\python.exe' -m unittest test_validator.py test_deepseek_ask_build.py test_risk_assistant.py test_server.py
+& '.\.venv\Scripts\python.exe' -m unittest test_validator.py test_deepseek_ask_build.py test_risk_assistant.py test_server.py test_xlsx_import.py test_risk_rules.py
 & '.\.venv\Scripts\python.exe' .\validate_data.py
 node --check app.js
 node --check builder.js
+node --check data-sources.js
+node --check risk-radar.js
 ```
 
-截至 2026-09-04：53 项自动测试通过，其中原有 V1 的 38 项及 2 项新增请求上限回归测试均通过；V2-P1 新增 13 项导入测试。V2-P1 的内置样本浏览器闭环、确认后落盘、桌面和 390 × 844 手机页面已验收。用户手动确认 Chrome 可选择两份本地 XLSX 并触发预览；受自动化权限限制，该文件选择动作不是自动化复现结果。
+截至 2026-09-04：70 项自动测试通过，其中 V2-P2 新增 17 项规则、评测、人工决策和接口测试。固定评测样本得到 6 条候选，Precision 与 Recall 均为 83.33%；这些指标仅属于人工编写的模拟测试集。V2-P1 与 V2-P2 的 Chrome 桌面和 390 × 844 页面均已验收。
 
 ## 当前状态与文档入口
 
@@ -82,6 +104,8 @@ node --check builder.js
 - `docs/RISKS_AND_ASSUMPTIONS.md`：已知风险、假设与成本。
 - `docs/V2_PHASE1_SPEC.md`：V2-P1 的范围和验收条件。
 - `docs/test_records/V2_PHASE1_TEST_RECORD_2026-09-04.md`：V2-P1 实际验收记录。
+- `docs/V2_PHASE2_SPEC.md`：V2-P2 的规则、指标和人工决策边界。
+- `docs/test_records/V2_PHASE2_TEST_RECORD_2026-09-04.md`：V2-P2 实际验收记录。
 
 阶段简称统一为 `V1-Pn` 和 `V2-Pn`。根目录旧有的 `PHASE1_TEST_RECORD.md` 至 `PHASE6_TEST_RECORD.md` 是 V1 历史记录，不重命名，以免破坏旧引用。
 
@@ -91,6 +115,8 @@ node --check builder.js
 - `data-sources.html`、`data-sources.css`、`data-sources.js`：V2-P1 数据源导入页面。
 - `services/ingestion/xlsx_import.py`：XLSX 解析、映射、校验和确认保存。
 - `data/samples/`、`data/evaluation/`：模拟 XLSX 与固定标准答案。
+- `risk-radar.html`、`risk-radar.css`、`risk-radar.js`：V2-P2 候选风险页面。
+- `services/risk_rules/deterministic_scan.py`：确定性规则、去重、评测与人工决策记录。
 - `risk-data.json`、`guide-data.json`：模拟风险和导览内容。
 - `server.py`：本地页面、分析接口、确认保存与备份。
 - `deepseek_risk_assistant.py`：风险 ASK / PLAN 规则和模型输出校验。
@@ -106,6 +132,7 @@ node --check builder.js
 
 - Flask 只作为本机开发服务，不是生产服务器。
 - JSON 适合单人 Demo，不支持多人同时编辑、账号、权限或数据库查询。
+- 当前规则只检查结构化任务数据和直接阻塞依赖，不理解文本语义或间接依赖链，存在误报与漏报。
 - 新建风险会保存；详情页临时修改的状态和临时采纳计划刷新后会恢复。
 - DeepSeek 输出经过结构检查，但建议是否合理仍需人工判断。
 - 没有真实业务数据，不能宣称降低了真实公司的风险或产生业务指标。

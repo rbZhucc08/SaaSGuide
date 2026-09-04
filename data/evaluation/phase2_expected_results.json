@@ -1,0 +1,27 @@
+{
+  "schema_version": "phase2-evaluation-v1",
+  "positive_candidate_keys": [
+    "project-001:T-002:schedule_delay",
+    "project-001:T-003:schedule_delay",
+    "project-001:T-003:delivery_blocked",
+    "project-001:T-004:schedule_pressure",
+    "project-001:T-004:dependency_risk",
+    "project-001:T-006:dependency_risk"
+  ],
+  "negative_candidate_keys": [
+    "project-001:T-005:schedule_pressure"
+  ],
+  "notes": {
+    "project-001:T-005:schedule_pressure": "固定答案将该项标为边界误报：剩余 3 天、12 小时工作量，单看完成度不足以判断压力。",
+    "project-001:T-006:dependency_risk": "固定答案将该项标为漏报：它受 T-004 的间接依赖链影响，而第一批规则只检查直接阻塞依赖。"
+  },
+  "expected_metrics": {
+    "true_positive": 5,
+    "false_positive": 1,
+    "false_negative": 1,
+    "precision_percent": 83.33,
+    "recall_percent": 83.33,
+    "false_positive_rate_percent": 100.0
+  },
+  "note": "这是人工编写的模拟标准答案，只评估当前固定样本，不代表真实企业数据表现。"
+}

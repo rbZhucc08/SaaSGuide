@@ -1,0 +1,27 @@
+{
+  "schema_version": "2.0-phase1",
+  "as_of": "2026-09-12",
+  "source": {
+    "source_id": "source-phase2-evaluation",
+    "source_type": "json",
+    "source_name": "phase2_project_timeline.json",
+    "source_version": "v1",
+    "sha256": "evaluation-fixture",
+    "imported_at": "2026-09-12T09:00:00+08:00"
+  },
+  "project": {
+    "project_id": "project-001",
+    "project_name": "星云 CRM 升级项目"
+  },
+  "tasks": [
+    {"source_row": 2, "task_id": "T-001", "task_name": "确认核心需求", "owner": "刘敏", "start_date": "2026-09-01", "due_date": "2026-09-02", "status": "已完成", "priority": "高", "dependency_ids": [], "progress_percent": 100, "effort_hours": 16},
+    {"source_row": 3, "task_id": "T-002", "task_name": "设计接口方案", "owner": "周航", "start_date": "2026-09-03", "due_date": "2026-09-05", "status": "进行中", "priority": "高", "dependency_ids": ["T-001"], "progress_percent": 60, "effort_hours": 24},
+    {"source_row": 4, "task_id": "T-003", "task_name": "改造前端页面", "owner": "林悦", "start_date": "2026-09-04", "due_date": "2026-09-10", "status": "阻塞", "priority": "中", "dependency_ids": ["T-001"], "progress_percent": 40, "effort_hours": 40},
+    {"source_row": 5, "task_id": "T-004", "task_name": "执行联调测试", "owner": "陈宁", "start_date": "2026-09-08", "due_date": "2026-09-12", "status": "未开始", "priority": "高", "dependency_ids": ["T-002", "T-003"], "progress_percent": 0, "effort_hours": 32},
+    {"source_row": 6, "task_id": "T-005", "task_name": "准备用户培训", "owner": "孟辰", "start_date": "2026-09-11", "due_date": "2026-09-15", "status": "未开始", "priority": "中", "dependency_ids": ["T-004"], "progress_percent": 0, "effort_hours": 12},
+    {"source_row": 7, "task_id": "T-006", "task_name": "完成上线评审", "owner": "许静", "start_date": "2026-09-15", "due_date": "2026-09-16", "status": "未开始", "priority": "高", "dependency_ids": ["T-004", "T-005"], "progress_percent": 0, "effort_hours": 8}
+  ],
+  "dependencies": [],
+  "updates": [],
+  "summary": {"task_count": 6, "dependency_count": 7, "update_count": 0, "error_count": 0}
+}
