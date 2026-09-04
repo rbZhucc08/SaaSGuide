@@ -251,6 +251,24 @@ class ServerTests(unittest.TestCase):
         )
         self.assertEqual(413, response.status_code)
 
+    def test_oversized_risk_analysis_request_is_rejected(self) -> None:
+        client, _ = self.make_client(lambda brief: {})
+        response = client.post(
+            "/api/risks/analyze",
+            data="x" * (65 * 1024),
+            content_type="application/json",
+        )
+        self.assertEqual(413, response.status_code)
+
+    def test_oversized_create_risk_request_is_rejected(self) -> None:
+        client, _ = self.make_client(lambda brief: {})
+        response = client.post(
+            "/api/risks",
+            data="x" * (65 * 1024),
+            content_type="application/json",
+        )
+        self.assertEqual(413, response.status_code)
+
     def test_guide_output_failure_is_reported(self) -> None:
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)

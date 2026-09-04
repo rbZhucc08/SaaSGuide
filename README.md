@@ -1,6 +1,6 @@
 # SaaSGuide
 
-一个面向 AI 应用岗位求职的个人学习 Demo：在虚构的 B2B 项目管理场景中，用风险看板集中查看风险，并让 DeepSeek 在人工确认前提供结构化处理建议。
+一个面向 AI 应用岗位求职的个人学习 Demo：在虚构的 B2B 项目管理场景中，用风险看板集中查看风险，并让 DeepSeek 在人工确认前提供结构化处理建议。V2 在不覆盖 V1 的前提下，逐阶段增加可核验的数据接入与风险分析能力。
 
 > 真实性声明：本项目使用虚构 SaaS 和模拟数据，没有真实客户、真实产品接入、生产部署或业务效果数据。
 
@@ -14,6 +14,7 @@
 - 将当前风险列表导出为适合表格软件打开的 CSV。
 - 提供可选的四步页面导览。
 - 保留一个后台 ASK / BUILD 引导生成实验，入口为 `/builder`。
+- 在独立的 `/data-sources` 页面导入项目任务 XLSX，完成列映射、校验、预览、人工确认和标准化 JSON 保存。
 
 ## 核心流程
 
@@ -51,6 +52,9 @@ $env:DEEPSEEK_API_KEY = '你的密钥'
 
 浏览器打开：`http://127.0.0.1:4173/`
 
+- V1 风险看板：`http://127.0.0.1:4173/`
+- V2-P1 数据源：`http://127.0.0.1:4173/data-sources`
+
 ## 检查方式
 
 一键检查：
@@ -68,11 +72,25 @@ node --check app.js
 node --check builder.js
 ```
 
-截至 2026-09-03：38 项自动测试通过；风险新建真实闭环、刷新持久化、桌面和 390 × 844 手机页面均已验收。
+截至 2026-09-04：53 项自动测试通过，其中原有 V1 的 38 项及 2 项新增请求上限回归测试均通过；V2-P1 新增 13 项导入测试。V2-P1 的内置样本浏览器闭环、确认后落盘、桌面和 390 × 844 手机页面已验收。用户手动确认 Chrome 可选择两份本地 XLSX 并触发预览；受自动化权限限制，该文件选择动作不是自动化复现结果。
+
+## 当前状态与文档入口
+
+- `docs/PROJECT_STATUS.md`：当前真正完成、验证和未验证的内容。
+- `docs/V2_ROADMAP.md`：V2 阶段路线与当前闸门。
+- `docs/EVIDENCE_RULES.md`：实现、自动测试、浏览器验收等证据等级。
+- `docs/RISKS_AND_ASSUMPTIONS.md`：已知风险、假设与成本。
+- `docs/V2_PHASE1_SPEC.md`：V2-P1 的范围和验收条件。
+- `docs/test_records/V2_PHASE1_TEST_RECORD_2026-09-04.md`：V2-P1 实际验收记录。
+
+阶段简称统一为 `V1-Pn` 和 `V2-Pn`。根目录旧有的 `PHASE1_TEST_RECORD.md` 至 `PHASE6_TEST_RECORD.md` 是 V1 历史记录，不重命名，以免破坏旧引用。
 
 ## 文件说明
 
 - `index.html`、`styles.css`、`app.js`：风险看板页面、外观与交互。
+- `data-sources.html`、`data-sources.css`、`data-sources.js`：V2-P1 数据源导入页面。
+- `services/ingestion/xlsx_import.py`：XLSX 解析、映射、校验和确认保存。
+- `data/samples/`、`data/evaluation/`：模拟 XLSX 与固定标准答案。
 - `risk-data.json`、`guide-data.json`：模拟风险和导览内容。
 - `server.py`：本地页面、分析接口、确认保存与备份。
 - `deepseek_risk_assistant.py`：风险 ASK / PLAN 规则和模型输出校验。

@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "phase1-evaluation-v1",
+  "samples": [
+    {
+      "file": "valid_project_tasks_cn.xlsx",
+      "valid": true,
+      "taskCount": 6,
+      "dependencyCount": 7,
+      "errorCodes": []
+    },
+    {
+      "file": "invalid_missing_owner.xlsx",
+      "valid": false,
+      "taskCount": 4,
+      "errorCodes": ["required_value_missing"],
+      "expectedRows": [4]
+    },
+    {
+      "file": "invalid_dates.xlsx",
+      "valid": false,
+      "taskCount": 2,
+      "errorCodes": ["invalid_date", "date_order"],
+      "expectedRows": [2, 3]
+    },
+    {
+      "file": "invalid_dependencies.xlsx",
+      "valid": false,
+      "taskCount": 5,
+      "errorCodes": ["duplicate_task_id", "self_dependency", "dependency_not_found"],
+      "expectedRows": [4, 5, 6]
+    }
+  ],
+  "note": "这些标准答案只用于自建模拟测试集，不能推导真实企业表现。"
+}

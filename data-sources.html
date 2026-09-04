@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="SaaSGuide V2 XLSX 项目任务导入学习 Demo。" />
+    <title>SaaSGuide｜数据源导入 Demo</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="data-sources.css" />
+  </head>
+  <body>
+    <div class="demo-notice" role="note">
+      <span>LEARNING DEMO</span>
+      <strong>个人学习 Demo</strong>
+      <p>虚构 SaaS、自建规则和模拟数据，未接入真实企业系统</p>
+    </div>
+
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="主导航">
+        <a class="brand" href="/" aria-label="返回风险看板">
+          <span class="brand__mark">S</span>
+          <span><strong>SaaSGuide</strong><small>Risk Intelligence</small></span>
+        </a>
+        <nav>
+          <a href="/"><span aria-hidden="true">△</span>风险看板</a>
+          <a class="is-active" href="/data-sources" aria-current="page"><span aria-hidden="true">⇧</span>数据源</a>
+        </nav>
+        <div class="phase-note">
+          <strong>V2 Phase 1</strong>
+          <p>只做 XLSX 接入和统一字段校验，不调用模型。</p>
+        </div>
+      </aside>
+
+      <main>
+        <header class="page-header">
+          <div>
+            <p class="eyebrow">DATA SOURCES</p>
+            <h1>导入项目任务</h1>
+            <p>先检查列名、日期、负责人、状态和依赖，再由你确认是否保存。</p>
+          </div>
+          <a class="secondary-button" href="/">返回风险看板</a>
+        </header>
+
+        <section class="flow-strip" aria-label="导入步骤">
+          <div><span>1</span><strong>选择 XLSX</strong><small>只读取第一个可见工作表</small></div>
+          <div><span>2</span><strong>确认列映射</strong><small>自动建议可以修改</small></div>
+          <div><span>3</span><strong>检查预览</strong><small>错误会标出原表行号</small></div>
+          <div><span>4</span><strong>人工确认</strong><small>通过后保存原件和 JSON</small></div>
+        </section>
+
+        <section class="card upload-card" aria-labelledby="upload-title">
+          <div>
+            <p class="step-label">STEP 1</p>
+            <h2 id="upload-title">选择项目任务 XLSX</h2>
+            <p>限制：`.xlsx`、最大 2 MB、1 个可见工作表、最多 1000 条数据行。公式不会执行。</p>
+          </div>
+          <form id="upload-form">
+            <label class="file-picker" for="xlsx-file">
+              <span>选择文件</span>
+              <strong id="file-name">尚未选择文件</strong>
+              <small>有效样本：data/samples/valid_project_tasks_cn.xlsx</small>
+            </label>
+            <input id="xlsx-file" name="file" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required />
+            <button id="preview-button" class="primary-button" type="submit">读取并生成预览</button>
+          </form>
+          <div class="sample-loader">
+            <label for="sample-select">或加载内置模拟样本（不等于文件上传）</label>
+            <div>
+              <select id="sample-select">
+                <option value="valid_project_tasks_cn.xlsx">有效项目任务</option>
+                <option value="invalid_missing_owner.xlsx">错误：缺少负责人</option>
+                <option value="invalid_dates.xlsx">错误：日期无效</option>
+                <option value="invalid_dependencies.xlsx">错误：任务依赖异常</option>
+              </select>
+              <button id="load-sample-button" class="secondary-button" type="button">加载样本</button>
+            </div>
+          </div>
+        </section>
+
+        <div id="page-message" class="message is-hidden" role="status" aria-live="polite"></div>
+
+        <section id="mapping-section" class="card is-hidden" aria-labelledby="mapping-title">
+          <div class="section-heading">
+            <div>
+              <p class="step-label">STEP 2</p>
+              <h2 id="mapping-title">确认列映射</h2>
+              <p>左侧是统一字段，右侧是 XLSX 原列名。带 * 的字段必须映射。</p>
+            </div>
+            <button id="validate-button" class="secondary-button" type="button">按当前映射重新校验</button>
+          </div>
+          <div id="mapping-grid" class="mapping-grid"></div>
+        </section>
+
+        <section id="preview-section" class="card is-hidden" aria-labelledby="preview-title">
+          <div class="section-heading">
+            <div>
+              <p class="step-label">STEP 3</p>
+              <h2 id="preview-title">校验结果与标准化预览</h2>
+              <p id="preview-summary">等待读取文件。</p>
+            </div>
+            <span id="validation-badge" class="validation-badge">未校验</span>
+          </div>
+
+          <div id="error-panel" class="error-panel is-hidden">
+            <h3>需要修正的问题</h3>
+            <ul id="error-list"></ul>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>原表行号</th>
+                  <th>任务编号</th>
+                  <th>任务名称</th>
+                  <th>负责人</th>
+                  <th>开始日期</th>
+                  <th>截止日期</th>
+                  <th>状态</th>
+                  <th>前置任务</th>
+                  <th>完成百分比</th>
+                </tr>
+              </thead>
+              <tbody id="preview-body"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="confirm-section" class="card confirm-card is-hidden" aria-labelledby="confirm-title">
+          <div>
+            <p class="step-label">STEP 4</p>
+            <h2 id="confirm-title">确认导入</h2>
+            <p>确认后才会把原始 XLSX 副本和统一 JSON 保存到本地。页面预览不能替代服务器复检。</p>
+          </div>
+          <button id="confirm-button" class="primary-button" type="button" disabled>确认导入</button>
+        </section>
+
+        <section id="success-section" class="success-card is-hidden" role="status" aria-live="polite">
+          <span aria-hidden="true">✓</span>
+          <div>
+            <p>IMPORT SAVED</p>
+            <h2>项目任务已确认导入</h2>
+            <dl id="success-details"></dl>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="data-sources.js"></script>
+  </body>
+</html>

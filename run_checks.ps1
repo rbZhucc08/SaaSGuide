@@ -12,7 +12,7 @@ if (-not (Test-Path -LiteralPath $pythonPath)) {
 
 Push-Location $projectRoot
 try {
-    & $pythonPath -m unittest test_validator.py test_deepseek_ask_build.py test_risk_assistant.py test_server.py
+    & $pythonPath -m unittest test_validator.py test_deepseek_ask_build.py test_risk_assistant.py test_server.py test_xlsx_import.py
     if ($LASTEXITCODE -ne 0) { throw "Python 自动测试失败。" }
 
     & $pythonPath .\validate_data.py
@@ -24,7 +24,10 @@ try {
     node --check builder.js
     if ($LASTEXITCODE -ne 0) { throw "builder.js 语法检查失败。" }
 
-    Write-Host "全部检查通过：38 项自动测试、数据校验和 JavaScript 语法检查。" -ForegroundColor Green
+    node --check data-sources.js
+    if ($LASTEXITCODE -ne 0) { throw "data-sources.js 语法检查失败。" }
+
+    Write-Host "全部检查通过：V1 回归、V2 Phase 1 XLSX 导入测试、数据校验和 JavaScript 语法检查。" -ForegroundColor Green
 }
 finally {
     Pop-Location

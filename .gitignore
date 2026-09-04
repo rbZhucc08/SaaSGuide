@@ -11,3 +11,12 @@ generated/
 
 # 求职材料含个人信息，且不属于 SaaSGuide 产品源码。
 resume_work/
+
+# 本地构建脚本、预览图和临时检查文件。
+work/
+
+# 用户确认后的本地导入数据可能包含敏感信息，只保留目录结构。
+data/raw/*
+!data/raw/.gitkeep
+data/normalized/*
+!data/normalized/.gitkeep

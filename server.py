@@ -15,11 +15,32 @@ from flask import Flask, jsonify, request, send_from_directory, url_for
 
 from deepseek_ask_build import DeepSeekError, ModelOutputError, evaluate_brief
 from deepseek_risk_assistant import analyze_risk
+from services.ingestion.xlsx_import import (
+    IngestionError,
+    MAX_XLSX_BYTES,
+    confirm_import,
+    load_pending,
+    parse_xlsx,
+    preview_payload,
+    save_pending_upload,
+    suggest_mapping,
+)
 from validate_data import RISK_FILE, validate_risk_data
 
 
 PROJECT_DIR = Path(__file__).resolve().parent
 GENERATED_DIR = PROJECT_DIR / "generated"
+MAX_JSON_REQUEST_BYTES = 64 * 1024
+PENDING_IMPORT_DIR = GENERATED_DIR / "imports" / "pending"
+RAW_DATA_DIR = PROJECT_DIR / "data" / "raw"
+NORMALIZED_DATA_DIR = PROJECT_DIR / "data" / "normalized"
+SAMPLE_DATA_DIR = PROJECT_DIR / "data" / "samples"
+ALLOWED_SAMPLE_FILES = {
+    "valid_project_tasks_cn.xlsx",
+    "invalid_missing_owner.xlsx",
+    "invalid_dates.xlsx",
+    "invalid_dependencies.xlsx",
+}
 RISK_WRITE_LOCK = threading.Lock()
 PUBLIC_FILES = {
     "index.html",
@@ -30,6 +51,9 @@ PUBLIC_FILES = {
     "builder.html",
     "builder.css",
     "builder.js",
+    "data-sources.html",
+    "data-sources.css",
+    "data-sources.js",
 }
 
 
@@ -244,9 +268,12 @@ def create_app(
     evaluator: Callable[[Any], dict[str, Any]] = evaluate_brief,
     risk_evaluator: Callable[[Any, str], dict[str, Any]] = analyze_risk,
     risk_file: Path = RISK_FILE,
+    pending_import_dir: Path = PENDING_IMPORT_DIR,
+    raw_data_dir: Path = RAW_DATA_DIR,
+    normalized_data_dir: Path = NORMALIZED_DATA_DIR,
 ) -> Flask:
     app = Flask(__name__, static_folder=None)
-    app.config["MAX_CONTENT_LENGTH"] = 64 * 1024
+    app.config["MAX_CONTENT_LENGTH"] = 3 * 1024 * 1024
 
     @app.get("/")
     def dashboard():
@@ -256,6 +283,11 @@ def create_app(
     @app.get("/builder.html")
     def builder():
         return send_from_directory(PROJECT_DIR, "builder.html")
+
+    @app.get("/data-sources")
+    @app.get("/data-sources.html")
+    def data_sources():
+        return send_from_directory(PROJECT_DIR, "data-sources.html")
 
     @app.get("/assets/<path:filename>")
     def assets(filename: str):
@@ -275,6 +307,8 @@ def create_app(
 
     @app.post("/api/guides/generate")
     def generate_guide():
+        if request.content_length and request.content_length > MAX_JSON_REQUEST_BYTES:
+            return jsonify({"error": "Brief 内容过长，最大允许 64 KB"}), 413
         brief = request.get_json(silent=True)
         if not isinstance(brief, dict):
             return jsonify({"error": "请求必须是 JSON 对象"}), 400
@@ -297,6 +331,8 @@ def create_app(
 
     @app.post("/api/risks/analyze")
     def analyze_current_risk():
+        if request.content_length and request.content_length > MAX_JSON_REQUEST_BYTES:
+            return jsonify({"error": "风险分析请求过长，最大允许 64 KB"}), 413
         payload = request.get_json(silent=True)
         if not isinstance(payload, dict) or not isinstance(payload.get("risk"), dict):
             return jsonify({"error": "请求必须包含 risk 对象"}), 400
@@ -322,6 +358,8 @@ def create_app(
 
     @app.post("/api/risks")
     def create_risk():
+        if request.content_length and request.content_length > MAX_JSON_REQUEST_BYTES:
+            return jsonify({"error": "新建风险请求过长，最大允许 64 KB"}), 413
         payload = request.get_json(silent=True)
         if not isinstance(payload, dict):
             return jsonify({"error": "请求必须是 JSON 对象"}), 400
@@ -340,9 +378,87 @@ def create_app(
             app.logger.exception("Unable to persist new risk")
             return jsonify({"error": "新风险无法写入本地数据文件"}), 500
 
+    @app.post("/api/imports/preview")
+    def preview_import():
+        upload = request.files.get("file")
+        if upload is None or not upload.filename:
+            return jsonify({"error": "请选择一个 XLSX 文件", "code": "file_required"}), 400
+        try:
+            content = upload.stream.read(MAX_XLSX_BYTES + 1)
+            preview_id, workbook_path = save_pending_upload(
+                content, upload.filename, pending_import_dir
+            )
+            parsed = parse_xlsx(workbook_path, upload.filename)
+            mapping = suggest_mapping(parsed.headers)
+            return jsonify(preview_payload(parsed, mapping, preview_id))
+        except IngestionError as error:
+            return jsonify({"error": str(error), "code": error.code}), error.status
+        except OSError:
+            app.logger.exception("Unable to create XLSX preview")
+            return jsonify({"error": "XLSX 预览无法保存", "code": "preview_save_failed"}), 500
+
+    @app.post("/api/imports/sample/<filename>")
+    def preview_sample_import(filename: str):
+        if filename not in ALLOWED_SAMPLE_FILES:
+            return jsonify({"error": "内置模拟样本不存在", "code": "sample_not_found"}), 404
+        try:
+            content = (SAMPLE_DATA_DIR / filename).read_bytes()
+            preview_id, workbook_path = save_pending_upload(content, filename, pending_import_dir)
+            parsed = parse_xlsx(workbook_path, filename)
+            mapping = suggest_mapping(parsed.headers)
+            response = preview_payload(parsed, mapping, preview_id)
+            response["sample_mode"] = True
+            return jsonify(response)
+        except IngestionError as error:
+            return jsonify({"error": str(error), "code": error.code}), error.status
+        except OSError:
+            app.logger.exception("Unable to load bundled XLSX sample")
+            return jsonify({"error": "内置模拟样本无法读取", "code": "sample_read_failed"}), 500
+
+    @app.post("/api/imports/validate")
+    def validate_import():
+        payload = request.get_json(silent=True)
+        if not isinstance(payload, dict) or not isinstance(payload.get("mapping"), dict):
+            return jsonify({"error": "请求必须包含 mapping 对象", "code": "mapping_required"}), 400
+        try:
+            workbook_path, source_name = load_pending(payload.get("preview_id", ""), pending_import_dir)
+            parsed = parse_xlsx(workbook_path, source_name)
+            return jsonify(preview_payload(parsed, payload["mapping"], payload["preview_id"]))
+        except IngestionError as error:
+            return jsonify({"error": str(error), "code": error.code}), error.status
+
+    @app.post("/api/imports/confirm")
+    def confirm_xlsx_import():
+        payload = request.get_json(silent=True)
+        if not isinstance(payload, dict) or not isinstance(payload.get("mapping"), dict):
+            return jsonify({"error": "请求必须包含 mapping 对象", "code": "mapping_required"}), 400
+        try:
+            result = confirm_import(
+                payload.get("preview_id", ""),
+                payload["mapping"],
+                pending_import_dir,
+                raw_data_dir,
+                normalized_data_dir,
+            )
+            return jsonify(result), 201
+        except IngestionError as error:
+            if error.code == "validation_failed":
+                try:
+                    workbook_path, source_name = load_pending(payload.get("preview_id", ""), pending_import_dir)
+                    parsed = parse_xlsx(workbook_path, source_name)
+                    response = preview_payload(parsed, payload["mapping"], payload.get("preview_id"))
+                    response.update({"error": str(error), "code": error.code})
+                    return jsonify(response), error.status
+                except IngestionError:
+                    pass
+            return jsonify({"error": str(error), "code": error.code}), error.status
+        except OSError:
+            app.logger.exception("Unable to persist confirmed XLSX import")
+            return jsonify({"error": "确认后的导入文件无法保存", "code": "import_save_failed"}), 500
+
     @app.errorhandler(413)
     def request_too_large(_error):
-        return jsonify({"error": "Brief 内容过长，最大允许 64 KB"}), 413
+        return jsonify({"error": "请求内容过大；XLSX 文件最大允许 2 MB"}), 413
 
     @app.get("/<path:filename>")
     def public_file(filename: str):
