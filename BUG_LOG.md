@@ -19,3 +19,10 @@
 - 处理：从 Codex bundled Python 复制 `python-docx 1.2.0`、`lxml` 和 `typing_extensions` 到项目虚拟环境；用 `netstat` 精确确认两个 PID，停止后只启动一个新服务。
 - 验证：项目 Python 可导入 `docx`；固定样本 API 返回段落 9、10 两条真实待确认信息。
 - 限制：依赖复制是本机恢复，不替代在干净环境运行 `pip install -r requirements.txt`。
+# V2-P5 SQLite 测试文件无法清理
+
+- 日期：2026-09-05
+- 现象：4 个测试逻辑完成后均在临时目录清理时报 WinError 32。
+- 原因：`sqlite3.Connection` 的上下文管理器会提交或回滚，但不会自动关闭连接。
+- 修复：增加 `ClosingConnection`，在上下文退出后关闭连接。
+- 复测：P5 4 项全部通过。

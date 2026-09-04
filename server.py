@@ -12,6 +12,7 @@ from typing import Any, Callable
 from uuid import uuid4
 
 from flask import Flask, jsonify, request, send_from_directory, url_for
+from database.store import StoreError, create_action, dashboard as action_dashboard, seed_demo, transition_action
 
 from deepseek_ask_build import DeepSeekError, ModelOutputError, evaluate_brief
 from deepseek_risk_assistant import analyze_risk
@@ -57,6 +58,7 @@ EVIDENCE_REVIEW_FILE = GENERATED_DIR / "evidence-reviews.jsonl"
 EVIDENCE_PREVIEWS: dict[str, dict[str, Any]] = {}
 KNOWLEDGE_FILE = PROJECT_DIR / "knowledge" / "documents" / "policies.json"
 PHASE4_EVALUATION_FILE = PROJECT_DIR / "data" / "evaluation" / "phase4_questions.json"
+DEMO_DATABASE = GENERATED_DIR / "saasguide-demo.db"
 ALLOWED_SAMPLE_FILES = {
     "valid_project_tasks_cn.xlsx",
     "invalid_missing_owner.xlsx",
@@ -86,6 +88,9 @@ PUBLIC_FILES = {
     "knowledge-base.html",
     "knowledge-base.css",
     "knowledge-base.js",
+    "action-tracker.html",
+    "action-tracker.css",
+    "action-tracker.js",
 }
 
 
@@ -336,6 +341,11 @@ def create_app(
     @app.get("/knowledge-base.html")
     def knowledge_base():
         return send_from_directory(PROJECT_DIR, "knowledge-base.html")
+
+    @app.get("/action-tracker")
+    @app.get("/action-tracker.html")
+    def action_tracker():
+        return send_from_directory(PROJECT_DIR, "action-tracker.html")
 
     @app.get("/assets/<path:filename>")
     def assets(filename: str):
@@ -622,6 +632,36 @@ def create_app(
         except (OSError, ValueError, json.JSONDecodeError):
             app.logger.exception("Unable to evaluate knowledge base")
             return jsonify({"error": "知识库评测无法运行", "code": "evaluation_unavailable"}), 500
+
+    @app.get("/api/actions")
+    def list_actions():
+        try:
+            seed_demo(DEMO_DATABASE)
+            return jsonify(action_dashboard(DEMO_DATABASE, request.args.get("as_of")))
+        except (OSError, ValueError):
+            return jsonify({"error": "行动数据无法读取", "code": "action_store_unavailable"}), 500
+
+    @app.post("/api/actions")
+    def add_action():
+        payload = request.get_json(silent=True)
+        if not isinstance(payload, dict):
+            return jsonify({"error": "请求必须是 JSON 对象", "code": "invalid_request"}), 400
+        try:
+            seed_demo(DEMO_DATABASE)
+            return jsonify({"message": "人工确认的行动已保存", "action": create_action(DEMO_DATABASE, payload)}), 201
+        except StoreError as error:
+            return jsonify({"error": str(error), "code": "action_invalid"}), 400
+
+    @app.post("/api/actions/<action_id>/transition")
+    def change_action(action_id: str):
+        payload = request.get_json(silent=True)
+        if not isinstance(payload, dict):
+            return jsonify({"error": "请求必须是 JSON 对象", "code": "invalid_request"}), 400
+        try:
+            action = transition_action(DEMO_DATABASE, action_id, str(payload.get("status", "")), str(payload.get("actor", "")), str(payload.get("note", "")))
+            return jsonify({"message": "行动状态和审计事件已更新", "action": action})
+        except StoreError as error:
+            return jsonify({"error": str(error), "code": "transition_invalid"}), 400
 
     @app.errorhandler(413)
     def request_too_large(_error):

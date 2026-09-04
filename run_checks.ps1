@@ -12,7 +12,7 @@ if (-not (Test-Path -LiteralPath $pythonPath)) {
 
 Push-Location $projectRoot
 try {
-    & $pythonPath -m unittest test_validator.py test_deepseek_ask_build.py test_risk_assistant.py test_server.py test_xlsx_import.py test_risk_rules.py test_text_evidence.py test_knowledge_base.py
+    & $pythonPath -m unittest test_validator.py test_deepseek_ask_build.py test_risk_assistant.py test_server.py test_xlsx_import.py test_risk_rules.py test_text_evidence.py test_knowledge_base.py test_sqlite_store.py
     if ($LASTEXITCODE -ne 0) { throw "Python 自动测试失败。" }
 
     & $pythonPath .\validate_data.py
@@ -36,7 +36,10 @@ try {
     node --check knowledge-base.js
     if ($LASTEXITCODE -ne 0) { throw "knowledge-base.js 语法检查失败。" }
 
-    Write-Host "全部检查通过：V1 回归、V2-P1 至 P4、数据校验和 JavaScript 语法检查。" -ForegroundColor Green
+    node --check action-tracker.js
+    if ($LASTEXITCODE -ne 0) { throw "action-tracker.js 语法检查失败。" }
+
+    Write-Host "全部检查通过：V1 回归、V2-P1 至 P5、数据校验和 JavaScript 语法检查。" -ForegroundColor Green
 }
 finally {
     Pop-Location
