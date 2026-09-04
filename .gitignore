@@ -5,6 +5,7 @@ __pycache__/
 .env.*
 !.env.example
 *.log
+node_modules/
 
 # 本地运行产物、模型输出与数据备份不进入版本库。
 generated/

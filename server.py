@@ -74,6 +74,8 @@ ALLOWED_SAMPLE_FILES = {
 }
 RISK_WRITE_LOCK = threading.Lock()
 RISK_DECISION_LOCK = threading.Lock()
+ERROR_LOG_LOCK = threading.Lock()
+HTTP_ERROR_LOG = GENERATED_DIR / "http-errors.jsonl"
 PUBLIC_FILES = {
     "index.html",
     "styles.css",
@@ -104,6 +106,8 @@ PUBLIC_FILES = {
     "input-lab.html",
     "input-lab.css",
     "input-lab.js",
+    "v2-overview.html",
+    "v2-overview.css",
 }
 
 
@@ -326,6 +330,29 @@ def create_app(
     app = Flask(__name__, static_folder=None)
     app.config["MAX_CONTENT_LENGTH"] = 3 * 1024 * 1024
 
+    @app.after_request
+    def security_headers(response):
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["Referrer-Policy"] = "no-referrer"
+        response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+        response.headers["Content-Security-Policy"] = "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; frame-ancestors 'none'"
+        response.headers["Cache-Control"] = "no-store"
+        if response.status_code >= 400 and not app.config.get("TESTING"):
+            record = {"created_at": now_iso(), "method": request.method, "path": request.path, "status": response.status_code}
+            try:
+                with ERROR_LOG_LOCK:
+                    HTTP_ERROR_LOG.parent.mkdir(parents=True, exist_ok=True)
+                    with HTTP_ERROR_LOG.open("a", encoding="utf-8") as handle:
+                        handle.write(json.dumps(record, ensure_ascii=False) + "\n")
+            except OSError:
+                app.logger.exception("Unable to append HTTP error log")
+        return response
+
+    @app.get("/health")
+    def health():
+        return jsonify({"status": "ok", "service": "saasguide-local-demo", "scope": "simulated-data-only", "version": "2.0-demo"})
+
     @app.get("/")
     def dashboard():
         return send_from_directory(PROJECT_DIR, "index.html")
@@ -369,6 +396,11 @@ def create_app(
     @app.get("/input-lab.html")
     def input_lab():
         return send_from_directory(PROJECT_DIR, "input-lab.html")
+
+    @app.get("/v2")
+    @app.get("/v2-overview.html")
+    def v2_overview():
+        return send_from_directory(PROJECT_DIR, "v2-overview.html")
 
     @app.get("/assets/<path:filename>")
     def assets(filename: str):
