@@ -25,6 +25,12 @@ from services.ingestion.xlsx_import import (
     save_pending_upload,
     suggest_mapping,
 )
+from services.ingestion.text_evidence import (
+    MAX_TEXT_BYTES,
+    TextEvidenceError,
+    parse_evidence,
+    save_review,
+)
 from services.risk_rules.deterministic_scan import (
     RiskScanError,
     evaluate_candidates,
@@ -44,6 +50,8 @@ SAMPLE_DATA_DIR = PROJECT_DIR / "data" / "samples"
 PHASE2_SAMPLE_FILE = PROJECT_DIR / "data" / "evaluation" / "phase2_project_timeline.json"
 PHASE2_EXPECTED_FILE = PROJECT_DIR / "data" / "evaluation" / "phase2_expected_results.json"
 RISK_DECISION_FILE = GENERATED_DIR / "risk-decisions.jsonl"
+EVIDENCE_REVIEW_FILE = GENERATED_DIR / "evidence-reviews.jsonl"
+EVIDENCE_PREVIEWS: dict[str, dict[str, Any]] = {}
 ALLOWED_SAMPLE_FILES = {
     "valid_project_tasks_cn.xlsx",
     "invalid_missing_owner.xlsx",
@@ -67,6 +75,9 @@ PUBLIC_FILES = {
     "risk-radar.html",
     "risk-radar.css",
     "risk-radar.js",
+    "evidence-intake.html",
+    "evidence-intake.css",
+    "evidence-intake.js",
 }
 
 
@@ -308,6 +319,11 @@ def create_app(
     def risk_radar():
         return send_from_directory(PROJECT_DIR, "risk-radar.html")
 
+    @app.get("/evidence-intake")
+    @app.get("/evidence-intake.html")
+    def evidence_intake():
+        return send_from_directory(PROJECT_DIR, "evidence-intake.html")
+
     @app.get("/assets/<path:filename>")
     def assets(filename: str):
         if filename not in PUBLIC_FILES:
@@ -530,6 +546,46 @@ def create_app(
         except OSError:
             app.logger.exception("Unable to save human risk decision")
             return jsonify({"error": "人工选择无法保存", "code": "decision_save_failed"}), 500
+
+    @app.post("/api/evidence/preview")
+    def preview_evidence():
+        upload = request.files.get("file")
+        if upload is None or not upload.filename:
+            return jsonify({"error": "请选择 TXT、Markdown 或 DOCX 文件", "code": "file_required"}), 400
+        try:
+            content = upload.stream.read(MAX_TEXT_BYTES + 1)
+            result = parse_evidence(content, upload.filename)
+            EVIDENCE_PREVIEWS[result["preview_id"]] = result
+            return jsonify(result)
+        except TextEvidenceError as error:
+            return jsonify({"error": str(error), "code": error.code}), error.status
+
+    @app.post("/api/evidence/sample")
+    def preview_evidence_sample():
+        try:
+            sample = PROJECT_DIR / "data" / "documents" / "phase3_project_weekly_update.docx"
+            result = parse_evidence(sample.read_bytes(), sample.name)
+            result["sample_mode"] = True
+            EVIDENCE_PREVIEWS[result["preview_id"]] = result
+            return jsonify(result)
+        except (OSError, TextEvidenceError) as error:
+            code = error.code if isinstance(error, TextEvidenceError) else "sample_read_failed"
+            status = error.status if isinstance(error, TextEvidenceError) else 500
+            return jsonify({"error": str(error), "code": code}), status
+
+    @app.post("/api/evidence/reviews")
+    def review_evidence():
+        payload = request.get_json(silent=True)
+        if not isinstance(payload, dict):
+            return jsonify({"error": "请求必须是 JSON 对象", "code": "invalid_request"}), 400
+        preview = EVIDENCE_PREVIEWS.get(str(payload.get("preview_id", "")))
+        if preview is None:
+            return jsonify({"error": "预览已失效，请重新解析文件", "code": "preview_not_found"}), 404
+        try:
+            record = save_review(EVIDENCE_REVIEW_FILE, preview, payload)
+            return jsonify({"message": "人工核对已记录；未写回任务或正式风险", "record": record}), 201
+        except TextEvidenceError as error:
+            return jsonify({"error": str(error), "code": error.code}), error.status
 
     @app.errorhandler(413)
     def request_too_large(_error):

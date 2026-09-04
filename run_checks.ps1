@@ -12,7 +12,7 @@ if (-not (Test-Path -LiteralPath $pythonPath)) {
 
 Push-Location $projectRoot
 try {
-    & $pythonPath -m unittest test_validator.py test_deepseek_ask_build.py test_risk_assistant.py test_server.py test_xlsx_import.py test_risk_rules.py
+    & $pythonPath -m unittest test_validator.py test_deepseek_ask_build.py test_risk_assistant.py test_server.py test_xlsx_import.py test_risk_rules.py test_text_evidence.py
     if ($LASTEXITCODE -ne 0) { throw "Python 自动测试失败。" }
 
     & $pythonPath .\validate_data.py
@@ -30,7 +30,10 @@ try {
     node --check risk-radar.js
     if ($LASTEXITCODE -ne 0) { throw "risk-radar.js 语法检查失败。" }
 
-    Write-Host "全部检查通过：V1 回归、V2-P1 XLSX 导入、V2-P2 确定性风险扫描、数据校验和 JavaScript 语法检查。" -ForegroundColor Green
+    node --check evidence-intake.js
+    if ($LASTEXITCODE -ne 0) { throw "evidence-intake.js 语法检查失败。" }
+
+    Write-Host "全部检查通过：V1 回归、V2-P1 XLSX、V2-P2 风险扫描、V2-P3 文本证据、数据校验和 JavaScript 语法检查。" -ForegroundColor Green
 }
 finally {
     Pop-Location

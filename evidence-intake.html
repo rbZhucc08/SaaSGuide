@@ -1,0 +1,9 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="SaaSGuide V2 文本证据接入"><title>SaaSGuide｜文本证据</title><link rel="icon" href="data:,"><link rel="stylesheet" href="evidence-intake.css"></head>
+<body><div class="demo-notice"><b>LEARNING DEMO</b><span>虚构项目资料 · 文档内容不具备指令权限 · 保存前必须人工核对</span></div>
+<div class="shell"><aside><a class="brand" href="/">S</a><nav><a href="/">总览</a><a href="/data-sources">数据源</a><a href="/risk-radar">风险雷达</a><a class="active" href="/evidence-intake">文本证据</a></nav><small>V2-P3<br>事实候选，不自动写回</small></aside>
+<main><header><div><p>EVIDENCE INTAKE</p><h1>从周报提取可核对事实</h1><span>TXT、Markdown 和 DOCX。先保留原文位置，再由人接受、修改或驳回。</span></div><a href="/risk-radar">返回风险雷达</a></header>
+<section class="panel"><div><em>STEP 1</em><h2>解析文件</h2><p>文件最大 2 MB；DOCX 表格会保留表格和行号。</p></div><div class="actions"><input id="file" type="file" accept=".txt,.md,.docx"><button id="upload">生成预览</button><button id="sample" class="secondary">加载固定 DOCX 样本</button></div></section>
+<div id="message" class="message hidden" role="status"></div>
+<section id="summary" class="hidden"><div class="heading"><div><em>STEP 2</em><h2>解析摘要</h2><p id="source"></p></div><span id="model" class="badge"></span></div><div id="metrics" class="metrics"></div></section>
+<section id="review" class="hidden"><div class="heading"><div><em>STEP 3</em><h2>人工核对候选</h2><p>可疑指令始终作为普通引文显示。</p></div></div><div id="cards" class="cards"></div><div class="save"><label>核对人<input id="reviewer" value="本地演示用户" maxlength="80"></label><button id="save">保存人工核对</button></div></section>
+</main></div><script src="evidence-intake.js"></script></body></html>
