@@ -1,0 +1,19 @@
+{
+  "featureName": "项目风险看板引导",
+  "featureBrief": "帮助项目经理发现、查看并处理当前项目风险。",
+  "targetUsers": "首次使用风险看板的项目经理",
+  "entryPoint": "项目详情页的风险看板入口",
+  "operationSteps": [
+    "查看风险总数",
+    "筛选高风险",
+    "查看风险详情",
+    "标记为已处理"
+  ],
+  "successState": "选中的风险显示为已处理并完成引导",
+  "pageElements": {
+    "riskTotal": "risk-total",
+    "highRiskFilter": "high-risk-filter",
+    "riskDetail": "risk-detail",
+    "resolveRisk": "resolve-risk"
+  }
+}

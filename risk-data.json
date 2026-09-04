@@ -1,0 +1,99 @@
+{
+  "risks": [
+    {
+      "id": "api-delay",
+      "type": "high",
+      "level": "高风险",
+      "title": "第三方 API 联调延迟",
+      "summary": "可能影响核心功能验收",
+      "description": "供应商沙箱环境响应不稳定，联调进度比原计划延迟 3 天，可能影响 9 月 6 日的核心功能验收。",
+      "owner": "周航",
+      "avatarClass": "",
+      "due": "2026-09-02",
+      "overdue": true,
+      "impact": "支付与消息模块",
+      "status": "待处理",
+      "plan": [
+        "申请供应商专属联调环境",
+        "准备本地模拟接口作为备用方案",
+        "每日 17:00 同步阻塞项"
+      ]
+    },
+    {
+      "id": "migration",
+      "type": "high",
+      "level": "高风险",
+      "title": "历史数据迁移存在缺失",
+      "summary": "抽样检查发现 2.3% 字段为空",
+      "description": "最近一次抽样检查发现部分历史字段为空，需要在正式迁移前完成映射补充与二次校验。",
+      "owner": "许静",
+      "avatarClass": "avatar--purple",
+      "due": "2026-09-05",
+      "overdue": false,
+      "impact": "客户历史记录",
+      "status": "处理中",
+      "plan": [
+        "补充缺失字段的映射规则",
+        "重新执行迁移抽样检查",
+        "记录无法自动修复的数据项"
+      ]
+    },
+    {
+      "id": "training",
+      "type": "high",
+      "level": "高风险",
+      "title": "客户培训排期未确认",
+      "summary": "关键用户尚未完成时间确认",
+      "description": "三位关键用户尚未确认培训时间，可能导致试运行阶段缺少完整的操作反馈。",
+      "owner": "孟辰",
+      "avatarClass": "avatar--blue",
+      "due": "2026-09-08",
+      "overdue": false,
+      "impact": "试运行与验收",
+      "status": "待处理",
+      "plan": [
+        "收集关键用户可参加的时间段",
+        "准备两个备选培训场次",
+        "在试运行前确认最终名单"
+      ]
+    },
+    {
+      "id": "copy",
+      "type": "medium",
+      "level": "中风险",
+      "title": "帮助中心文案待审核",
+      "summary": "不影响当前开发里程碑",
+      "description": "帮助中心首批文案仍在业务审核中，目前不会阻塞核心功能开发。",
+      "owner": "何茜",
+      "avatarClass": "avatar--green",
+      "due": "2026-09-12",
+      "overdue": false,
+      "impact": "上线支持内容",
+      "status": "处理中",
+      "plan": [
+        "汇总业务审核意见",
+        "优先确认上线必需文案",
+        "在发布前完成最终校对"
+      ]
+    },
+    {
+      "id": "risk-2814ffadaa",
+      "type": "high",
+      "level": "高风险",
+      "title": "测试环境证书即将过期",
+      "summary": "测试环境证书将在两天后过期，可能导致接口联调和登录测试中断。",
+      "description": "测试环境证书将在两天后过期，可能导致接口联调中断。",
+      "owner": "陈宁",
+      "avatarClass": "avatar--purple",
+      "due": "2026-09-05",
+      "overdue": false,
+      "impact": "登录与接口测试",
+      "status": "待处理",
+      "plan": [
+        "通知责任人陈宁和相关联调团队，确认证书当前使用范围及过期准确时间。",
+        "联系证书管理员或服务商，申请证书续期或更新，并明确是否需要停机维护。",
+        "在测试环境部署新证书并验证登录流程和关键接口调用。"
+      ]
+    }
+  ]
+}

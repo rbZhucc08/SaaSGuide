@@ -1,0 +1,35 @@
+{
+  "pageElements": {
+    "riskTotal": "risk-total",
+    "highRiskFilter": "high-risk-filter",
+    "riskDetail": "risk-detail",
+    "resolveRisk": "resolve-risk"
+  },
+  "guideSteps": [
+    {
+      "step": 1,
+      "target": "riskTotal",
+      "title": "先看风险总数",
+      "description": "这里汇总当前项目的全部风险，帮助你快速判断整体风险规模。"
+    },
+    {
+      "step": 2,
+      "target": "highRiskFilter",
+      "title": "聚焦高风险事项",
+      "description": "点击“高风险”筛选，只查看最需要优先处理的风险。",
+      "action": "filter-high"
+    },
+    {
+      "step": 3,
+      "target": "riskDetail",
+      "title": "查看风险详情",
+      "description": "详情区说明风险影响、责任人、截止日期与应对计划。"
+    },
+    {
+      "step": 4,
+      "target": "resolveRisk",
+      "title": "完成风险处理",
+      "description": "确认风险已经解决后，点击“标记为已处理”，再完成本次引导。"
+    }
+  ]
+}

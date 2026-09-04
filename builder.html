@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="SaaSGuide DeepSeek ASK / BUILD 本地学习流程。" />
+    <title>SaaSGuide｜后台引导生成实验</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="/assets/builder.css" />
+  </head>
+  <body>
+    <header class="page-header">
+      <a href="/" class="back-link">← 返回风险看板</a>
+      <div class="demo-label">BACKSTAGE LEARNING EXPERIMENT</div>
+      <h1>后台实验：AI 引导生成器</h1>
+      <p>保留用于展示 ASK / BUILD 和结构化校验，不属于普通员工管理风险的主流程。</p>
+    </header>
+
+    <main class="builder-layout">
+      <section class="form-panel" aria-labelledby="brief-title">
+        <div class="section-heading">
+          <div>
+            <span>输入</span>
+            <h2 id="brief-title">功能 Brief</h2>
+          </div>
+          <div class="sample-actions">
+            <button type="button" class="quiet-button" id="load-complete">完整示例</button>
+            <button type="button" class="quiet-button" id="load-ambiguous">含糊示例</button>
+            <button type="button" class="quiet-button" id="clear-form">清空</button>
+          </div>
+        </div>
+
+        <form id="brief-form">
+          <label>功能名称<input id="feature-name" required /></label>
+          <label>功能说明<textarea id="feature-brief" rows="3" required></textarea></label>
+          <div class="two-columns">
+            <label>目标用户<input id="target-users" required /></label>
+            <label>功能入口<input id="entry-point" required /></label>
+          </div>
+          <label>
+            操作步骤
+            <textarea id="operation-steps" rows="5" required></textarea>
+            <small>每行一个步骤。</small>
+          </label>
+          <label>成功状态<textarea id="success-state" rows="2" required></textarea></label>
+
+          <fieldset>
+            <legend>允许使用的页面元素</legend>
+            <div class="element-grid">
+              <code>riskTotal → risk-total</code>
+              <code>highRiskFilter → high-risk-filter</code>
+              <code>riskDetail → risk-detail</code>
+              <code>resolveRisk → resolve-risk</code>
+            </div>
+          </fieldset>
+
+          <button class="submit-button" id="submit-brief" type="submit">
+            让 DeepSeek 判断
+          </button>
+          <p class="privacy-note">只发送以上虚构 Brief。API 密钥保留在 Python 环境变量中，浏览器无法读取。</p>
+        </form>
+      </section>
+
+      <section class="result-panel" aria-labelledby="result-title" aria-live="polite">
+        <div class="section-heading">
+          <div>
+            <span>输出</span>
+            <h2 id="result-title">判断结果</h2>
+          </div>
+          <span class="result-status" id="result-status">等待提交</span>
+        </div>
+        <div id="result-empty" class="empty-state">
+          <strong>还没有结果</strong>
+          <p>你可以先使用“完整示例”和“含糊示例”观察 BUILD 与 ASK 的区别。</p>
+        </div>
+        <div id="result-content" class="result-content is-hidden"></div>
+      </section>
+    </main>
+
+    <footer>虚构 SaaS · 模拟数据 · 本地学习应用 · 非生产系统</footer>
+    <script src="/assets/builder.js"></script>
+  </body>
+</html>

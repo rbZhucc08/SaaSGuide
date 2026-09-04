@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+.env.*
+!.env.example
+*.log
+
+# 本地运行产物、模型输出与数据备份不进入版本库。
+generated/
+
+# 求职材料含个人信息，且不属于 SaaSGuide 产品源码。
+resume_work/

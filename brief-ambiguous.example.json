@@ -1,0 +1,17 @@
+{
+  "featureName": "风险相关功能",
+  "featureBrief": "做一个大致的风险操作引导。",
+  "targetUsers": "还不确定",
+  "entryPoint": "页面里的某个位置",
+  "operationSteps": [
+    "先看看",
+    "再操作一下"
+  ],
+  "successState": "看起来差不多完成",
+  "pageElements": {
+    "riskTotal": "risk-total",
+    "highRiskFilter": "high-risk-filter",
+    "riskDetail": "risk-detail",
+    "resolveRisk": "resolve-risk"
+  }
+}
