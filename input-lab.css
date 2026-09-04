@@ -1,0 +1,1 @@
+@import url("reports.css");.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.grid section{margin:0}.result{margin-top:14px;padding:12px;border-radius:8px;background:#f5f3ff;color:#394259;min-height:42px;white-space:pre-wrap}@media(max-width:700px){.grid{grid-template-columns:1fr}}

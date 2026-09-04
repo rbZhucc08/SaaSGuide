@@ -32,6 +32,8 @@ from services.ingestion.text_evidence import (
     parse_evidence,
     save_review,
 )
+from services.ingestion.pdf_audio import MediaError, parse_pdf
+from services.adapters.contracts import AdapterError, validate_envelope
 from services.risk_rules.deterministic_scan import (
     RiskScanError,
     evaluate_candidates,
@@ -99,6 +101,9 @@ PUBLIC_FILES = {
     "reports.html",
     "reports.css",
     "reports.js",
+    "input-lab.html",
+    "input-lab.css",
+    "input-lab.js",
 }
 
 
@@ -359,6 +364,11 @@ def create_app(
     @app.get("/reports.html")
     def reports():
         return send_from_directory(PROJECT_DIR, "reports.html")
+
+    @app.get("/input-lab")
+    @app.get("/input-lab.html")
+    def input_lab():
+        return send_from_directory(PROJECT_DIR, "input-lab.html")
 
     @app.get("/assets/<path:filename>")
     def assets(filename: str):
@@ -696,6 +706,30 @@ def create_app(
         if not PHASE6_XLSX_FILE.exists():
             return jsonify({"error": "XLSX 报告尚未生成", "code": "xlsx_not_generated"}), 404
         return send_file(PHASE6_XLSX_FILE, as_attachment=True, download_name="weekly-risk-report.xlsx")
+
+    @app.post("/api/media/pdf/sample")
+    def parse_pdf_sample():
+        path = PROJECT_DIR / "data" / "documents" / "phase7_meeting_notes.pdf"
+        try:
+            result = parse_pdf(path.read_bytes(), path.name)
+            result["sample_mode"] = True
+            return jsonify(result)
+        except (OSError, MediaError) as error:
+            code = error.code if isinstance(error, MediaError) else "sample_read_failed"
+            status = error.status if isinstance(error, MediaError) else 500
+            return jsonify({"error": str(error), "code": code}), status
+
+    @app.post("/api/adapters/validate")
+    def validate_adapter():
+        payload = request.get_json(silent=True)
+        try:
+            return jsonify(validate_envelope(payload))
+        except AdapterError as error:
+            return jsonify({"error": str(error), "code": "adapter_invalid"}), 400
+
+    @app.get("/api/media/voice/status")
+    def voice_status():
+        return jsonify({"input_interface": "wav-metadata", "browser_recording": "not_implemented", "transcription": "not_configured", "verified": False, "reason": "没有配置或调用真实语音识别服务"})
 
     @app.errorhandler(413)
     def request_too_large(_error):
