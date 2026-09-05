@@ -1,60 +1,8 @@
-<!doctype html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="SaaSGuide V2-P2 确定性候选风险扫描学习 Demo。" />
-    <title>SaaSGuide｜风险雷达 Demo</title>
-    <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="risk-radar.css" />
-  </head>
-  <body>
-    <div class="demo-notice" role="note">
-      <span>LEARNING DEMO</span>
-      <strong>候选不等于事实</strong>
-      <p>虚构 SaaS、自建规则和模拟数据；规则只提示人工检查，不自动处理风险</p>
-    </div>
-
-    <div class="app-shell">
-      <aside class="sidebar" aria-label="主导航">
-        <a class="brand" href="/" aria-label="返回风险看板"><span>S</span><strong>SaaSGuide</strong></a>
-        <nav>
-          <a href="/"><span aria-hidden="true">△</span>风险看板</a>
-          <a href="/data-sources"><span aria-hidden="true">⇧</span>数据源</a>
-          <a class="is-active" href="/risk-radar" aria-current="page"><span aria-hidden="true">◈</span>风险雷达</a>
-        </nav>
-        <div class="phase-note"><strong>V2-P2</strong><p>确定性规则，不调用模型。</p></div>
-      </aside>
-
-      <main>
-        <header class="page-header">
-          <div><p class="eyebrow">RISK RADAR</p><h1>候选风险扫描</h1><p>从统一项目数据中找出可解释信号，再由人决定是否成立。</p></div>
-          <a class="secondary-button" href="/data-sources">返回数据源</a>
-        </header>
-
-        <section class="scan-panel" aria-labelledby="scan-title">
-          <div><p class="step-label">STEP 1</p><h2 id="scan-title">选择扫描来源</h2><p>固定样本用于复现指标；最近导入用于检查 V2-P1 的真实本地输出。</p></div>
-          <div class="scan-actions">
-            <button id="scan-sample" class="primary-button" type="button">扫描固定评测样本</button>
-            <label>扫描日期（最近导入）<input id="scan-date" type="date" /></label>
-            <button id="scan-latest" class="secondary-button" type="button">扫描最近导入数据</button>
-          </div>
-        </section>
-
-        <div id="page-message" class="message is-hidden" role="status" aria-live="polite"></div>
-
-        <section id="summary-section" class="is-hidden" aria-labelledby="summary-title">
-          <div class="section-heading"><div><p class="step-label">STEP 2</p><h2 id="summary-title">扫描摘要</h2><p id="scan-meta"></p></div><span id="source-badge" class="source-badge"></span></div>
-          <div id="summary-grid" class="summary-grid"></div>
-          <div id="evaluation-panel" class="evaluation-panel is-hidden"></div>
-        </section>
-
-        <section id="candidate-section" class="is-hidden" aria-labelledby="candidate-title">
-          <div class="section-heading"><div><p class="step-label">STEP 3</p><h2 id="candidate-title">候选风险与证据</h2><p>核对证据后再选择；人工选择只写审计记录。</p></div></div>
-          <div id="candidate-list" class="candidate-list"></div>
-        </section>
-      </main>
-    </div>
-    <script src="risk-radar.js"></script>
-  </body>
-</html>
+<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="SaaSGuide 候选风险扫描"><title>SaaSGuide｜风险雷达</title><link rel="icon" href="data:,"><link rel="stylesheet" href="v2-shell.css"><link rel="stylesheet" href="risk-radar.css"></head><body>
+<div class="demo-notice" role="note"><span class="demo-notice__badge">LOCAL DEMO</span><strong>候选不等于事实</strong><span>规则只提示人工检查，不自动处理风险</span></div><div class="app-shell">
+<aside class="sidebar" aria-label="主导航"><a class="brand" href="/" aria-label="SaaSGuide 首页"><span class="brand__mark">S</span><span><strong>SaaSGuide</strong><small>项目风险工作台</small></span></a><nav class="nav-list"><a href="/"><span>⌂</span>概览</a><a href="/data-sources"><span>⇧</span>数据源</a><a class="is-active" href="/risk-radar" aria-current="page"><span>◈</span>风险雷达</a><a href="/evidence-intake"><span>▤</span>文本证据</a><a href="/knowledge-base"><span>◎</span>知识库</a><a href="/action-tracker"><span>✓</span>行动跟踪</a><a href="/reports"><span>▥</span>报告</a><a href="/input-lab"><span>◇</span>输入实验室</a></nav><div class="sidebar__footer"><strong>人工决策</strong><small>选择结果会写入本地审计记录</small></div></aside>
+<main class="main-content"><header class="page-header"><div><p class="eyebrow">RISK RADAR</p><h1>候选风险扫描</h1><p class="subtitle">从统一项目数据中发现可解释信号，并逐项人工判断。</p></div><a class="secondary-button" href="/data-sources">导入数据</a></header>
+<section class="scan-panel" aria-labelledby="scan-title"><div><h2 id="scan-title">选择扫描来源</h2><p>评测样本会明确标记；最近导入使用你已确认保存的数据。</p></div><div class="scan-actions"><button id="scan-sample" class="primary-button" type="button">扫描模拟样本</button><label>扫描日期<input id="scan-date" type="date"></label><button id="scan-latest" class="secondary-button" type="button">扫描最近导入</button></div></section><div id="page-message" class="message is-hidden" role="status" aria-live="polite"></div>
+<section id="summary-section" class="is-hidden" aria-labelledby="summary-title"><div class="section-heading"><div><h2 id="summary-title">扫描摘要</h2><p id="scan-meta"></p></div><span id="source-badge" class="source-badge"></span></div><div id="summary-grid" class="summary-grid"></div><div id="evaluation-panel" class="evaluation-panel is-hidden"></div></section>
+<section id="candidate-section" class="is-hidden" aria-labelledby="candidate-title"><div class="section-heading"><div><h2 id="candidate-title">候选风险与证据</h2><p>核对证据后选择处理结果。</p></div></div><div id="candidate-list" class="candidate-list"></div></section>
+</main></div><script src="risk-radar.js"></script></body></html>

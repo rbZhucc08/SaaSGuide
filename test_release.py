@@ -51,6 +51,40 @@ class ReleaseTests(unittest.TestCase):
         ):
             self.assertIn(path, text)
 
+    def test_feature_pages_share_product_shell_and_complete_navigation(self):
+        pages = (
+            ("/data-sources", "/data-sources"),
+            ("/risk-radar", "/risk-radar"),
+            ("/evidence-intake", "/evidence-intake"),
+            ("/knowledge-base", "/knowledge-base"),
+            ("/action-tracker", "/action-tracker"),
+            ("/reports", "/reports"),
+            ("/input-lab", "/input-lab"),
+        )
+        navigation = (
+            "/data-sources",
+            "/risk-radar",
+            "/evidence-intake",
+            "/knowledge-base",
+            "/action-tracker",
+            "/reports",
+            "/input-lab",
+        )
+        for route, active_path in pages:
+            with self.subTest(route=route):
+                response = self.client.get(route)
+                self.assertEqual(200, response.status_code)
+                text = response.get_data(as_text=True)
+                response.close()
+                self.assertIn('href="v2-shell.css"', text)
+                self.assertIn('class="nav-list"', text)
+                self.assertIn(f'class="is-active" href="{active_path}" aria-current="page"', text)
+                for path in navigation:
+                    self.assertIn(f'href="{path}"', text)
+                self.assertNotIn("V2-P", text)
+                self.assertNotIn("STEP ", text)
+                self.assertNotIn("phase-note", text)
+
     def test_dashboard_empty_state_does_not_read_fixed_risk_data(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

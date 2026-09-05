@@ -80,6 +80,7 @@ HTTP_ERROR_LOG = GENERATED_DIR / "http-errors.jsonl"
 PUBLIC_FILES = {
     "index.html",
     "styles.css",
+    "v2-shell.css",
     "app.js",
     "guide-data.json",
     "risk-data.json",
