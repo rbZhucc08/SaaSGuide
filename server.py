@@ -16,7 +16,10 @@ from flask import Flask, Response, jsonify, request, send_file, send_from_direct
 from database.store import StoreError, create_action, dashboard as action_dashboard, seed_demo, transition_action
 
 from deepseek_ask_build import DeepSeekError, ModelOutputError, evaluate_brief
+from deepseek_ask_build import DeepSeekClient
 from deepseek_risk_assistant import analyze_risk
+from services.ai.orchestrator import orchestrate_risk_candidate
+from services.ai.skills import catalog as ai_skill_catalog
 from services.ingestion.xlsx_import import (
     IngestionError,
     MAX_XLSX_BYTES,
@@ -76,7 +79,9 @@ ALLOWED_SAMPLE_FILES = {
 RISK_WRITE_LOCK = threading.Lock()
 RISK_DECISION_LOCK = threading.Lock()
 ERROR_LOG_LOCK = threading.Lock()
+AI_RUN_LOCK = threading.Lock()
 HTTP_ERROR_LOG = GENERATED_DIR / "http-errors.jsonl"
+AI_RUN_LOG = GENERATED_DIR / "ai-runs.jsonl"
 PUBLIC_FILES = {
     "index.html",
     "styles.css",
@@ -108,6 +113,12 @@ PUBLIC_FILES = {
     "input-lab.html",
     "input-lab.css",
     "input-lab.js",
+}
+
+PUBLIC_MIMETYPES = {
+    ".css": "text/css",
+    ".js": "application/javascript",
+    ".json": "application/json",
 }
 
 
@@ -392,6 +403,7 @@ def create_app(
     output_dir: Path = GENERATED_DIR,
     evaluator: Callable[[Any], dict[str, Any]] = evaluate_brief,
     risk_evaluator: Callable[[Any, str], dict[str, Any]] = analyze_risk,
+    ai_orchestrator: Callable[[Any, Any, Any, str, Path], dict[str, Any]] = orchestrate_risk_candidate,
     risk_file: Path = RISK_FILE,
     pending_import_dir: Path = PENDING_IMPORT_DIR,
     raw_data_dir: Path = RAW_DATA_DIR,
@@ -482,7 +494,7 @@ def create_app(
     def assets(filename: str):
         if filename not in PUBLIC_FILES:
             return jsonify({"error": "文件不存在"}), 404
-        return send_from_directory(PROJECT_DIR, filename)
+        return send_from_directory(PROJECT_DIR, filename, mimetype=PUBLIC_MIMETYPES.get(Path(filename).suffix.lower()))
 
     @app.get("/generated/<path:filename>")
     def generated_file(filename: str):
@@ -701,6 +713,58 @@ def create_app(
             app.logger.exception("Unable to save human risk decision")
             return jsonify({"error": "人工选择无法保存", "code": "decision_save_failed"}), 500
 
+    @app.get("/api/agent/capabilities")
+    def agent_capabilities():
+        client = DeepSeekClient()
+        return jsonify(
+            {
+                "agent": "saasguide-v2-orchestrator",
+                "provider": "deepseek",
+                "provider_configured": client.is_configured,
+                "model": client.model,
+                "workflow": "bounded-risk-assessment",
+                "skills": ai_skill_catalog(),
+                "human_confirmation_required": True,
+            }
+        )
+
+    @app.post("/api/agent/risk-assessment")
+    def agent_risk_assessment():
+        if request.content_length and request.content_length > MAX_JSON_REQUEST_BYTES:
+            return jsonify({"error": "AI 研判请求过长，最大允许 64 KB", "code": "request_too_large"}), 413
+        payload = request.get_json(silent=True)
+        if not isinstance(payload, dict):
+            return jsonify({"error": "请求必须是 JSON 对象", "code": "invalid_request"}), 400
+        try:
+            result = ai_orchestrator(
+                payload.get("candidate"),
+                payload.get("project"),
+                payload.get("source"),
+                str(payload.get("context_note", "")),
+                knowledge_file,
+            )
+            record = {
+                "run_id": result.get("run_id"),
+                "feature": "v2-risk-assessment",
+                "status": result.get("decision", "unknown"),
+                "model_status": result.get("model_status", "unknown"),
+                "model": result.get("model"),
+                "candidate_id": str(payload.get("candidate", {}).get("candidate_id", "")) if isinstance(payload.get("candidate"), dict) else "",
+                "trace": result.get("trace", []),
+                "created_at": result.get("created_at", now_iso()),
+            }
+            if not app.config.get("TESTING"):
+                with AI_RUN_LOCK:
+                    AI_RUN_LOG.parent.mkdir(parents=True, exist_ok=True)
+                    with AI_RUN_LOG.open("a", encoding="utf-8") as handle:
+                        handle.write(json.dumps(record, ensure_ascii=False) + "\n")
+            return jsonify(result)
+        except (DeepSeekError, ModelOutputError) as error:
+            return jsonify({"error": str(error), "code": "agent_unavailable"}), 502
+        except (OSError, ValueError, json.JSONDecodeError):
+            app.logger.exception("Unable to run V2 orchestrator")
+            return jsonify({"error": "AI 协调流程当前无法运行", "code": "agent_failed"}), 500
+
     @app.post("/api/evidence/preview")
     def preview_evidence():
         upload = request.files.get("file")
@@ -847,7 +911,7 @@ def create_app(
     def public_file(filename: str):
         if filename not in PUBLIC_FILES:
             return jsonify({"error": "文件不存在"}), 404
-        return send_from_directory(PROJECT_DIR, filename)
+        return send_from_directory(PROJECT_DIR, filename, mimetype=PUBLIC_MIMETYPES.get(Path(filename).suffix.lower()))
 
     return app
 

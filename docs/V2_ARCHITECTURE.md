@@ -5,10 +5,12 @@ flowchart LR
     A[XLSX TXT MD DOCX PDF] --> B[解析与结构校验]
     B --> C[候选事实与证据]
     C --> D[确定性风险规则]
-    D --> E[人工确认]
-    K[版本化知识库] --> F[引用与拒答]
-    D --> F
-    F --> E
+    D --> O[单 Orchestrator]
+    K[版本化知识库] --> R[生效版本检索]
+    R --> O
+    O --> M[DeepSeek ASK 或 PLAN]
+    M --> V[Python 结构与引用校验]
+    V --> E[人工确认]
     E --> G[(SQLite)]
     G --> H[行动与审计]
     G --> I[Python 指标]
@@ -27,3 +29,10 @@ flowchart LR
 - 单机 Flask 开发服务，仅监听 `127.0.0.1`。
 - 浏览器静态页面加本地 API；SQLite 和运行产物位于 `generated`，不进入 Git。
 - 不是生产 WSGI 部署，不提供 TLS、账号登录、多租户或企业权限。
+
+## AI 编排边界
+
+- 当前只有一个 `saasguide-v2-orchestrator`，不是多 Agent。
+- 五个名称是 SaaSGuide 产品运行时的领域 Skill 合约，不是 Codex 客户端安装的 Skills。
+- 风险卡调用实际执行 `risk-signal-scan`、`evidence-grounded-assessment` 和 `risk-action-planner`；`project-data-intake` 是上游接入，`weekly-risk-report` 仍是确定性报告流程。
+- 选择自管编排循环，是因为本项目需要直接复用现有 Python 工具、白名单引用、错误映射和人工确认边界；没有引入额外 Agent SDK 或多 Agent handoff。

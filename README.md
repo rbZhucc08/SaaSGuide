@@ -12,6 +12,7 @@ V2 本地工作台：`http://127.0.0.1:4173/`
 - 保留一个后台 ASK / BUILD 引导生成实验，入口为 `/builder`。
 - 在 `/data-sources` 导入项目任务 XLSX；原始列名可自由输入，并提供原表头建议，服务端会拦截不存在的列。
 - 在独立的 `/risk-radar` 页面运行确定性风险规则，查看原始证据、固定评测指标，并记录确认、观察、驳回或误报选择。
+- 在候选卡中按需调用一个受控 Orchestrator：检索当前生效知识后由 DeepSeek 返回 ASK 或带引用 PLAN，再由 Python 校验；AI 不自动确认或保存行动。
 - 解析 TXT、Markdown、DOCX 与普通 PDF，保留文件哈希、原文位置和人工核对记录。
 - 用版本化自建知识库回答并引用当前生效文档；无依据时拒答。
 - 用 SQLite 保存行动、状态事件和人工决策审计。
@@ -51,7 +52,11 @@ Python 确定性规则与去重
         ↓
 带原始证据的候选风险
         ↓
-版本化知识引用与拒答
+当前生效知识检索与引用白名单
+        ↓
+DeepSeek ASK / PLAN 草稿
+        ↓
+Python 结构与引用校验
         ↓
 人工确认 / 观察 / 驳回 / 标记误报
         ↓
@@ -105,7 +110,7 @@ $env:DEEPSEEK_API_KEY = '你的密钥'
 等价的分项命令：
 
 ```powershell
-& '.\.venv\Scripts\python.exe' -m unittest test_validator.py test_deepseek_ask_build.py test_risk_assistant.py test_server.py test_xlsx_import.py test_risk_rules.py test_text_evidence.py test_knowledge_base.py test_sqlite_store.py test_reporting.py test_multimodal_adapters.py test_release.py
+& '.\.venv\Scripts\python.exe' -m unittest test_validator.py test_deepseek_ask_build.py test_risk_assistant.py test_server.py test_xlsx_import.py test_risk_rules.py test_text_evidence.py test_knowledge_base.py test_sqlite_store.py test_reporting.py test_multimodal_adapters.py test_ai_orchestrator.py test_release.py
 & '.\.venv\Scripts\python.exe' .\validate_data.py
 node --check app.js
 node --check builder.js
@@ -118,7 +123,7 @@ node --check reports.js
 node --check input-lab.js
 ```
 
-截至 2026-09-05：发布后产品化修订包含 96 项自动测试；最终通过数与浏览器结果见 `docs/test_records/V2_POST_RELEASE_REVISION_TEST_RECORD_2026-09-05.md`。P2 固定规则集 Precision 与 Recall 均为 83.33%；P4 的 10 题同源小型固定集检索、引用与拒答均为 100%。这些指标只能描述自建模拟样本。
+截至 2026-09-05：AI 编排纠偏后累计 107 项自动测试通过；真实 DeepSeek 浏览器验收已取得两次 ASK 和一次带 3 条白名单引用的 PLAN，详见 `docs/test_records/V2_AI_ORCHESTRATION_TEST_RECORD_2026-09-05.md`。P2 固定规则集 Precision 与 Recall 均为 83.33%；P4 的 10 题同源小型固定集检索、引用与拒答均为 100%。这些指标只能描述自建模拟样本。
 
 ## 当前状态与文档入口
 
@@ -133,6 +138,7 @@ node --check input-lab.js
 - `docs/V2_PHASE3_SPEC.md` 至 `docs/V2_PHASE8_SPEC.md`：后续阶段规格。
 - `docs/test_records/V2_PHASE3_TEST_RECORD_2026-09-04.md` 至 `V2_PHASE8_TEST_RECORD_2026-09-05.md`：实际验收记录。
 - `docs/V2_ARCHITECTURE.md`、`docs/V2_SECURITY_AND_LIMITS.md`：架构与安全边界。
+- `docs/V2_AI_ORCHESTRATION_SPEC.md` 与对应测试记录：V2 Orchestrator、五个领域 Skill 和真实 DeepSeek 验收。
 - `docs/SaaSGuide_V2_HR_演示引导.docx`：脱离产品页面的 HR 演示讲解稿。
 
 阶段简称统一为 `V1-Pn` 和 `V2-Pn`。根目录旧有的 `PHASE1_TEST_RECORD.md` 至 `PHASE6_TEST_RECORD.md` 是 V1 历史记录，不重命名，以免破坏旧引用。
@@ -147,6 +153,7 @@ node --check input-lab.js
 - `services/risk_rules/deterministic_scan.py`：确定性规则、去重、评测与人工决策记录。
 - `services/ingestion/text_evidence.py`、`pdf_audio.py`：文本、DOCX、普通 PDF 和 WAV 元数据。
 - `services/retrieval/knowledge_base.py`：版本检索、引用、冲突和拒答。
+- `services/ai/skills.py`、`services/ai/orchestrator.py`：五个产品领域 Skill 合约与受控 DeepSeek 风险编排。
 - `database/store.py`：SQLite 迁移、行动状态机和审计事件。
 - `services/reporting/metrics.py`：确定性报告指标和 CSV。
 - `risk-data.json`、`guide-data.json`：V1 历史模拟数据与后台学习实验兼容数据，不供 V2 工作台统计。
@@ -167,5 +174,6 @@ node --check input-lab.js
 - 确定性规则和检索不理解复杂语义或完整间接依赖链，存在误报、漏报和同源评测过拟合。
 - 新建风险会保存；详情页临时修改的状态和临时采纳计划刷新后会恢复。
 - DeepSeek 输出经过结构检查，但建议是否合理仍需人工判断。
+- 当前 DeepSeek 只用于风险行动规划；P3 模型文本抽取、向量 RAG 和 P6 模型周报叙述仍未实现。
 - 没有真实业务数据，不能宣称降低了真实公司的风险或产生业务指标。
 - 没有公开部署、生产 WSGI/TLS、真实 OCR、语音识别或外部系统授权。

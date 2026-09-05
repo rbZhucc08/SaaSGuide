@@ -1,4 +1,5 @@
 let currentScan = null;
+let agentConfigured = false;
 
 const pageMessage = document.querySelector("#page-message");
 const summarySection = document.querySelector("#summary-section");
@@ -45,6 +46,80 @@ function renderEvaluation(evaluation) {
   evaluationPanel.append(grid, note);
 }
 
+function appendTextList(parent, title, items, ordered = false) {
+  if (!Array.isArray(items) || !items.length) return;
+  const heading = document.createElement("h4");
+  heading.textContent = title;
+  const list = document.createElement(ordered ? "ol" : "ul");
+  items.forEach((item) => {
+    const row = document.createElement("li");
+    row.textContent = typeof item === "string" ? item : item.action
+      ? `${item.action}（角色：${item.ownerRole}；完成信号：${item.successSignal}）`
+      : item.question || String(item);
+    list.append(row);
+  });
+  parent.append(heading, list);
+}
+
+function renderAgentResult(container, result) {
+  container.replaceChildren();
+  const meta = document.createElement("div");
+  meta.className = "ai-meta";
+  [result.decision, result.model || "本地预检查", result.run_id].filter(Boolean).forEach((value) => {
+    const chip = document.createElement("span");
+    chip.textContent = value;
+    meta.append(chip);
+  });
+  container.append(meta);
+  const summary = document.createElement("p");
+  summary.textContent = result.decision === "PLAN" ? result.summary : result.reason;
+  container.append(summary);
+  if (result.decision === "PLAN") {
+    const recommendation = document.createElement("p");
+    recommendation.textContent = `建议：${result.suggestedLevel} · ${result.priority}。这是草稿，仍需人工确认。`;
+    container.append(recommendation);
+    appendTextList(container, "判断依据", result.rationale);
+    appendTextList(container, "行动草稿", result.actions, true);
+    appendTextList(container, "注意事项", result.cautions);
+    appendTextList(container, "引用", (result.citations || []).filter((item) => result.citationIds.includes(item.citation_id)).map((item) => `${item.title} v${item.version}：${item.quote}`));
+  } else {
+    appendTextList(container, "需要补充", result.questions);
+  }
+  const details = document.createElement("details");
+  const label = document.createElement("summary");
+  label.textContent = "查看 Skill 运行轨迹";
+  const trace = document.createElement("ul");
+  (result.trace || []).forEach((item) => {
+    const row = document.createElement("li");
+    row.textContent = `${item.skill} · ${item.status} · ${item.detail}`;
+    trace.append(row);
+  });
+  details.append(label, trace);
+  container.append(details);
+}
+
+async function runAgent(button, container, candidate, contextNote) {
+  const normalText = button.textContent;
+  button.disabled = true;
+  button.textContent = "AI 研判中…";
+  container.textContent = "协调智能体正在运行证据检索和行动规划 Skill。";
+  try {
+    const response = await fetch("/api/agent/risk-assessment", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ candidate, project: currentScan.project, source: currentScan.source, context_note: contextNote }),
+    });
+    const data = await readJson(response);
+    if (!response.ok) throw new Error(data.error || `AI 研判失败（HTTP ${response.status}）`);
+    renderAgentResult(container, data);
+  } catch (error) {
+    container.textContent = error.message || "AI 研判失败；确定性扫描结果仍可使用。";
+  } finally {
+    button.disabled = !agentConfigured;
+    button.textContent = normalText;
+  }
+}
+
 function candidateCard(candidate) {
   const card = document.createElement("article");
   card.className = "candidate-card";
@@ -80,6 +155,22 @@ function candidateCard(candidate) {
     evidence.append(row);
   });
 
+  const aiArea = document.createElement("section");
+  aiArea.className = "ai-area";
+  const aiTop = document.createElement("div");
+  aiTop.className = "ai-area__top";
+  const aiTitle = document.createElement("strong");
+  aiTitle.textContent = "AI 综合研判";
+  const aiButton = document.createElement("button");
+  aiButton.type = "button";
+  aiButton.className = "ai-button";
+  aiButton.textContent = "调用 DeepSeek";
+  aiButton.disabled = !agentConfigured;
+  const aiResult = document.createElement("div");
+  aiResult.className = "ai-result";
+  aiTop.append(aiTitle, aiButton);
+  aiArea.append(aiTop, aiResult);
+
   const decisionArea = document.createElement("div");
   decisionArea.className = "decision-area";
   const note = document.createElement("input");
@@ -100,7 +191,8 @@ function candidateCard(candidate) {
   status.className = "decision-status";
   status.setAttribute("aria-live", "polite");
   decisionArea.append(status);
-  card.append(top, rules, evidence, decisionArea);
+  aiButton.addEventListener("click", () => runAgent(aiButton, aiResult, candidate, note.value));
+  card.append(top, rules, evidence, aiArea, decisionArea);
   return card;
 }
 
@@ -130,7 +222,7 @@ async function runScan(endpoint, button, body) {
   const normalText = button.textContent;
   button.disabled = true;
   button.textContent = "扫描中…";
-  setMessage("正在运行确定性规则；不会调用模型。", "info");
+  setMessage("正在运行确定性规则；完成后可在候选卡中按需调用 DeepSeek。", "info");
   try {
     const response = await fetch(endpoint, {
       method: "POST",
@@ -182,3 +274,22 @@ document.querySelector("#scan-latest").addEventListener("click", (event) => {
   const asOf = document.querySelector("#scan-date").value;
   runScan("/api/risk-scans/latest", event.currentTarget, asOf ? { as_of: asOf } : {});
 });
+
+async function loadAgentCapabilities() {
+  const status = document.querySelector("#agent-status");
+  try {
+    const response = await fetch("/api/agent/capabilities");
+    const data = await readJson(response);
+    if (!response.ok) throw new Error(data.error || "AI 状态不可用");
+    agentConfigured = data.provider_configured === true;
+    status.textContent = agentConfigured ? `DeepSeek 已配置 · ${data.skills.length} Skills` : "DeepSeek 未配置";
+    status.classList.toggle("is-ready", agentConfigured);
+    status.classList.toggle("is-offline", !agentConfigured);
+  } catch (_error) {
+    agentConfigured = false;
+    status.textContent = "AI 状态不可用";
+    status.classList.add("is-offline");
+  }
+}
+
+loadAgentCapabilities();

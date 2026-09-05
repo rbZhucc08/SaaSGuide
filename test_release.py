@@ -28,6 +28,34 @@ class ReleaseTests(unittest.TestCase):
             self.assertIn("microphone=()", response.headers["Permissions-Policy"])
             response.close()
 
+    def test_public_assets_have_nosniff_safe_content_types(self):
+        for path, expected in (("/risk-radar.js", "application/javascript"), ("/v2-shell.css", "text/css"), ("/guide-data.json", "application/json")):
+            with self.subTest(path=path):
+                response = self.client.get(path)
+                self.assertEqual(200, response.status_code)
+                self.assertTrue(response.content_type.startswith(expected), response.content_type)
+                response.close()
+
+    def test_risk_radar_exposes_bounded_ai_assessment(self):
+        response = self.client.get("/risk-radar")
+        text = response.get_data(as_text=True)
+        response.close()
+        self.assertIn("agent-status", text)
+        script_response = self.client.get("/risk-radar.js")
+        script = script_response.get_data(as_text=True)
+        script_response.close()
+        self.assertIn("/api/agent/risk-assessment", script)
+        self.assertIn("查看 Skill 运行轨迹", script)
+
+    def test_agent_capabilities_do_not_expose_secret(self):
+        response = self.client.get("/api/agent/capabilities")
+        self.assertEqual(200, response.status_code)
+        data = response.get_json()
+        response.close()
+        self.assertEqual("saasguide-v2-orchestrator", data["agent"])
+        self.assertEqual(5, len(data["skills"]))
+        self.assertNotIn("api_key", data)
+
     def test_removed_v2_overview_returns_404(self):
         response = self.client.get("/v2")
         self.assertEqual(404, response.status_code)
