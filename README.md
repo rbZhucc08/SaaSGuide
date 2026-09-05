@@ -1,22 +1,16 @@
 # SaaSGuide
 
-一个面向 AI 应用岗位求职的个人学习 Demo：在虚构的 B2B 项目管理场景中，用风险看板集中查看风险，并让 DeepSeek 在人工确认前提供结构化处理建议。V2 在不覆盖 V1 的前提下，逐阶段增加可核验的数据接入与风险分析能力。
+一个面向 AI 应用岗位求职的个人学习 Demo：在虚构的 B2B 项目管理场景中，将用户确认导入的项目数据、风险审计、文本证据、知识引用、行动与报告串成可追溯的本地闭环。V1 的固定风险看板保留在 Git 历史中，不再作为当前产品入口。
 
 > 真实性声明：本项目使用虚构 SaaS 和模拟数据，没有真实客户、真实产品接入、生产部署或业务效果数据。
 
 ## 能做什么
 
-V2 本地总览：`http://127.0.0.1:4173/v2`
+V2 本地工作台：`http://127.0.0.1:4173/`
 
-- 从 `risk-data.json` 读取风险列表，自动统计总数、等级和处理状态。
-- 按高、中、低风险筛选，查看风险详情并在当前页面标记已处理。
-- 对已有风险调用 DeepSeek，返回 ASK（追问）或 PLAN（建议方案）。
-- 新建风险时先进行 AI 分析，只有人工确认的 PLAN 才能保存。
-- 保存前校验完整数据，并自动备份修改前的风险文件。
-- 将当前风险列表导出为适合表格软件打开的 CSV。
-- 提供可选的四步页面导览。
+- 根工作台只汇总用户确认导入的统一 JSON、人工审计记录和 SQLite 行动；没有数据时显示 0 和空状态。
 - 保留一个后台 ASK / BUILD 引导生成实验，入口为 `/builder`。
-- 在独立的 `/data-sources` 页面导入项目任务 XLSX，完成列映射、校验、预览、人工确认和标准化 JSON 保存。
+- 在 `/data-sources` 导入项目任务 XLSX；原始列名可自由输入，并提供原表头建议，服务端会拦截不存在的列。
 - 在独立的 `/risk-radar` 页面运行确定性风险规则，查看原始证据、固定评测指标，并记录确认、观察、驳回或误报选择。
 - 解析 TXT、Markdown、DOCX 与普通 PDF，保留文件哈希、原文位置和人工核对记录。
 - 用版本化自建知识库回答并引用当前生效文档；无依据时拒答。
@@ -84,10 +78,9 @@ $env:DEEPSEEK_API_KEY = '你的密钥'
 
 浏览器打开：`http://127.0.0.1:4173/`
 
-- V1 风险看板：`http://127.0.0.1:4173/`
+- V2 工作台：`http://127.0.0.1:4173/`
 - V2-P1 数据源：`http://127.0.0.1:4173/data-sources`
 - V2-P2 风险雷达：`http://127.0.0.1:4173/risk-radar`
-- V2 总览：`http://127.0.0.1:4173/v2`
 - 文本证据：`http://127.0.0.1:4173/evidence-intake`
 - 知识库：`http://127.0.0.1:4173/knowledge-base`
 - 行动跟踪：`http://127.0.0.1:4173/action-tracker`
@@ -125,7 +118,7 @@ node --check reports.js
 node --check input-lab.js
 ```
 
-截至 2026-09-05：91 项自动测试通过。P2 固定规则集 Precision 与 Recall 均为 83.33%；P4 的 10 题同源小型固定集检索、引用与拒答均为 100%。这些指标只能描述自建模拟样本。P4-P8 在应用内 Chromium 完成桌面、390 × 844 和控制台验收；当时 Chrome 扩展浏览器不可用，不能外推为 Chrome 验收。
+截至 2026-09-05：发布后产品化修订包含 96 项自动测试；最终通过数与浏览器结果见 `docs/test_records/V2_POST_RELEASE_REVISION_TEST_RECORD_2026-09-05.md`。P2 固定规则集 Precision 与 Recall 均为 83.33%；P4 的 10 题同源小型固定集检索、引用与拒答均为 100%。这些指标只能描述自建模拟样本。
 
 ## 当前状态与文档入口
 
@@ -139,13 +132,14 @@ node --check input-lab.js
 - `docs/test_records/V2_PHASE2_TEST_RECORD_2026-09-04.md`：V2-P2 实际验收记录。
 - `docs/V2_PHASE3_SPEC.md` 至 `docs/V2_PHASE8_SPEC.md`：后续阶段规格。
 - `docs/test_records/V2_PHASE3_TEST_RECORD_2026-09-04.md` 至 `V2_PHASE8_TEST_RECORD_2026-09-05.md`：实际验收记录。
-- `docs/V2_ARCHITECTURE.md`、`docs/V2_SECURITY_AND_LIMITS.md`、`docs/V2_DEMO_SCRIPT.md`：架构、安全边界与演示顺序。
+- `docs/V2_ARCHITECTURE.md`、`docs/V2_SECURITY_AND_LIMITS.md`：架构与安全边界。
+- `docs/SaaSGuide_V2_HR_演示引导.docx`：脱离产品页面的 HR 演示讲解稿。
 
 阶段简称统一为 `V1-Pn` 和 `V2-Pn`。根目录旧有的 `PHASE1_TEST_RECORD.md` 至 `PHASE6_TEST_RECORD.md` 是 V1 历史记录，不重命名，以免破坏旧引用。
 
 ## 文件说明
 
-- `index.html`、`styles.css`、`app.js`：风险看板页面、外观与交互。
+- `index.html`、`styles.css`、`app.js`：V2 工作台页面、外观与本地状态汇总交互。
 - `data-sources.html`、`data-sources.css`、`data-sources.js`：V2-P1 数据源导入页面。
 - `services/ingestion/xlsx_import.py`：XLSX 解析、映射、校验和确认保存。
 - `data/samples/`、`data/evaluation/`：模拟 XLSX 与固定标准答案。
@@ -155,7 +149,7 @@ node --check input-lab.js
 - `services/retrieval/knowledge_base.py`：版本检索、引用、冲突和拒答。
 - `database/store.py`：SQLite 迁移、行动状态机和审计事件。
 - `services/reporting/metrics.py`：确定性报告指标和 CSV。
-- `risk-data.json`、`guide-data.json`：模拟风险和导览内容。
+- `risk-data.json`、`guide-data.json`：V1 历史模拟数据与后台学习实验兼容数据，不供 V2 工作台统计。
 - `server.py`：本地页面、分析接口、确认保存与备份。
 - `deepseek_risk_assistant.py`：风险 ASK / PLAN 规则和模型输出校验。
 - `deepseek_ask_build.py`：后台引导生成学习实验。

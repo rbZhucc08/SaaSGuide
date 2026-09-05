@@ -291,11 +291,12 @@ def validate_and_normalize(parsed: ParsedWorkbook, mapping: dict[str, Any]) -> d
         if not isinstance(source_header, str):
             source_header = ""
         source_header = source_header.strip()
+        supplied_header = source_header
         if source_header and source_header not in header_set:
-            errors.append(_error("mapping_unknown_column", f"{definition['label']}映射到了不存在的列", field=key))
+            errors.append(_error("mapping_unknown_column", f"{definition['label']}映射的原始列“{source_header}”不存在", field=key))
             source_header = ""
         clean_mapping[key] = source_header
-        if key in required_keys and not source_header:
+        if key in required_keys and not source_header and not supplied_header:
             errors.append(_error("mapping_required", f"必须映射{definition['label']}", field=key))
 
     used_headers = [header for header in clean_mapping.values() if header]

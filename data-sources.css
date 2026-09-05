@@ -103,7 +103,8 @@ h1 { margin: 0; font-size: clamp(26px, 3vw, 34px); }
 .mapping-field { display: grid; grid-template-columns: minmax(120px, .65fr) minmax(180px, 1fr); align-items: center; gap: 10px; }
 .mapping-field label { font-size: 12px; font-weight: 700; }
 .mapping-field label span { color: var(--danger); }
-.mapping-field select { width: 100%; padding: 9px 10px; border: 1px solid #d7ddea; border-radius: 8px; background: #fff; color: var(--ink); }
+.mapping-field input { width: 100%; padding: 9px 10px; border: 1px solid #d7ddea; border-radius: 8px; background: #fff; color: var(--ink); }
+.mapping-field input:focus { outline: 2px solid rgba(101, 87, 232, .18); border-color: var(--brand); }
 
 .validation-badge { padding: 6px 9px; border-radius: 20px; background: #f0f2f6; color: #667085; font-size: 11px; font-weight: 800; }
 .validation-badge.is-valid { background: var(--success-soft); color: var(--success); }

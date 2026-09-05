@@ -9,9 +9,9 @@
   ],
   "successState": "看起来差不多完成",
   "pageElements": {
-    "riskTotal": "risk-total",
-    "highRiskFilter": "high-risk-filter",
-    "riskDetail": "risk-detail",
-    "resolveRisk": "resolve-risk"
+    "riskTotal": "metric-imports",
+    "highRiskFilter": "metric-decisions",
+    "riskDetail": "activity-list",
+    "resolveRisk": "next-step-link"
   }
 }

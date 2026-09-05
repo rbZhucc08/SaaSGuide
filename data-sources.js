@@ -31,15 +31,24 @@ function setBusy(button, busy, busyText, normalText) {
 
 function readMapping() {
   return Object.fromEntries(
-    [...mappingGrid.querySelectorAll("select[data-field]")].map((select) => [
-      select.dataset.field,
-      select.value,
+    [...mappingGrid.querySelectorAll("input[data-field]")].map((input) => [
+      input.dataset.field,
+      input.value.trim(),
     ])
   );
 }
 
 function renderMapping(data) {
   mappingGrid.replaceChildren();
+  const datalistId = `source-headers-${data.preview_id || "current"}`;
+  const datalist = document.createElement("datalist");
+  datalist.id = datalistId;
+  data.headers.forEach((header) => {
+    const option = document.createElement("option");
+    option.value = header;
+    datalist.append(option);
+  });
+  mappingGrid.append(datalist);
   data.field_definitions.forEach((field) => {
     const row = document.createElement("div");
     row.className = "mapping-field";
@@ -52,21 +61,15 @@ function renderMapping(data) {
       label.append(required);
     }
 
-    const select = document.createElement("select");
-    select.id = `mapping-${field.key}`;
-    select.dataset.field = field.key;
-    const empty = document.createElement("option");
-    empty.value = "";
-    empty.textContent = "不映射";
-    select.append(empty);
-    data.headers.forEach((header) => {
-      const option = document.createElement("option");
-      option.value = header;
-      option.textContent = header;
-      option.selected = data.mapping[field.key] === header;
-      select.append(option);
-    });
-    row.append(label, select);
+    const input = document.createElement("input");
+    input.type = "text";
+    input.id = `mapping-${field.key}`;
+    input.dataset.field = field.key;
+    input.setAttribute("list", datalistId);
+    input.value = data.mapping[field.key] || "";
+    input.placeholder = field.required ? "输入原始列名（必填）" : "输入原始列名；留空表示不映射";
+    input.autocomplete = "off";
+    row.append(label, input);
     mappingGrid.append(row);
   });
   mappingSection.classList.remove("is-hidden");

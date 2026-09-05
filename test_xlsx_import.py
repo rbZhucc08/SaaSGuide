@@ -72,6 +72,22 @@ class XlsxImportTests(unittest.TestCase):
         result = validate_and_normalize(parsed, mapping)
         self.assertTrue(any(item["code"] == "mapping_required" for item in result["errors"]))
 
+    def test_free_text_unknown_column_returns_clear_error(self) -> None:
+        parsed = parse_xlsx(SAMPLE_DIR / "valid_project_tasks_cn.xlsx")
+        mapping = suggest_mapping(parsed.headers)
+        mapping["owner"] = "我自己输入的负责人列"
+        result = validate_and_normalize(parsed, mapping)
+        unknown = [item for item in result["errors"] if item["code"] == "mapping_unknown_column"]
+        self.assertEqual(1, len(unknown))
+        self.assertIn("我自己输入的负责人列", unknown[0]["message"])
+        self.assertFalse(any(item["code"] == "mapping_required" and item.get("field") == "owner" for item in result["errors"]))
+
+    def test_mapping_page_uses_free_text_inputs_with_header_suggestions(self) -> None:
+        script = (PROJECT_DIR / "data-sources.js").read_text(encoding="utf-8")
+        self.assertIn('input.type = "text"', script)
+        self.assertIn('document.createElement("datalist")', script)
+        self.assertNotIn('querySelectorAll("select[data-field]")', script)
+
     def test_one_source_column_cannot_map_twice(self) -> None:
         parsed = parse_xlsx(SAMPLE_DIR / "valid_project_tasks_cn.xlsx")
         mapping = suggest_mapping(parsed.headers)

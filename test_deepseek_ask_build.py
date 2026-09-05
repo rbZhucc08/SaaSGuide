@@ -30,10 +30,10 @@ COMPLETE_BRIEF = {
     ],
     "successState": "选中的风险显示为已处理并完成引导",
     "pageElements": {
-        "riskTotal": "risk-total",
-        "highRiskFilter": "high-risk-filter",
-        "riskDetail": "risk-detail",
-        "resolveRisk": "resolve-risk",
+        "riskTotal": "metric-imports",
+        "highRiskFilter": "metric-decisions",
+        "riskDetail": "activity-list",
+        "resolveRisk": "next-step-link",
     },
 }
 

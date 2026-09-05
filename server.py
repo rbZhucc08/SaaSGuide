@@ -5,6 +5,7 @@ from __future__ import annotations
 import html
 import json
 import os
+import sqlite3
 import threading
 from datetime import datetime, timezone
 from pathlib import Path
@@ -106,9 +107,78 @@ PUBLIC_FILES = {
     "input-lab.html",
     "input-lab.css",
     "input-lab.js",
-    "v2-overview.html",
-    "v2-overview.css",
 }
+
+
+def _read_json_lines(path: Path) -> list[dict[str, Any]]:
+    if not path.exists():
+        return []
+    records: list[dict[str, Any]] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        try:
+            value = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(value, dict):
+            records.append(value)
+    return records
+
+
+def build_dashboard_payload(normalized_dir: Path, risk_decisions_path: Path, evidence_reviews_path: Path, database_path: Path, knowledge_path: Path) -> dict[str, Any]:
+    imports: list[dict[str, Any]] = []
+    paths = sorted(normalized_dir.glob("*.json")) if normalized_dir.exists() else []
+    for path in paths:
+        try:
+            document = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        if isinstance(document, dict) and isinstance(document.get("source"), dict):
+            imports.append(document)
+
+    latest_by_project: dict[str, dict[str, Any]] = {}
+    for document in imports:
+        project = document.get("project") or {}
+        source = document.get("source") or {}
+        project_id = str(project.get("project_id") or document.get("import_id") or "")
+        stamp = str(source.get("imported_at") or "")
+        previous = latest_by_project.get(project_id)
+        if previous is None or stamp >= str((previous.get("source") or {}).get("imported_at") or ""):
+            latest_by_project[project_id] = document
+
+    decisions = _read_json_lines(risk_decisions_path)
+    reviews = _read_json_lines(evidence_reviews_path)
+    action_summary = {"total": 0, "open": 0, "overdue": 0, "completed": 0}
+    action_activity: list[dict[str, Any]] = []
+    if database_path.exists():
+        try:
+            with sqlite3.connect(database_path) as connection:
+                connection.row_factory = sqlite3.Row
+                has_actions = connection.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='action_items'").fetchone()
+                rows = [dict(row) for row in connection.execute("SELECT title,status,due_date,updated_at FROM action_items ORDER BY updated_at DESC")] if has_actions else []
+            today = datetime.now().date().isoformat()
+            action_summary = {"total": len(rows), "open": sum(item["status"] in {"open", "in_progress"} for item in rows), "overdue": sum(item["status"] not in {"completed", "cancelled"} and item["due_date"] < today for item in rows), "completed": sum(item["status"] == "completed" for item in rows)}
+            action_activity = [{"type": "action", "title": item["title"], "detail": f"行动状态：{item['status']}", "timestamp": item["updated_at"]} for item in rows[:5]]
+        except (sqlite3.Error, OSError):
+            pass
+
+    try:
+        knowledge = json.loads(knowledge_path.read_text(encoding="utf-8"))
+        knowledge_count = len(knowledge) if isinstance(knowledge, list) else 0
+    except (OSError, json.JSONDecodeError):
+        knowledge_count = 0
+
+    activities: list[dict[str, Any]] = []
+    for document in imports:
+        source, project, summary = document.get("source") or {}, document.get("project") or {}, document.get("summary") or {}
+        activities.append({"type": "import", "title": f"已确认导入 {source.get('source_name', '项目数据')}", "detail": f"{project.get('project_name', '未命名项目')} · {summary.get('task_count', 0)} 条任务", "timestamp": source.get("imported_at")})
+    for record in decisions:
+        activities.append({"type": "risk_decision", "title": "已记录风险人工决策", "detail": f"决策：{record.get('decision', '未记录')} · 未自动写回正式风险", "timestamp": record.get("recorded_at")})
+    for record in reviews:
+        source = record.get("source") or {}
+        activities.append({"type": "evidence_review", "title": f"已核对 {source.get('filename', '文本证据')}", "detail": f"{len(record.get('decisions') or [])} 条候选事实已人工处理", "timestamp": record.get("created_at")})
+    activities.extend(action_activity)
+    activities.sort(key=lambda item: str(item.get("timestamp") or ""), reverse=True)
+    return {"generated_at": now_iso(), "summary": {"imports": len(imports), "projects": len(latest_by_project), "tasks": sum(int((item.get("summary") or {}).get("task_count") or len(item.get("tasks") or [])) for item in latest_by_project.values()), "risk_decisions": len(decisions), "evidence_reviews": len(reviews), "knowledge_versions": knowledge_count}, "actions": action_summary, "recent_activity": activities[:8], "scope": "local_confirmed_records_only"}
 
 
 def now_iso() -> str:
@@ -326,6 +396,9 @@ def create_app(
     raw_data_dir: Path = RAW_DATA_DIR,
     normalized_data_dir: Path = NORMALIZED_DATA_DIR,
     risk_decision_file: Path = RISK_DECISION_FILE,
+    evidence_review_file: Path = EVIDENCE_REVIEW_FILE,
+    database_path: Path = DEMO_DATABASE,
+    knowledge_file: Path = KNOWLEDGE_FILE,
 ) -> Flask:
     app = Flask(__name__, static_folder=None)
     app.config["MAX_CONTENT_LENGTH"] = 3 * 1024 * 1024
@@ -356,6 +429,13 @@ def create_app(
     @app.get("/")
     def dashboard():
         return send_from_directory(PROJECT_DIR, "index.html")
+
+    @app.get("/api/dashboard")
+    def dashboard_data():
+        try:
+            return jsonify(build_dashboard_payload(normalized_data_dir, risk_decision_file, evidence_review_file, database_path, knowledge_file))
+        except OSError:
+            return jsonify({"error": "工作台本地状态无法读取", "code": "dashboard_unavailable"}), 500
 
     @app.get("/builder")
     @app.get("/builder.html")
@@ -396,11 +476,6 @@ def create_app(
     @app.get("/input-lab.html")
     def input_lab():
         return send_from_directory(PROJECT_DIR, "input-lab.html")
-
-    @app.get("/v2")
-    @app.get("/v2-overview.html")
-    def v2_overview():
-        return send_from_directory(PROJECT_DIR, "v2-overview.html")
 
     @app.get("/assets/<path:filename>")
     def assets(filename: str):

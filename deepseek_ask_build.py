@@ -52,7 +52,7 @@ BUILD 的 json 示例：
   "decision": "BUILD",
   "reason": "输入信息完整且步骤可映射到页面元素",
   "guide": {
-    "pageElements": {"riskTotal": "risk-total"},
+    "pageElements": {"riskTotal": "metric-imports"},
     "guideSteps": [
       {
         "step": 1,

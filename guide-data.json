@@ -1,35 +1,34 @@
 {
   "pageElements": {
-    "riskTotal": "risk-total",
-    "highRiskFilter": "high-risk-filter",
-    "riskDetail": "risk-detail",
-    "resolveRisk": "resolve-risk"
+    "riskTotal": "metric-imports",
+    "highRiskFilter": "metric-decisions",
+    "riskDetail": "activity-list",
+    "resolveRisk": "next-step-link"
   },
   "guideSteps": [
     {
       "step": 1,
       "target": "riskTotal",
-      "title": "先看风险总数",
-      "description": "这里汇总当前项目的全部风险，帮助你快速判断整体风险规模。"
+      "title": "先看已确认数据",
+      "description": "这里统计用户确认保存的数据源、项目和任务，不读取固定风险样本。"
     },
     {
       "step": 2,
       "target": "highRiskFilter",
-      "title": "聚焦高风险事项",
-      "description": "点击“高风险”筛选，只查看最需要优先处理的风险。",
-      "action": "filter-high"
+      "title": "核对人工风险决策",
+      "description": "风险决策只统计已保存的人工审计记录，规则不会自动形成正式结论。"
     },
     {
       "step": 3,
       "target": "riskDetail",
-      "title": "查看风险详情",
-      "description": "详情区说明风险影响、责任人、截止日期与应对计划。"
+      "title": "查看最近活动",
+      "description": "活动区串联已确认导入、风险决策、证据核对和行动状态。"
     },
     {
       "step": 4,
       "target": "resolveRisk",
-      "title": "完成风险处理",
-      "description": "确认风险已经解决后，点击“标记为已处理”，再完成本次引导。"
+      "title": "进入下一步",
+      "description": "工作台根据本地状态给出下一步入口，业务决定仍由用户确认。"
     }
   ]
 }
