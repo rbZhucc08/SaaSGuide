@@ -29,7 +29,7 @@ class ReleaseTests(unittest.TestCase):
             response.close()
 
     def test_public_assets_have_nosniff_safe_content_types(self):
-        for path, expected in (("/risk-radar.js", "application/javascript"), ("/v2-shell.css", "text/css"), ("/guide-data.json", "application/json")):
+        for path, expected in (("/risk-radar.js", "application/javascript"), ("/shell.js", "application/javascript"), ("/v2-shell.css", "text/css"), ("/guide-data.json", "application/json")):
             with self.subTest(path=path):
                 response = self.client.get(path)
                 self.assertEqual(200, response.status_code)
@@ -106,12 +106,35 @@ class ReleaseTests(unittest.TestCase):
                 response.close()
                 self.assertIn('href="v2-shell.css"', text)
                 self.assertIn('class="nav-list"', text)
+                self.assertIn('src="shell.js"', text)
                 self.assertIn(f'class="is-active" href="{active_path}" aria-current="page"', text)
                 for path in navigation:
                     self.assertIn(f'href="{path}"', text)
                 self.assertNotIn("V2-P", text)
                 self.assertNotIn("STEP ", text)
                 self.assertNotIn("phase-note", text)
+
+    def test_mobile_navigation_helper_only_adjusts_current_navigation_visibility(self):
+        script = (Path(__file__).resolve().parent / "shell.js").read_text(encoding="utf-8")
+        self.assertIn('querySelector(".is-active")', script)
+        self.assertIn("window.innerWidth > 700", script)
+        self.assertIn("navigation.scrollTo", script)
+        self.assertNotIn("fetch(", script)
+
+    def test_ui_refinement_preserves_critical_dom_and_api_contracts(self):
+        root = Path(__file__).resolve().parent
+        contracts = {
+            "data-sources.html": ("upload-form", "xlsx-file", "mapping-grid", "confirm-button"),
+            "risk-radar.html": ("agent-status", "scan-sample", "candidate-list", "page-message"),
+            "action-tracker.html": ("confirmed", "create", "actions"),
+        }
+        for filename, ids in contracts.items():
+            text = (root / filename).read_text(encoding="utf-8")
+            for dom_id in ids:
+                self.assertIn(f'id="{dom_id}"', text)
+        risk_script = (root / "risk-radar.js").read_text(encoding="utf-8")
+        for endpoint in ("/api/risk-scans/sample", "/api/risk-scans/latest", "/api/agent/risk-assessment", "/api/risk-scans/decisions"):
+            self.assertIn(endpoint, risk_script)
 
     def test_dashboard_empty_state_does_not_read_fixed_risk_data(self):
         with tempfile.TemporaryDirectory() as temporary:

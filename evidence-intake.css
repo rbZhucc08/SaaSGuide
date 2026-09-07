@@ -1,2 +1,19 @@
-.panel{display:flex;align-items:center;justify-content:space-between;gap:20px}.actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.actions input{max-width:280px;padding:7px}.cards{display:grid;gap:11px}.card{padding:16px}.card.suspicious{border-color:#e8c063;background:#fffaf0}.card-head{display:flex;justify-content:space-between;gap:10px}.card code{display:block;margin:9px 0;white-space:pre-wrap;color:#30384a}.card select,.save input{padding:8px}.save{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}.save label{display:flex;align-items:center;gap:8px;font-size:12px}
-@media(max-width:700px){.panel,.save{align-items:stretch;flex-direction:column}.actions>*{width:100%;max-width:none}}
+.panel { display: flex; align-items: center; justify-content: space-between; gap: 24px; border-top: 3px solid var(--info) !important; }
+.actions { display: flex; align-items: center; justify-content: flex-end; gap: 9px; flex-wrap: wrap; }
+.actions input { max-width: 300px; padding: 8px; background: var(--surface-subtle); }
+.cards { display: grid; gap: 13px; }
+.card { padding: 17px; border-left: 4px solid var(--success); box-shadow: none; }
+.card.suspicious { border-color: #e7c36d; border-left-color: var(--warning); background: #fffaf0; }
+.card-head { display: flex; justify-content: space-between; gap: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.card-head small { color: var(--muted-light); }
+.card code { display: block; margin: 12px 0; padding: 12px; border-radius: 9px; background: var(--surface-subtle); white-space: pre-wrap; overflow-wrap: anywhere; color: var(--ink-soft); font-family: inherit; line-height: 1.7; }
+.card select, .save input { min-height: 40px; padding: 8px 10px; }
+.card label { color: var(--muted); font-size: 12px; font-weight: 700; }
+.save { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-top: 20px; padding: 19px; border: 1px solid #d9d4ff; border-radius: 12px; background: #faf9ff; }
+.save label { display: flex; align-items: center; gap: 9px; font-size: 12px; font-weight: 700; }
+@media (max-width:700px) {
+  .panel, .save { align-items: stretch; flex-direction: column; }
+  .actions { justify-content: stretch; }
+  .actions > * { width: 100%; max-width: none; }
+  .card-head { flex-direction: column; }
+}

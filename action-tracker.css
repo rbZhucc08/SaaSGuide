@@ -1,2 +1,16 @@
-.form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}.form label{display:grid;gap:5px;font-size:12px;font-weight:700}.form input{padding:10px}.form .check{display:flex;align-items:center}.form .check input{width:16px;height:16px}.form button{align-self:end}.cards{display:grid;gap:10px;margin-top:15px}.action{display:grid;grid-template-columns:1fr auto;gap:10px;padding:15px;border:1px solid var(--line);border-radius:10px}.action p{margin:6px 0}.action small{color:var(--muted)}.action select{padding:8px}
-@media(max-width:700px){.form{grid-template-columns:1fr}.action{grid-template-columns:1fr}}
+.form { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px 16px; margin-top: 18px; }
+.form label { display: grid; gap: 6px; color: var(--ink-soft); font-size: 12px; font-weight: 700; }
+.form input { min-height: 42px; padding: 10px 11px; }
+.form .check { display: flex; align-items: center; padding: 12px; border: 1px solid #d9d4ff; border-radius: 11px; background: #faf9ff; color: var(--brand-dark); }
+.form .check input { width: 17px; height: 17px; accent-color: var(--brand); }
+.form button { align-self: end; }
+.cards { display: grid; gap: 11px; margin-top: 17px; }
+.action { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 16px 17px; border: 1px solid var(--line); border-left: 4px solid var(--brand); border-radius: 11px; background: var(--surface-subtle); }
+.action p { margin: 6px 0; color: var(--ink-soft); }
+.action small { color: var(--muted); overflow-wrap: anywhere; }
+.action select { min-height: 40px; padding: 8px 10px; }
+@media (max-width:700px) {
+  .form { grid-template-columns:1fr; }
+  .action { grid-template-columns:1fr; }
+  .action select { width:100%; }
+}

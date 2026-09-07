@@ -48,6 +48,8 @@ function renderEvaluation(evaluation) {
 
 function appendTextList(parent, title, items, ordered = false) {
   if (!Array.isArray(items) || !items.length) return;
+  const block = document.createElement("section");
+  block.className = "ai-block";
   const heading = document.createElement("h4");
   heading.textContent = title;
   const list = document.createElement(ordered ? "ol" : "ul");
@@ -58,11 +60,13 @@ function appendTextList(parent, title, items, ordered = false) {
       : item.question || String(item);
     list.append(row);
   });
-  parent.append(heading, list);
+  block.append(heading, list);
+  parent.append(block);
 }
 
 function renderAgentResult(container, result) {
   container.replaceChildren();
+  container.dataset.decision = result.decision;
   const meta = document.createElement("div");
   meta.className = "ai-meta";
   [result.decision, result.model || "本地预检查", result.run_id].filter(Boolean).forEach((value) => {
@@ -71,13 +75,16 @@ function renderAgentResult(container, result) {
     meta.append(chip);
   });
   container.append(meta);
+  const overview = document.createElement("section");
+  overview.className = "ai-block";
   const summary = document.createElement("p");
   summary.textContent = result.decision === "PLAN" ? result.summary : result.reason;
-  container.append(summary);
+  overview.append(summary);
+  container.append(overview);
   if (result.decision === "PLAN") {
     const recommendation = document.createElement("p");
     recommendation.textContent = `建议：${result.suggestedLevel} · ${result.priority}。这是草稿，仍需人工确认。`;
-    container.append(recommendation);
+    overview.append(recommendation);
     appendTextList(container, "判断依据", result.rationale);
     appendTextList(container, "行动草稿", result.actions, true);
     appendTextList(container, "注意事项", result.cautions);

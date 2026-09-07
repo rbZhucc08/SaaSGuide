@@ -21,6 +21,9 @@ try {
     node --check app.js
     if ($LASTEXITCODE -ne 0) { throw "app.js 语法检查失败。" }
 
+    node --check shell.js
+    if ($LASTEXITCODE -ne 0) { throw "shell.js 语法检查失败。" }
+
     node --check builder.js
     if ($LASTEXITCODE -ne 0) { throw "builder.js 语法检查失败。" }
 

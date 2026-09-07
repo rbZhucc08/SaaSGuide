@@ -86,6 +86,7 @@ PUBLIC_FILES = {
     "index.html",
     "styles.css",
     "v2-shell.css",
+    "shell.js",
     "app.js",
     "guide-data.json",
     "risk-data.json",

@@ -1,3 +1,59 @@
-.upload-card{display:grid;grid-template-columns:minmax(240px,.75fr) minmax(460px,1.25fr);align-items:center;gap:20px 24px}.upload-card form{min-width:0;display:flex;align-items:stretch;gap:10px}#xlsx-file{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.file-picker{min-width:0;flex:1;display:grid;grid-template-columns:auto 1fr;gap:3px 10px;padding:11px 13px;border:1px dashed #b9c0d0;border-radius:10px;background:#fafbfe;cursor:pointer}.file-picker span{grid-row:1/3;align-self:center;padding:7px 10px;border-radius:7px;background:var(--brand-soft);color:var(--brand-dark);font-size:12px;font-weight:700}.file-picker strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}.file-picker small{color:#8d95a6;font-size:10px}.sample-loader{grid-column:2;padding-top:12px;border-top:1px solid var(--line)}.sample-loader>label{display:block;margin-bottom:7px;color:var(--muted);font-size:11px}.sample-loader>div{display:flex;gap:9px}.sample-loader select{min-width:0;flex:1;padding:9px 10px}
-.mapping-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px 18px}.mapping-field{display:grid;grid-template-columns:minmax(120px,.65fr) minmax(180px,1fr);align-items:center;gap:10px}.mapping-field label{font-size:12px;font-weight:700}.mapping-field label span{color:var(--danger)}.mapping-field input{width:100%;padding:9px 10px}.validation-badge.is-valid{background:var(--success-soft);color:var(--success)}.validation-badge.is-invalid{background:var(--danger-soft);color:var(--danger)}.error-panel{margin-bottom:16px;padding:15px 17px;border-left:4px solid var(--danger);border-radius:8px;background:var(--danger-soft)}.error-panel h3{margin:0 0 8px;font-size:14px;color:#8e2336}.error-panel ul{margin:0;padding-left:19px;color:#7c2e3d;font-size:12px;line-height:1.7}.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}table{width:100%;min-width:980px;border-collapse:collapse;font-size:12px}th{padding:10px 11px;background:#f6f7fb;color:#727c90;text-align:left;white-space:nowrap}td{padding:11px;border-top:1px solid #edf0f5;color:#374056;white-space:nowrap}.confirm-card{display:flex;align-items:center;justify-content:space-between;gap:24px}.success-card{display:flex;gap:16px;margin-top:18px;padding:22px;border:1px solid #bde9d8;border-radius:14px;background:var(--success-soft)}.success-card>span{width:38px;height:38px;flex:0 0 38px;display:grid;place-items:center;border-radius:50%;background:var(--success);color:#fff;font-weight:900}.success-card h2{margin:0;font-size:18px}.success-card dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 20px;margin:16px 0 0}.success-card dt{color:#5d756d;font-size:10px}.success-card dd{margin:3px 0 0;overflow-wrap:anywhere;color:#214f40;font-size:12px;font-weight:700}
-@media(max-width:980px){.upload-card{display:flex;align-items:stretch;flex-direction:column}.upload-card form,.sample-loader{width:100%}.mapping-grid{grid-template-columns:1fr}}@media(max-width:700px){.upload-card form,.section-heading,.confirm-card{align-items:stretch;flex-direction:column}.mapping-field{grid-template-columns:1fr;gap:5px}.success-card dl{grid-template-columns:1fr}}
+.upload-card { position: relative; display: grid; grid-template-columns: minmax(240px,.72fr) minmax(460px,1.28fr); align-items: center; gap: 22px 28px; border-top: 3px solid var(--brand) !important; }
+.upload-card::after { content: "1  选择文件   ·   2  映射字段   ·   3  校验预览   ·   4  人工确认"; position: absolute; top: 18px; right: 24px; color: var(--muted-light); font-size: 10px; letter-spacing: .03em; }
+.upload-card > div:first-child { padding-top: 18px; }
+.upload-card form { min-width: 0; display: flex; align-items: stretch; gap: 10px; padding-top: 18px; }
+#xlsx-file { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.file-picker { min-width: 0; flex: 1; display: grid; grid-template-columns: auto 1fr; gap: 3px 11px; padding: 12px 14px; border: 1px dashed #adb8cb; border-radius: 11px; background: var(--surface-subtle); cursor: pointer; transition: border-color 160ms ease, background-color 160ms ease; }
+.file-picker:hover { border-color: var(--brand); background: #f6f4ff; }
+.file-picker span { grid-row: 1/3; align-self: center; padding: 7px 10px; border-radius: 8px; background: var(--brand-soft); color: var(--brand-dark); font-size: 12px; font-weight: 700; }
+.file-picker strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+.file-picker small { color: var(--muted-light); font-size: 10px; }
+.sample-loader { grid-column: 2; padding-top: 14px; border-top: 1px solid var(--line); }
+.sample-loader > label { display: block; margin-bottom: 7px; color: var(--muted); font-size: 11px; font-weight: 700; }
+.sample-loader > div { display: flex; gap: 9px; }
+.sample-loader select { min-width: 0; flex: 1; padding: 9px 11px; }
+
+#mapping-section, #preview-section, #confirm-section { position: relative; }
+#mapping-section::before, #preview-section::before, #confirm-section::before { position: absolute; top: 23px; right: 24px; color: var(--brand); font-size: 10px; font-weight: 800; letter-spacing: .1em; }
+#mapping-section::before { content: "STEP 02"; }
+#preview-section::before { content: "STEP 03"; }
+#confirm-section::before { content: "STEP 04"; }
+.mapping-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px 20px; }
+.mapping-field { display: grid; grid-template-columns: minmax(120px,.62fr) minmax(180px,1fr); align-items: center; gap: 11px; padding: 10px; border: 1px solid #edf0f5; border-radius: 11px; background: var(--surface-subtle); }
+.mapping-field label { font-size: 12px; font-weight: 700; }
+.mapping-field label span { color: var(--danger); }
+.mapping-field input { width: 100%; padding: 9px 10px; }
+.validation-badge.is-valid { background: var(--success-soft); color: var(--success); }
+.validation-badge.is-invalid { background: var(--danger-soft); color: var(--danger); }
+.error-panel { margin-bottom: 17px; padding: 16px 18px; border: 1px solid #f0c4cd; border-left: 4px solid var(--danger); border-radius: 10px; background: var(--danger-soft); }
+.error-panel h3 { margin: 0 0 8px; font-size: 14px; color: #8e2336; }
+.error-panel ul { margin: 0; padding-left: 19px; color: #7c2e3d; font-size: 12px; line-height: 1.75; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 11px; background: #fff; scrollbar-width: thin; }
+table { width: 100%; min-width: 980px; border-collapse: collapse; font-size: 12px; }
+th { position: sticky; top: 0; padding: 11px 12px; background: var(--surface-subtle); color: var(--muted); text-align: left; white-space: nowrap; font-size: 10px; letter-spacing: .02em; }
+td { padding: 12px; border-top: 1px solid #edf0f5; color: var(--ink-soft); white-space: nowrap; }
+tbody tr:hover { background: #fafbfe; }
+.confirm-card { display: flex; align-items: center; justify-content: space-between; gap: 24px; border-color: #d8d3ff !important; background: linear-gradient(135deg,#fff,#faf9ff) !important; }
+.success-card { display: flex; gap: 16px; margin-top: 20px; padding: 24px; border: 1px solid #bde4d5; border-radius: 16px; background: var(--success-soft); box-shadow: var(--shadow-card); }
+.success-card > span { width: 40px; height: 40px; flex: 0 0 40px; display: grid; place-items: center; border-radius: 50%; background: var(--success); color: #fff; font-weight: 900; }
+.success-card h2 { margin: 0; font-size: 18px; }
+.success-card dl { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 11px 22px; margin: 16px 0 0; }
+.success-card dt { color: #5d756d; font-size: 10px; }
+.success-card dd { margin: 3px 0 0; overflow-wrap: anywhere; color: #214f40; font-size: 12px; font-weight: 700; }
+
+@media (max-width: 980px) {
+  .upload-card { display: flex; align-items: stretch; flex-direction: column; padding-top: 50px !important; }
+  .upload-card::after { left: 24px; right: auto; }
+  .upload-card > div:first-child, .upload-card form { padding-top: 0; }
+  .upload-card form, .sample-loader { width: 100%; }
+  .mapping-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 700px) {
+  .upload-card { padding-top: 58px !important; }
+  .upload-card::after { max-width: calc(100% - 48px); line-height: 1.6; }
+  .upload-card form, .section-heading, .confirm-card { align-items: stretch; flex-direction: column; }
+  .mapping-field { grid-template-columns: 1fr; gap: 6px; }
+  .sample-loader > div { align-items: stretch; flex-direction: column; }
+  #mapping-section::before, #preview-section::before, #confirm-section::before { display: none; }
+  .success-card dl { grid-template-columns: 1fr; }
+}
