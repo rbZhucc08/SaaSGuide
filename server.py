@@ -7,13 +7,13 @@ import json
 import os
 import sqlite3
 import threading
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 from uuid import uuid4
 
 from flask import Flask, Response, jsonify, request, send_file, send_from_directory, url_for
-from database.store import StoreError, create_action, dashboard as action_dashboard, seed_demo, transition_action
+from database.store import StoreError, create_action, dashboard as action_dashboard, transition_action
 
 from deepseek_ask_build import DeepSeekError, ModelOutputError, evaluate_brief
 from deepseek_ask_build import DeepSeekClient
@@ -49,7 +49,20 @@ from services.retrieval.knowledge_base import evaluate as evaluate_knowledge
 from services.retrieval.knowledge_base import load_documents
 from services.reporting.metrics import calculate as calculate_report
 from services.reporting.metrics import csv_bytes as report_csv_bytes
-from services.reporting.metrics import load_dataset as load_report_dataset
+from services.reporting.metrics import xlsx_bytes as report_xlsx_bytes
+from services.company_data.store import (
+    CompanyDataError,
+    clear as clear_company_data,
+    create_policy,
+    create_project,
+    delete_policy,
+    delete_project,
+    project_document,
+    read as read_company_data,
+    reset as reset_company_data,
+    update_policy,
+    update_project,
+)
 from validate_data import RISK_FILE, validate_risk_data
 
 
@@ -68,8 +81,8 @@ EVIDENCE_PREVIEWS: dict[str, dict[str, Any]] = {}
 KNOWLEDGE_FILE = PROJECT_DIR / "knowledge" / "documents" / "policies.json"
 PHASE4_EVALUATION_FILE = PROJECT_DIR / "data" / "evaluation" / "phase4_questions.json"
 DEMO_DATABASE = GENERATED_DIR / "saasguide-demo.db"
-PHASE6_DATA_FILE = PROJECT_DIR / "data" / "evaluation" / "phase6_reporting_data.json"
-PHASE6_XLSX_FILE = PROJECT_DIR / "data" / "reports" / "weekly-risk-report.xlsx"
+COMPANY_SEED_FILE = PROJECT_DIR / "data" / "demo" / "nebula_company_seed.json"
+COMPANY_DATA_FILE = GENERATED_DIR / "company-data.json"
 ALLOWED_SAMPLE_FILES = {
     "valid_project_tasks_cn.xlsx",
     "invalid_missing_owner.xlsx",
@@ -135,6 +148,28 @@ def _read_json_lines(path: Path) -> list[dict[str, Any]]:
         if isinstance(value, dict):
             records.append(value)
     return records
+
+
+def build_runtime_report(risk_decisions_path: Path, database_path: Path, as_of: str | None = None) -> dict[str, Any]:
+    today = date.fromisoformat(as_of) if as_of else date.today()
+    decisions = _read_json_lines(risk_decisions_path)
+    risks = []
+    status_map = {"confirm": "confirmed", "watch": "observing", "reject": "dismissed", "false_positive": "dismissed"}
+    for item in decisions:
+        stamp = str(item.get("recorded_at") or today.isoformat())
+        risks.append({
+            "id": str(item.get("candidate_id") or "unknown"),
+            "date": stamp[:10],
+            "level": str(item.get("severity") or "unknown"),
+            "status": status_map.get(str(item.get("decision")), "observing"),
+            "false_positive": item.get("decision") == "false_positive",
+            "resolution_hours": None,
+        })
+    action_data = action_dashboard(database_path, today.isoformat())
+    actions = [{"id": item["action_id"], "title": item["title"], "owner_role": item["owner_role"], "due_date": item["due_date"], "status": item["status"]} for item in action_data["actions"]]
+    dates = [item["date"] for item in risks]
+    period = f"{min(dates)} / {max(dates)}" if dates else "暂无人工风险记录"
+    return calculate_report({"period": period, "risks": risks, "actions": actions, "scope": "runtime_local_records"}, today.isoformat())
 
 
 def build_dashboard_payload(normalized_dir: Path, risk_decisions_path: Path, evidence_reviews_path: Path, database_path: Path, knowledge_path: Path) -> dict[str, Any]:
@@ -207,6 +242,12 @@ def atomic_write_text(path: Path, content: str) -> None:
     finally:
         if temporary.exists():
             temporary.unlink()
+
+
+def runtime_knowledge_path(company_data: dict[str, Any], company_data_path: Path) -> Path:
+    path = company_data_path.with_name("runtime-knowledge.json")
+    atomic_write_text(path, json.dumps(company_data.get("policies", []), ensure_ascii=False, indent=2) + "\n")
+    return path
 
 
 def append_run_log(output_dir: Path, brief: dict[str, Any], result: dict[str, Any]) -> None:
@@ -413,9 +454,12 @@ def create_app(
     evidence_review_file: Path = EVIDENCE_REVIEW_FILE,
     database_path: Path = DEMO_DATABASE,
     knowledge_file: Path = KNOWLEDGE_FILE,
+    company_data_file: Path | None = None,
+    company_seed_file: Path = COMPANY_SEED_FILE,
 ) -> Flask:
     app = Flask(__name__, static_folder=None)
     app.config["MAX_CONTENT_LENGTH"] = 3 * 1024 * 1024
+    company_data_path = company_data_file or output_dir / "company-data.json"
 
     @app.after_request
     def security_headers(response):
@@ -447,9 +491,100 @@ def create_app(
     @app.get("/api/dashboard")
     def dashboard_data():
         try:
-            return jsonify(build_dashboard_payload(normalized_data_dir, risk_decision_file, evidence_review_file, database_path, knowledge_file))
-        except OSError:
+            payload = build_dashboard_payload(normalized_data_dir, risk_decision_file, evidence_review_file, database_path, knowledge_file)
+            company = read_company_data(company_data_path, company_seed_file)
+            payload["company_workspace"] = {
+                "name": company["company"]["name"],
+                "projects": len(company["projects"]),
+                "tasks": sum(len(item["tasks"]) for item in company["projects"]),
+                "policy_versions": len(company["policies"]),
+            }
+            return jsonify(payload)
+        except (CompanyDataError, OSError, json.JSONDecodeError):
             return jsonify({"error": "工作台本地状态无法读取", "code": "dashboard_unavailable"}), 500
+
+    @app.get("/api/company-data")
+    def company_data():
+        try:
+            return jsonify(read_company_data(company_data_path, company_seed_file))
+        except (CompanyDataError, OSError, json.JSONDecodeError) as error:
+            code = error.code if isinstance(error, CompanyDataError) else "company_data_unavailable"
+            status = error.status if isinstance(error, CompanyDataError) else 500
+            return jsonify({"error": str(error), "code": code}), status
+
+    @app.post("/api/company-data/reset")
+    def reset_company_records():
+        try:
+            return jsonify(reset_company_data(company_data_path, company_seed_file))
+        except (CompanyDataError, OSError, json.JSONDecodeError) as error:
+            return jsonify({"error": str(error), "code": "company_data_reset_failed"}), 500
+
+    @app.post("/api/company-data/clear")
+    def clear_company_records():
+        payload = request.get_json(silent=True)
+        if not isinstance(payload, dict) or payload.get("confirmed") is not True:
+            return jsonify({"error": "清空前必须明确确认", "code": "confirmation_required"}), 400
+        try:
+            return jsonify(clear_company_data(company_data_path, company_seed_file))
+        except (CompanyDataError, OSError, json.JSONDecodeError) as error:
+            return jsonify({"error": str(error), "code": "company_data_clear_failed"}), 500
+
+    @app.post("/api/company-data/projects")
+    def add_company_project():
+        try:
+            return jsonify(create_project(company_data_path, company_seed_file, request.get_json(silent=True))), 201
+        except CompanyDataError as error:
+            return jsonify({"error": str(error), "code": error.code}), error.status
+
+    @app.put("/api/company-data/projects/<project_id>")
+    def edit_company_project(project_id: str):
+        try:
+            return jsonify(update_project(company_data_path, company_seed_file, project_id, request.get_json(silent=True)))
+        except CompanyDataError as error:
+            return jsonify({"error": str(error), "code": error.code}), error.status
+
+    @app.delete("/api/company-data/projects/<project_id>")
+    def remove_company_project(project_id: str):
+        try:
+            return jsonify(delete_project(company_data_path, company_seed_file, project_id))
+        except CompanyDataError as error:
+            return jsonify({"error": str(error), "code": error.code}), error.status
+
+    @app.post("/api/company-data/projects/<project_id>/scan")
+    def scan_company_project(project_id: str):
+        payload = request.get_json(silent=True) or {}
+        if not isinstance(payload, dict):
+            return jsonify({"error": "请求必须是 JSON 对象", "code": "invalid_request"}), 400
+        try:
+            data = read_company_data(company_data_path, company_seed_file)
+            result = scan_project(project_document(data, project_id, payload.get("as_of")), payload.get("as_of"))
+            result["evaluation"] = None
+            result["sample_mode"] = False
+            result["source_mode"] = "editable_company_project"
+            return jsonify(result)
+        except (CompanyDataError, RiskScanError) as error:
+            return jsonify({"error": str(error), "code": error.code}), error.status
+
+    @app.post("/api/company-data/policies")
+    def add_company_policy():
+        try:
+            return jsonify(create_policy(company_data_path, company_seed_file, request.get_json(silent=True))), 201
+        except CompanyDataError as error:
+            return jsonify({"error": str(error), "code": error.code}), error.status
+
+    @app.put("/api/company-data/policies/<document_id>/<version>")
+    def edit_company_policy(document_id: str, version: str):
+        try:
+            return jsonify(update_policy(company_data_path, company_seed_file, document_id, version, request.get_json(silent=True)))
+        except CompanyDataError as error:
+            return jsonify({"error": str(error), "code": error.code}), error.status
+
+    @app.delete("/api/company-data/policies/<document_id>/<version>")
+    def remove_company_policy(document_id: str, version: str):
+        try:
+            return jsonify(delete_policy(company_data_path, company_seed_file, document_id, version))
+        except CompanyDataError as error:
+            return jsonify({"error": str(error), "code": error.code}), error.status
 
     @app.get("/builder")
     @app.get("/builder.html")
@@ -742,7 +877,7 @@ def create_app(
                 payload.get("project"),
                 payload.get("source"),
                 str(payload.get("context_note", "")),
-                knowledge_file,
+                runtime_knowledge_path(read_company_data(company_data_path, company_seed_file), company_data_path),
             )
             record = {
                 "run_id": result.get("run_id"),
@@ -812,15 +947,16 @@ def create_app(
         if not isinstance(payload, dict) or not isinstance(payload.get("question"), str):
             return jsonify({"error": "请求必须包含 question 文字", "code": "question_required"}), 400
         try:
-            return jsonify(knowledge_answer(payload["question"], load_documents(KNOWLEDGE_FILE)))
-        except (OSError, ValueError, json.JSONDecodeError):
+            documents = read_company_data(company_data_path, company_seed_file)["policies"]
+            return jsonify(knowledge_answer(payload["question"], documents))
+        except (CompanyDataError, OSError, ValueError, json.JSONDecodeError):
             app.logger.exception("Unable to query knowledge base")
             return jsonify({"error": "知识库当前无法读取", "code": "knowledge_unavailable"}), 500
 
     @app.post("/api/knowledge/evaluate")
     def evaluate_knowledge_base():
         try:
-            documents = load_documents(KNOWLEDGE_FILE)
+            documents = load_documents(knowledge_file)
             cases = json.loads(PHASE4_EVALUATION_FILE.read_text(encoding="utf-8"))
             result = evaluate_knowledge(documents, cases)
             result["scope"] = "fixed_simulated_dataset"
@@ -832,8 +968,7 @@ def create_app(
     @app.get("/api/actions")
     def list_actions():
         try:
-            seed_demo(DEMO_DATABASE)
-            return jsonify(action_dashboard(DEMO_DATABASE, request.args.get("as_of")))
+            return jsonify(action_dashboard(database_path, request.args.get("as_of")))
         except (OSError, ValueError):
             return jsonify({"error": "行动数据无法读取", "code": "action_store_unavailable"}), 500
 
@@ -843,8 +978,7 @@ def create_app(
         if not isinstance(payload, dict):
             return jsonify({"error": "请求必须是 JSON 对象", "code": "invalid_request"}), 400
         try:
-            seed_demo(DEMO_DATABASE)
-            return jsonify({"message": "人工确认的行动已保存", "action": create_action(DEMO_DATABASE, payload)}), 201
+            return jsonify({"message": "人工确认的行动已保存", "action": create_action(database_path, payload)}), 201
         except StoreError as error:
             return jsonify({"error": str(error), "code": "action_invalid"}), 400
 
@@ -854,7 +988,7 @@ def create_app(
         if not isinstance(payload, dict):
             return jsonify({"error": "请求必须是 JSON 对象", "code": "invalid_request"}), 400
         try:
-            action = transition_action(DEMO_DATABASE, action_id, str(payload.get("status", "")), str(payload.get("actor", "")), str(payload.get("note", "")))
+            action = transition_action(database_path, action_id, str(payload.get("status", "")), str(payload.get("actor", "")), str(payload.get("note", "")))
             return jsonify({"message": "行动状态和审计事件已更新", "action": action})
         except StoreError as error:
             return jsonify({"error": str(error), "code": "transition_invalid"}), 400
@@ -862,23 +996,25 @@ def create_app(
     @app.get("/api/reports/weekly")
     def weekly_report():
         try:
-            return jsonify(calculate_report(load_report_dataset(PHASE6_DATA_FILE)))
+            return jsonify(build_runtime_report(risk_decision_file, database_path, request.args.get("as_of")))
         except (OSError, ValueError, json.JSONDecodeError):
             return jsonify({"error": "报告数据无法读取", "code": "report_unavailable"}), 500
 
     @app.get("/downloads/weekly-risk-report.csv")
     def download_weekly_csv():
         try:
-            result = calculate_report(load_report_dataset(PHASE6_DATA_FILE))
+            result = build_runtime_report(risk_decision_file, database_path, request.args.get("as_of"))
             return Response(report_csv_bytes(result), mimetype="text/csv", headers={"Content-Disposition": "attachment; filename=weekly-risk-report.csv"})
         except (OSError, ValueError, json.JSONDecodeError):
             return jsonify({"error": "CSV 报告无法生成", "code": "report_unavailable"}), 500
 
     @app.get("/downloads/weekly-risk-report.xlsx")
     def download_weekly_xlsx():
-        if not PHASE6_XLSX_FILE.exists():
-            return jsonify({"error": "XLSX 报告尚未生成", "code": "xlsx_not_generated"}), 404
-        return send_file(PHASE6_XLSX_FILE, as_attachment=True, download_name="weekly-risk-report.xlsx")
+        try:
+            result = build_runtime_report(risk_decision_file, database_path, request.args.get("as_of"))
+            return Response(report_xlsx_bytes(result), mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", headers={"Content-Disposition": "attachment; filename=weekly-risk-report.xlsx"})
+        except (OSError, ValueError, json.JSONDecodeError):
+            return jsonify({"error": "XLSX 报告无法生成", "code": "report_unavailable"}), 500
 
     @app.post("/api/media/pdf/sample")
     def parse_pdf_sample():

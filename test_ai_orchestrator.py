@@ -75,6 +75,18 @@ class AiOrchestratorTests(unittest.TestCase):
             [item["skill"] for item in result["trace"]],
         )
 
+    def test_empty_runtime_knowledge_returns_local_ask_without_model(self):
+        import tempfile
+        candidate, project, source = candidate_context()
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "empty.json"
+            path.write_text("[]", encoding="utf-8")
+            client = FakeClient(valid_plan())
+            result = orchestrate_risk_candidate(candidate, project, source, "", path, client=client)
+        self.assertEqual("ASK", result["decision"])
+        self.assertEqual("not_called", result["model_status"])
+        self.assertFalse(client.called)
+
     def test_fabricated_citation_is_blocked(self):
         candidate, project, source = candidate_context()
         with self.assertRaises(ModelOutputError):

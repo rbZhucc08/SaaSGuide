@@ -86,3 +86,6 @@
   .ai-area__top { align-items: flex-start; flex-direction: column; }
   .ai-button { width: 100%; }
 }
+.scan-actions select { min-width:240px; padding:10px 11px; }
+.evaluation-tools { align-self:end; }.evaluation-tools summary { color:var(--muted); font-size:11px; cursor:pointer; }.evaluation-tools button { margin-top:7px; }
+@media (max-width:700px) { .scan-actions select { width:100%; min-width:0; } .evaluation-tools { align-self:stretch; } }

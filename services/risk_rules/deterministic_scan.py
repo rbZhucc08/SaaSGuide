@@ -320,6 +320,19 @@ def save_human_decision(
         "source_id": source_id,
         "recorded_at": recorded_at or datetime.now().astimezone().isoformat(timespec="seconds"),
     }
+    optional_text = {
+        "project_id": 80,
+        "project_name": 120,
+        "title": 200,
+        "severity": 20,
+        "risk_type": 80,
+    }
+    for key, maximum in optional_text.items():
+        value = payload.get(key)
+        if value is not None:
+            if not isinstance(value, str) or len(value.strip()) > maximum:
+                raise RiskScanError("invalid_decision_metadata", "人工决策附加信息无效")
+            record[key] = value.strip()
     decision_path.parent.mkdir(parents=True, exist_ok=True)
     with decision_path.open("a", encoding="utf-8") as output:
         output.write(json.dumps(record, ensure_ascii=False) + "\n")

@@ -8,14 +8,23 @@
 
 V2 本地工作台：`http://127.0.0.1:4173/`
 
-- 根工作台只汇总用户确认导入的统一 JSON、人工审计记录和 SQLite 行动；没有数据时显示 0 和空状态。
+- 根工作台区分可编辑模拟公司档案、用户确认导入、人工审计和 SQLite 行动；没有人工结果时显示真实空状态。
 - 保留一个后台 ASK / BUILD 引导生成实验，入口为 `/builder`。
 - 在 `/data-sources` 导入项目任务 XLSX；原始列名可自由输入，并提供原表头建议，服务端会拦截不存在的列。
-- 在独立的 `/risk-radar` 页面运行确定性风险规则，查看原始证据、固定评测指标，并记录确认、观察、驳回或误报选择。
+- 在 `/data-sources` 页面新增、编辑、删除项目与任务，也可继续导入 XLSX；固定样本只收纳在折叠的开发评测入口。
+- 在独立的 `/risk-radar` 页面选择当前可编辑项目运行确定性规则，查看原始证据，并记录确认、观察、驳回或误报选择。
 - 在候选卡中按需调用一个受控 Orchestrator：检索当前生效知识后由 DeepSeek 返回 ASK 或带引用 PLAN，再由 Python 校验；AI 不自动确认或保存行动。
 - 解析 TXT、Markdown、DOCX 与普通 PDF，保留文件哈希、原文位置和人工核对记录。
-- 用版本化自建知识库回答并引用当前生效文档；无依据时拒答。
-- 用 SQLite 保存行动、状态事件和人工决策审计。
+- 用可新增、编辑、删除的版本化自建知识库回答并引用当前生效文档；无依据时拒答。
+- 用 SQLite 保存行动、状态事件和人工决策审计；产品运行时不再自动写入固定行动。
+- 报告与 CSV/XLSX 均从当前人工决策和行动实时计算，不再回退到固定报告样板。
+
+## 可编辑模拟公司数据
+
+- 版本化 Seed：`data/demo/nebula_company_seed.json`，包含 1 家虚构公司、6 个部门、5 个项目、25 条任务、16 个制度/历史案例版本。
+- 本地运行副本：`generated/company-data.json`，首次访问复制一次，此后保留用户修改。
+- 清空后重启不会自动恢复；只有点击“恢复模拟公司数据”才会覆盖为 Seed。
+- 这属于数据驱动检索与受控 Agent 上下文，不是训练或微调 DeepSeek。
 - 由 Python 计算周报指标，并导出 UTF-8 BOM CSV 与三表 XLSX。
 - 检测需要 OCR 的 PDF、检查 WAV 元数据和模拟适配器；真实 OCR、语音识别和外部连接器尚未验证。
 
@@ -123,7 +132,7 @@ node --check reports.js
 node --check input-lab.js
 ```
 
-截至 2026-09-05：AI 编排纠偏后累计 107 项自动测试通过；真实 DeepSeek 浏览器验收已取得两次 ASK 和一次带 3 条白名单引用的 PLAN，详见 `docs/test_records/V2_AI_ORCHESTRATION_TEST_RECORD_2026-09-05.md`。P2 固定规则集 Precision 与 Recall 均为 83.33%；P4 的 10 题同源小型固定集检索、引用与拒答均为 100%。这些指标只能描述自建模拟样本。
+截至 2026-09-07：累计 120 项自动测试通过；可编辑项目已在浏览器完成编辑、跨刷新保存和风险扫描，真实 DeepSeek 对当前项目返回带 3 条当前制度引用、3 条行动草稿的 PLAN。固定评测夹具继续保留，但已与产品运行数据隔离。所有指标只能描述自建模拟样本。
 
 ## 当前状态与文档入口
 
@@ -148,7 +157,8 @@ node --check input-lab.js
 - `index.html`、`styles.css`、`app.js`：V2 工作台页面、外观与本地状态汇总交互。
 - `data-sources.html`、`data-sources.css`、`data-sources.js`：V2-P1 数据源导入页面。
 - `services/ingestion/xlsx_import.py`：XLSX 解析、映射、校验和确认保存。
-- `data/samples/`、`data/evaluation/`：模拟 XLSX 与固定标准答案。
+- `data/demo/`：可恢复的丰富模拟公司 Seed；`services/company_data/`：运行数据校验、持久化与 CRUD。
+- `data/samples/`、`data/evaluation/`：仅供隔离测试的模拟 XLSX 与固定标准答案。
 - `risk-radar.html`、`risk-radar.css`、`risk-radar.js`：V2-P2 候选风险页面。
 - `services/risk_rules/deterministic_scan.py`：确定性规则、去重、评测与人工决策记录。
 - `services/ingestion/text_evidence.py`、`pdf_audio.py`：文本、DOCX、普通 PDF 和 WAV 元数据。

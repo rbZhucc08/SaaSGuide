@@ -1,4 +1,85 @@
 let importPreview = null;
+let companyData = null;
+let editingProjectId = null;
+
+async function companyApi(url, options = {}) {
+  const response = await fetch(url, options);
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || `请求失败（HTTP ${response.status}）`);
+  return data;
+}
+
+function projectInput(id) { return document.querySelector(`#${id}`); }
+
+function createTaskRow(task = {}) {
+  const row = document.createElement("div");
+  row.className = "task-row";
+  const fields = [
+    ["task_id", "编号", "text"], ["task_name", "任务名称", "text"], ["owner", "负责人", "text"],
+    ["start_date", "开始", "date"], ["due_date", "截止", "date"], ["status", "状态", "text"],
+    ["priority", "优先级", "text"], ["progress_percent", "完成度", "number"], ["dependency_ids", "前置任务", "text"],
+  ];
+  fields.forEach(([key, labelText, type]) => {
+    const label = document.createElement("label");
+    label.textContent = labelText;
+    const input = document.createElement("input");
+    input.type = type;
+    input.dataset.taskField = key;
+    if (type === "number") { input.min = "0"; input.max = "100"; }
+    const value = key === "dependency_ids" ? (task[key] || []).join(",") : task[key];
+    input.value = value ?? (key === "progress_percent" ? 0 : "");
+    input.required = !["dependency_ids"].includes(key);
+    label.append(input); row.append(label);
+  });
+  const remove = document.createElement("button");
+  remove.type = "button"; remove.className = "icon-danger"; remove.textContent = "删除任务";
+  remove.addEventListener("click", () => row.remove()); row.append(remove);
+  return row;
+}
+
+function readTaskRows() {
+  return [...document.querySelectorAll("#task-rows .task-row")].map((row) => {
+    const values = Object.fromEntries([...row.querySelectorAll("[data-task-field]")].map((input) => [input.dataset.taskField, input.value.trim()]));
+    values.progress_percent = Number(values.progress_percent);
+    values.effort_hours = 0;
+    values.dependency_ids = values.dependency_ids ? values.dependency_ids.split(",").map((item) => item.trim()).filter(Boolean) : [];
+    return values;
+  });
+}
+
+function openProjectEditor(project = null) {
+  editingProjectId = project?.project_id || null;
+  document.querySelector("#project-editor-title").textContent = project ? "编辑项目" : "新增项目";
+  const values = project || {};
+  [["project-id","project_id"],["project-name","project_name"],["project-department","department"],["project-stage","stage"],["project-start","start_date"],["project-end","end_date"],["project-background","background"],["project-outcome","outcome"]].forEach(([id,key]) => { projectInput(id).value = values[key] || ""; });
+  projectInput("project-id").readOnly = Boolean(project);
+  const rows = document.querySelector("#task-rows"); rows.replaceChildren(...(values.tasks || []).map(createTaskRow));
+  if (!values.tasks?.length) rows.append(createTaskRow());
+  document.querySelector("#project-editor").classList.remove("is-hidden");
+  document.querySelector("#project-editor").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function renderCompany(data) {
+  companyData = data;
+  document.querySelector("#company-summary").textContent = `${data.company.name} · ${data.projects.length} 个项目 · ${data.projects.reduce((sum, item) => sum + item.tasks.length, 0)} 条任务 · 本地可编辑`;
+  const list = document.querySelector("#project-list"); list.replaceChildren();
+  if (!data.projects.length) {
+    const empty = document.createElement("div"); empty.className = "record-empty"; empty.textContent = "当前没有项目。可新增项目，或显式恢复模拟公司数据。"; list.append(empty); return;
+  }
+  data.projects.forEach((project) => {
+    const card = document.createElement("article"); card.className = "record-card";
+    const copy = document.createElement("div"); const title = document.createElement("h3"); title.textContent = project.project_name;
+    const meta = document.createElement("p"); meta.textContent = `${project.project_id} · ${project.department} · ${project.stage} · ${project.tasks.length} 条任务`;
+    const outcome = document.createElement("small"); outcome.textContent = project.outcome || "尚未记录项目经历或结果"; copy.append(title, meta, outcome);
+    const actions = document.createElement("div");
+    const edit = document.createElement("button"); edit.className = "secondary-button"; edit.type = "button"; edit.textContent = "编辑"; edit.addEventListener("click", () => openProjectEditor(project));
+    const scan = document.createElement("a"); scan.className = "secondary-button"; scan.href = `/risk-radar?project=${encodeURIComponent(project.project_id)}`; scan.textContent = "扫描";
+    const remove = document.createElement("button"); remove.className = "danger-button"; remove.type = "button"; remove.textContent = "删除"; remove.addEventListener("click", async () => { if (!confirm(`删除模拟项目“${project.project_name}”？`)) return; try { await companyApi(`/api/company-data/projects/${encodeURIComponent(project.project_id)}`, {method:"DELETE"}); await loadCompany(); setMessage("项目已删除。", "info"); } catch (error) { setMessage(error.message); } });
+    actions.append(edit, scan, remove); card.append(copy, actions); list.append(card);
+  });
+}
+
+async function loadCompany() { try { renderCompany(await companyApi("/api/company-data")); } catch (error) { setMessage(error.message); } }
 
 const uploadForm = document.querySelector("#upload-form");
 const fileInput = document.querySelector("#xlsx-file");
@@ -256,3 +337,16 @@ confirmButton.addEventListener("click", async () => {
     }
   }
 });
+
+document.querySelector("#new-project").addEventListener("click", () => openProjectEditor());
+document.querySelector("#cancel-project").addEventListener("click", () => document.querySelector("#project-editor").classList.add("is-hidden"));
+document.querySelector("#add-task").addEventListener("click", () => document.querySelector("#task-rows").append(createTaskRow()));
+document.querySelector("#project-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const payload = {project_id:projectInput("project-id").value.trim(),project_name:projectInput("project-name").value.trim(),department:projectInput("project-department").value.trim(),stage:projectInput("project-stage").value.trim(),start_date:projectInput("project-start").value,end_date:projectInput("project-end").value,background:projectInput("project-background").value.trim(),outcome:projectInput("project-outcome").value.trim(),tasks:readTaskRows()};
+  const endpoint = editingProjectId ? `/api/company-data/projects/${encodeURIComponent(editingProjectId)}` : "/api/company-data/projects";
+  try { await companyApi(endpoint,{method:editingProjectId?"PUT":"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)}); document.querySelector("#project-editor").classList.add("is-hidden"); await loadCompany(); setMessage("项目档案已保存，风险雷达将读取最新内容。", "info"); } catch(error) { setMessage(error.message); }
+});
+document.querySelector("#reset-company").addEventListener("click", async () => { if (!confirm("恢复会覆盖当前项目和制度，确定继续？")) return; try { renderCompany(await companyApi("/api/company-data/reset",{method:"POST"})); setMessage("已恢复丰富模拟公司数据。", "info"); } catch(error) { setMessage(error.message); } });
+document.querySelector("#clear-company").addEventListener("click", async () => { if (!confirm("清空当前模拟公司项目和制度？清空后重启不会自动恢复。")) return; try { renderCompany(await companyApi("/api/company-data/clear",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({confirmed:true})})); setMessage("当前项目和制度已清空；需要时可显式恢复。", "info"); } catch(error) { setMessage(error.message); } });
+loadCompany();

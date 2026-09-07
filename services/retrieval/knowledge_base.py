@@ -21,8 +21,8 @@ def _tokens(text: str) -> set[str]:
 
 def load_documents(path: Path) -> list[dict[str, Any]]:
     data = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(data, list) or not data:
-        raise KnowledgeError("知识库文档为空")
+    if not isinstance(data, list):
+        raise KnowledgeError("知识库文档结构无效")
     required = {"document_id", "title", "version", "effective_date", "status", "content"}
     for item in data:
         if not isinstance(item, dict) or not required.issubset(item):

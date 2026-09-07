@@ -146,6 +146,17 @@ def orchestrate_risk_candidate(
         {"skill": "risk-signal-scan", "status": "completed", "detail": f"{len(candidate['trigger_rules'])} rule hit(s) supplied"},
         {"skill": "evidence-grounded-assessment", "status": "completed" if citations else "insufficient", "detail": f"{len(citations)} effective citation(s) retrieved"},
     ]
+    if not citations:
+        return {
+            "run_id": run_id,
+            "decision": "ASK",
+            "reason": "当前可编辑知识库没有与候选风险匹配的生效依据，AI 不能在无引用时生成行动计划。",
+            "questions": [{"field": "knowledge", "question": "请新增或启用与该风险相关的制度或项目案例后重试。"}],
+            "source": "local-precheck",
+            "model_status": "not_called",
+            "trace": trace,
+            "created_at": datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds"),
+        }
     active_client = client or DeepSeekClient()
     content = active_client.create_json(build_messages(candidate, project, source, str(context_note or "")[:1000], citations))
     result = parse_model_json(content)

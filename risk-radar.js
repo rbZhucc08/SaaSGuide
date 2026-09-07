@@ -140,7 +140,7 @@ function candidateCard(candidate) {
   const meta = document.createElement("p");
   title.textContent = candidate.title;
   meta.className = "candidate-meta";
-  meta.textContent = `${candidate.task_id} · ${candidate.task_name} · 负责人 ${candidate.owner || "未填写"} · ${candidate.risk_type}`;
+  meta.textContent = `${candidate.task_id} · ${candidate.task_name} · 负责人 ${candidate.owner || "未填写"} · ${candidate.risk_type} · ${candidate.candidate_id}`;
   heading.append(title, meta);
   const severity = document.createElement("span");
   severity.className = `severity ${candidate.severity}`;
@@ -206,7 +206,7 @@ function candidateCard(candidate) {
 function renderScan(data) {
   currentScan = data;
   document.querySelector("#scan-meta").textContent = `${data.project.project_name}（${data.project.project_id}）· 扫描日 ${data.as_of} · 来源 ${data.source.source_name}`;
-  document.querySelector("#source-badge").textContent = data.sample_mode ? "固定模拟评测" : "最近本地导入";
+  document.querySelector("#source-badge").textContent = data.sample_mode ? "隔离评测夹具" : data.source_mode === "editable_company_project" ? "可编辑公司项目" : "最近本地导入";
   summaryGrid.replaceChildren(
     metric("候选风险", data.summary.candidate_count),
     metric("高风险信号", data.summary.high_count),
@@ -263,6 +263,11 @@ async function saveDecision(card, candidate, decision, note) {
         source_id: currentScan.source.source_id,
         decision,
         note,
+        project_id: currentScan.project.project_id,
+        project_name: currentScan.project.project_name,
+        title: candidate.title,
+        severity: candidate.severity,
+        risk_type: candidate.risk_type,
       }),
     });
     const data = await readJson(response);
@@ -277,6 +282,12 @@ async function saveDecision(card, candidate, decision, note) {
 }
 
 document.querySelector("#scan-sample").addEventListener("click", (event) => runScan("/api/risk-scans/sample", event.currentTarget));
+document.querySelector("#scan-company").addEventListener("click", (event) => {
+  const projectId = document.querySelector("#company-project").value;
+  if (!projectId) { setMessage("当前没有可扫描项目，请先在数据源页面新增或恢复模拟公司数据。"); return; }
+  const asOf = document.querySelector("#scan-date").value;
+  runScan(`/api/company-data/projects/${encodeURIComponent(projectId)}/scan`, event.currentTarget, asOf ? { as_of: asOf } : {});
+});
 document.querySelector("#scan-latest").addEventListener("click", (event) => {
   const asOf = document.querySelector("#scan-date").value;
   runScan("/api/risk-scans/latest", event.currentTarget, asOf ? { as_of: asOf } : {});
@@ -300,3 +311,16 @@ async function loadAgentCapabilities() {
 }
 
 loadAgentCapabilities();
+
+async function loadCompanyProjects() {
+  const select = document.querySelector("#company-project");
+  try {
+    const response = await fetch("/api/company-data"); const data = await readJson(response);
+    if (!response.ok) throw new Error(data.error || "项目列表不可用");
+    select.replaceChildren(...data.projects.map((project) => { const option = document.createElement("option"); option.value = project.project_id; option.textContent = `${project.project_name} · ${project.department}`; return option; }));
+    const requested = new URLSearchParams(location.search).get("project");
+    if (requested && [...select.options].some((item) => item.value === requested)) select.value = requested;
+    document.querySelector("#scan-company").disabled = data.projects.length === 0;
+  } catch (error) { setMessage(error.message || "无法读取项目列表。"); }
+}
+loadCompanyProjects();

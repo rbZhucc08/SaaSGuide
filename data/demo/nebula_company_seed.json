@@ -1,0 +1,86 @@
+{
+  "schema_version": "1.0",
+  "company": {
+    "company_id": "nebula-digital",
+    "name": "星云数科（模拟）",
+    "industry": "企业软件与数字化服务",
+    "description": "用于 SaaSGuide 本地练习的虚构公司。全部制度、人员和项目经历均为模拟数据。",
+    "simulated": true
+  },
+  "departments": ["产品中心", "研发中心", "交付中心", "客户成功部", "数据与安全部", "运营管理部"],
+  "projects": [
+    {
+      "project_id": "PRJ-CRM-026", "project_name": "客户成功 CRM 升级", "department": "产品中心", "stage": "联调", "start_date": "2026-08-18", "end_date": "2026-10-16",
+      "background": "原客户跟进记录分散，模拟公司计划统一商机阶段、服务工单和续约提醒。", "outcome": "当前仍在执行；已完成范围确认，接口评审和数据字典存在待处理项。",
+      "tasks": [
+        {"task_id":"CRM-01","task_name":"确认核心业务范围","owner":"刘敏","start_date":"2026-08-18","due_date":"2026-08-22","status":"已完成","priority":"高","dependency_ids":[],"progress_percent":100,"effort_hours":20},
+        {"task_id":"CRM-02","task_name":"冻结客户数据字典","owner":"周航","start_date":"2026-08-25","due_date":"2026-09-03","status":"阻塞","priority":"高","dependency_ids":["CRM-01"],"progress_percent":70,"effort_hours":32},
+        {"task_id":"CRM-03","task_name":"完成接口评审","owner":"陈宁","start_date":"2026-09-01","due_date":"2026-09-06","status":"进行中","priority":"高","dependency_ids":["CRM-01"],"progress_percent":55,"effort_hours":24},
+        {"task_id":"CRM-04","task_name":"执行全链路联调","owner":"林悦","start_date":"2026-09-07","due_date":"2026-09-13","status":"未开始","priority":"高","dependency_ids":["CRM-02","CRM-03"],"progress_percent":0,"effort_hours":40},
+        {"task_id":"CRM-05","task_name":"准备业务验收","owner":"孟辰","start_date":"2026-09-14","due_date":"2026-09-18","status":"未开始","priority":"中","dependency_ids":["CRM-04"],"progress_percent":0,"effort_hours":16}
+      ]
+    },
+    {
+      "project_id": "PRJ-DATA-014", "project_name": "客户主数据迁移", "department": "数据与安全部", "stage": "数据清洗", "start_date": "2026-07-20", "end_date": "2026-09-30",
+      "background": "模拟将三个历史系统的客户主数据合并到统一数据服务。", "outcome": "已完成两轮抽样；重复主体和缺失授权记录仍需业务确认。",
+      "tasks": [
+        {"task_id":"DAT-01","task_name":"盘点源系统字段","owner":"赵岚","start_date":"2026-07-20","due_date":"2026-07-28","status":"已完成","priority":"高","dependency_ids":[],"progress_percent":100,"effort_hours":30},
+        {"task_id":"DAT-02","task_name":"建立主键合并规则","owner":"吴桐","start_date":"2026-07-29","due_date":"2026-08-08","status":"已完成","priority":"高","dependency_ids":["DAT-01"],"progress_percent":100,"effort_hours":36},
+        {"task_id":"DAT-03","task_name":"清理重复客户主体","owner":"赵岚","start_date":"2026-08-09","due_date":"2026-09-05","status":"进行中","priority":"高","dependency_ids":["DAT-02"],"progress_percent":78,"effort_hours":60},
+        {"task_id":"DAT-04","task_name":"核对数据处理授权","owner":"苏妍","start_date":"2026-08-20","due_date":"2026-09-04","status":"阻塞","priority":"高","dependency_ids":["DAT-01"],"progress_percent":65,"effort_hours":28},
+        {"task_id":"DAT-05","task_name":"执行迁移回滚演练","owner":"吴桐","start_date":"2026-09-08","due_date":"2026-09-12","status":"未开始","priority":"高","dependency_ids":["DAT-03","DAT-04"],"progress_percent":0,"effort_hours":24}
+      ]
+    },
+    {
+      "project_id": "PRJ-MOB-009", "project_name": "移动端 3.2 发布", "department": "研发中心", "stage": "发布准备", "start_date": "2026-08-10", "end_date": "2026-09-15",
+      "background": "模拟版本包含离线工单、消息中心和性能治理。", "outcome": "灰度包已完成；两个高优先级缺陷尚未关闭，发布窗口待复核。",
+      "tasks": [
+        {"task_id":"MOB-01","task_name":"冻结版本范围","owner":"方宁","start_date":"2026-08-10","due_date":"2026-08-15","status":"已完成","priority":"高","dependency_ids":[],"progress_percent":100,"effort_hours":12},
+        {"task_id":"MOB-02","task_name":"完成离线工单开发","owner":"梁策","start_date":"2026-08-16","due_date":"2026-08-28","status":"已完成","priority":"高","dependency_ids":["MOB-01"],"progress_percent":100,"effort_hours":52},
+        {"task_id":"MOB-03","task_name":"修复崩溃缺陷","owner":"叶青","start_date":"2026-08-29","due_date":"2026-09-05","status":"阻塞","priority":"高","dependency_ids":["MOB-02"],"progress_percent":50,"effort_hours":20},
+        {"task_id":"MOB-04","task_name":"执行灰度验证","owner":"高原","start_date":"2026-09-04","due_date":"2026-09-09","status":"进行中","priority":"高","dependency_ids":["MOB-02"],"progress_percent":40,"effort_hours":28},
+        {"task_id":"MOB-05","task_name":"完成发布审批","owner":"方宁","start_date":"2026-09-10","due_date":"2026-09-11","status":"未开始","priority":"高","dependency_ids":["MOB-03","MOB-04"],"progress_percent":0,"effort_hours":6}
+      ]
+    },
+    {
+      "project_id": "PRJ-ENT-031", "project_name": "大客户定制交付", "department": "交付中心", "stage": "客户验收", "start_date": "2026-06-15", "end_date": "2026-09-20",
+      "background": "模拟为集团客户配置审批流、单点登录和月度经营报表。", "outcome": "核心范围已交付；客户新增报表口径尚未完成变更评估。",
+      "tasks": [
+        {"task_id":"ENT-01","task_name":"确认交付范围","owner":"许静","start_date":"2026-06-15","due_date":"2026-06-22","status":"已完成","priority":"高","dependency_ids":[],"progress_percent":100,"effort_hours":18},
+        {"task_id":"ENT-02","task_name":"配置集团审批流","owner":"沈越","start_date":"2026-06-23","due_date":"2026-07-18","status":"已完成","priority":"高","dependency_ids":["ENT-01"],"progress_percent":100,"effort_hours":72},
+        {"task_id":"ENT-03","task_name":"接入单点登录","owner":"唐可","start_date":"2026-07-10","due_date":"2026-08-06","status":"已完成","priority":"中","dependency_ids":["ENT-01"],"progress_percent":100,"effort_hours":48},
+        {"task_id":"ENT-04","task_name":"评估新增报表口径","owner":"许静","start_date":"2026-08-28","due_date":"2026-09-03","status":"进行中","priority":"高","dependency_ids":["ENT-02"],"progress_percent":35,"effort_hours":16},
+        {"task_id":"ENT-05","task_name":"取得客户书面验收","owner":"罗嘉","start_date":"2026-09-04","due_date":"2026-09-10","status":"未开始","priority":"高","dependency_ids":["ENT-03","ENT-04"],"progress_percent":0,"effort_hours":12}
+      ]
+    },
+    {
+      "project_id": "PRJ-API-018", "project_name": "供应商接口切换", "department": "运营管理部", "stage": "切换演练", "start_date": "2026-08-01", "end_date": "2026-09-25",
+      "background": "模拟将通知服务从旧供应商切换至新供应商，并保留可回退路径。", "outcome": "双写验证进行中；供应商压测报告与故障联系人尚未齐备。",
+      "tasks": [
+        {"task_id":"API-01","task_name":"确认接口差异","owner":"韩川","start_date":"2026-08-01","due_date":"2026-08-08","status":"已完成","priority":"高","dependency_ids":[],"progress_percent":100,"effort_hours":18},
+        {"task_id":"API-02","task_name":"开发双写适配层","owner":"程野","start_date":"2026-08-09","due_date":"2026-08-25","status":"已完成","priority":"高","dependency_ids":["API-01"],"progress_percent":100,"effort_hours":46},
+        {"task_id":"API-03","task_name":"核验供应商压测报告","owner":"韩川","start_date":"2026-08-20","due_date":"2026-09-02","status":"阻塞","priority":"高","dependency_ids":["API-01"],"progress_percent":30,"effort_hours":14},
+        {"task_id":"API-04","task_name":"执行故障切换演练","owner":"秦露","start_date":"2026-09-03","due_date":"2026-09-08","status":"未开始","priority":"高","dependency_ids":["API-02","API-03"],"progress_percent":0,"effort_hours":20},
+        {"task_id":"API-05","task_name":"关闭旧供应商通道","owner":"韩川","start_date":"2026-09-16","due_date":"2026-09-18","status":"未开始","priority":"中","dependency_ids":["API-04"],"progress_percent":0,"effort_hours":8}
+      ]
+    }
+  ],
+  "policies": [
+    {"document_id":"risk-level","title":"项目风险分级与升级标准","version":"1.0","effective_date":"2026-01-01","status":"superseded","tags":["风险","分级"],"content":"高风险在两个工作日内升级，中风险每周复核，低风险记录观察。"},
+    {"document_id":"risk-level","title":"项目风险分级与升级标准","version":"2.0","effective_date":"2026-08-01","status":"effective","tags":["风险","分级","升级"],"content":"高风险应在一个工作日内由项目负责人组织核对，并记录证据、影响、责任角色和下一次检查日期；中风险每三个工作日复核。"},
+    {"document_id":"change-control","title":"需求变更控制办法","version":"1.2","effective_date":"2026-06-15","status":"effective","tags":["需求","变更","范围"],"content":"需求变更进入开发前，应记录提出方、业务理由、范围、验收条件、测试影响和排期影响；截止日期变化必须由人工批准。"},
+    {"document_id":"deadline-change","title":"项目截止日期变更规则","version":"1.0","effective_date":"2026-07-01","status":"effective","tags":["日期","延期","审批"],"content":"截止日期不得由系统自动修改。项目负责人应说明原计划、新日期、依赖影响和补救措施，并保留审批记录。"},
+    {"document_id":"weekly-report","title":"项目周报填写规范","version":"1.3","effective_date":"2026-05-01","status":"effective","tags":["周报","证据"],"content":"周报至少包含任务编号、状态、完成度、负责人、截止日期、阻塞原因和下一步。待核实内容必须明确标记。"},
+    {"document_id":"data-security","title":"项目数据最小化处理规范","version":"1.0","effective_date":"2026-04-10","status":"effective","tags":["数据","安全","隐私"],"content":"导入项目资料前应去除无关个人信息和敏感凭证，只保留风险判断所需字段；测试数据不得冒充真实客户数据。"},
+    {"document_id":"release-approval","title":"生产发布审批清单","version":"2.1","effective_date":"2026-08-15","status":"effective","tags":["发布","审批","回滚"],"content":"发布前必须确认测试结论、未关闭高优缺陷、监控指标、回滚方案、值班角色和业务验收。任何一项缺失都应暂停自动放行。"},
+    {"document_id":"defect-escalation","title":"高优缺陷升级流程","version":"1.0","effective_date":"2026-03-20","status":"effective","tags":["缺陷","升级"],"content":"阻断发布或导致核心流程不可用的缺陷应立即升级，明确临时缓解措施、修复负责人、验证人和复测时间。"},
+    {"document_id":"supplier-management","title":"关键供应商交付管理规范","version":"1.0","effective_date":"2026-02-18","status":"effective","tags":["供应商","接口","SLA"],"content":"关键接口切换前应取得容量证据、故障联系人、服务承诺和回退路径；口头承诺不能替代可核查材料。"},
+    {"document_id":"customer-acceptance","title":"客户验收证据要求","version":"1.1","effective_date":"2026-06-01","status":"effective","tags":["客户","验收"],"content":"验收应对应已确认范围和验收条件，保存测试记录、问题清单和客户书面结论；未签字状态不得标记为完成。"},
+    {"document_id":"incident-review","title":"重大事故复盘要求","version":"1.0","effective_date":"2026-01-20","status":"effective","tags":["事故","复盘"],"content":"复盘应区分事实、推测和待验证事项，覆盖时间线、影响、根因证据、纠正行动、责任角色和完成信号。"},
+    {"document_id":"archive-standard","title":"项目结项与归档标准","version":"1.0","effective_date":"2026-03-01","status":"effective","tags":["结项","归档"],"content":"项目结项前应归档范围基线、变更记录、风险决定、验收证据、行动状态和经验总结；未完成行动应明确移交。"},
+    {"document_id":"ai-usage","title":"项目 AI 助手使用边界","version":"1.0","effective_date":"2026-08-25","status":"effective","tags":["AI","人工确认","引用"],"content":"AI 输出只作为草稿。引用必须来自当前允许的知识版本，模型不得自动改变负责人、期限、风险状态或创建正式行动。"},
+    {"document_id":"case-crm-interface","title":"历史案例：CRM 接口评审延期","version":"1.0","effective_date":"2026-04-18","status":"effective","tags":["案例","接口","延期"],"content":"模拟案例中接口评审连续两次未通过，下游联调未同步调整。团队先确认评审缺口，再拆分可并行任务并记录复核日期。"},
+    {"document_id":"case-data-migration","title":"历史案例：主数据迁移回滚","version":"1.0","effective_date":"2026-05-12","status":"effective","tags":["案例","数据迁移","回滚"],"content":"模拟案例在迁移抽样中发现重复主体。团队暂停全量导入，修订合并规则并完成小批量回滚演练后再继续。"},
+    {"document_id":"case-supplier-cutover","title":"历史案例：供应商切换演练失败","version":"1.0","effective_date":"2026-07-22","status":"effective","tags":["案例","供应商","切换"],"content":"模拟案例因故障联系人和限流参数未确认导致演练中止。后续以清单逐项核验，并保留旧通道直至新通道稳定。"}
+  ]
+}

@@ -83,10 +83,16 @@ def create_action(path: Path, payload: dict[str, Any]) -> dict[str, Any]:
         raise StoreError("期限必须是 YYYY-MM-DD") from error
     stamp = now_iso()
     action_id = f"action-{uuid4().hex[:12]}"
+    project_id = str(payload.get("project_id", "local-project")).strip() or "local-project"
+    candidate_title = str(payload.get("candidate_title", values["title"])).strip() or values["title"]
+    if len(project_id) > 80 or len(candidate_title) > 200:
+        raise StoreError("候选风险引用无效")
+    migrate(path)
     with connect(path) as connection:
         candidate = connection.execute("SELECT 1 FROM risk_candidates WHERE candidate_id=?", (values["candidate_id"],)).fetchone()
         if not candidate:
-            raise StoreError("候选风险不存在")
+            connection.execute("INSERT OR IGNORE INTO projects VALUES(?,?,?)", (project_id, project_id, stamp))
+            connection.execute("INSERT INTO risk_candidates VALUES(?,?,?,?,?)", (values["candidate_id"], project_id, candidate_title, "confirmed", stamp))
         connection.execute("INSERT INTO action_items VALUES(?,?,?,?,?,?,?,?,?)", (action_id, values["candidate_id"], values["title"], values["owner_role"], values["due_date"], values["completion_signal"], "open", stamp, stamp))
         connection.execute("INSERT INTO human_decisions VALUES(?,?,?,?,?,?,?)", (f"decision-{uuid4().hex[:12]}", "action", action_id, "create", values["actor"], str(payload.get("note", ""))[:500], stamp))
         connection.execute("INSERT INTO action_events VALUES(?,?,?,?,?,?,?)", (f"event-{uuid4().hex[:12]}", action_id, None, "open", values["actor"], "人工确认创建", stamp))
@@ -107,6 +113,7 @@ def transition_action(path: Path, action_id: str, status: str, actor: str, note:
     actor = str(actor).strip()
     if not actor:
         raise StoreError("请填写操作人")
+    migrate(path)
     with connect(path) as connection:
         row = connection.execute("SELECT status FROM action_items WHERE action_id=?", (action_id,)).fetchone()
         if not row:
@@ -122,6 +129,7 @@ def transition_action(path: Path, action_id: str, status: str, actor: str, note:
 
 def dashboard(path: Path, as_of: str | None = None) -> dict[str, Any]:
     today = date.fromisoformat(as_of) if as_of else date.today()
+    migrate(path)
     with connect(path) as connection:
         actions = [dict(row) for row in connection.execute("SELECT * FROM action_items ORDER BY due_date,created_at")]
     for item in actions:
