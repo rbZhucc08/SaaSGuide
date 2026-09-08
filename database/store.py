@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 import json
+import shutil
 import sqlite3
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 SCHEMA = """
 PRAGMA foreign_keys = ON;
@@ -56,8 +57,37 @@ def connect(path: Path) -> sqlite3.Connection:
 
 
 def migrate(path: Path) -> None:
+    previous_version = 0
+    if path.exists() and path.stat().st_size:
+        try:
+            with connect(path) as connection:
+                has_migrations = connection.execute(
+                    "SELECT 1 FROM sqlite_master WHERE type='table' AND name='schema_migrations'"
+                ).fetchone()
+                if has_migrations:
+                    row = connection.execute("SELECT MAX(version) FROM schema_migrations").fetchone()
+                    previous_version = int(row[0] or 0)
+        except sqlite3.DatabaseError:
+            previous_version = 0
+    if previous_version == 1:
+        backup = path.with_suffix(path.suffix + ".pre-v2.bak")
+        if not backup.exists():
+            shutil.copy2(path, backup)
     with connect(path) as connection:
         connection.executescript(SCHEMA)
+        candidate_columns = {row[1] for row in connection.execute("PRAGMA table_info(risk_candidates)")}
+        for name in ("company_id", "task_id", "source_id", "scan_id", "evidence_json", "citations_json"):
+            if name not in candidate_columns:
+                connection.execute(f"ALTER TABLE risk_candidates ADD COLUMN {name} TEXT")
+        action_columns = {row[1] for row in connection.execute("PRAGMA table_info(action_items)")}
+        for name, definition in (
+            ("risk_decision_id", "TEXT"),
+            ("plan_run_id", "TEXT"),
+            ("plan_step", "INTEGER"),
+        ):
+            if name not in action_columns:
+                connection.execute(f"ALTER TABLE action_items ADD COLUMN {name} {definition}")
+        connection.execute("INSERT OR IGNORE INTO schema_migrations(version, applied_at) VALUES(1, ?)", (now_iso(),))
         connection.execute("INSERT OR IGNORE INTO schema_migrations(version, applied_at) VALUES(?, ?)", (SCHEMA_VERSION, now_iso()))
 
 
@@ -66,8 +96,70 @@ def seed_demo(path: Path) -> None:
     stamp = now_iso()
     with connect(path) as connection:
         connection.execute("INSERT OR IGNORE INTO projects VALUES(?,?,?)", ("project-001", "星云 CRM 升级项目", stamp))
-        connection.execute("INSERT OR IGNORE INTO risk_candidates VALUES(?,?,?,?,?)", ("candidate-interface", "project-001", "接口评审未通过影响联调", "confirmed", stamp))
+        connection.execute(
+            "INSERT OR IGNORE INTO risk_candidates(candidate_id,project_id,title,status,created_at) VALUES(?,?,?,?,?)",
+            ("candidate-interface", "project-001", "接口评审未通过影响联调", "confirmed", stamp),
+        )
         connection.execute("INSERT OR IGNORE INTO risk_evidence VALUES(?,?,?,?)", ("evidence-interface", "candidate-interface", "接口评审未通过，等待架构组确认。", "周报段落 5"))
+        connection.execute("INSERT OR IGNORE INTO human_decisions VALUES(?,?,?,?,?,?,?)", ("decision-risk-demo", "risk_candidate", "candidate-interface", "confirm", "演示用户", "固定测试确认", stamp))
+
+
+def record_candidate_decision(
+    path: Path,
+    candidate: dict[str, Any],
+    decision_record: dict[str, Any],
+) -> dict[str, Any]:
+    """Persist the candidate identity and its append-only human decision."""
+
+    candidate_id = str(candidate.get("candidate_id", "")).strip()
+    project_id = str(candidate.get("project_id", "")).strip()
+    decision_id = str(decision_record.get("decision_id", "")).strip()
+    if not candidate_id or not project_id or not decision_id:
+        raise StoreError("候选风险、项目或人工决策编号缺失")
+    stamp = str(decision_record.get("recorded_at") or now_iso())
+    migrate(path)
+    with connect(path) as connection:
+        connection.execute(
+            "INSERT OR IGNORE INTO projects(project_id,name,created_at) VALUES(?,?,?)",
+            (project_id, str(candidate.get("project_name") or project_id)[:200], stamp),
+        )
+        connection.execute(
+            """INSERT INTO risk_candidates(
+                   candidate_id,project_id,title,status,created_at,company_id,task_id,
+                   source_id,scan_id,evidence_json,citations_json
+               ) VALUES(?,?,?,?,?,?,?,?,?,?,?)
+               ON CONFLICT(candidate_id) DO UPDATE SET
+                   project_id=excluded.project_id,title=excluded.title,status=excluded.status,
+                   company_id=excluded.company_id,task_id=excluded.task_id,
+                   source_id=excluded.source_id,scan_id=excluded.scan_id,
+                   evidence_json=excluded.evidence_json,citations_json=excluded.citations_json""",
+            (
+                candidate_id,
+                project_id,
+                str(candidate.get("title") or candidate_id)[:200],
+                str(decision_record.get("decision") or "candidate"),
+                stamp,
+                str(candidate.get("company_id") or "")[:80],
+                str(candidate.get("task_id") or "")[:80],
+                str(candidate.get("source_id") or "")[:120],
+                str(candidate.get("scan_id") or "")[:120],
+                json.dumps(candidate.get("evidence") or [], ensure_ascii=False),
+                json.dumps(candidate.get("citations") or [], ensure_ascii=False),
+            ),
+        )
+        connection.execute(
+            "INSERT INTO human_decisions VALUES(?,?,?,?,?,?,?)",
+            (
+                decision_id,
+                "risk_candidate",
+                candidate_id,
+                str(decision_record.get("decision") or ""),
+                str(decision_record.get("actor") or "本地演示用户")[:80],
+                str(decision_record.get("note") or "")[:500],
+                stamp,
+            ),
+        )
+    return decision_record
 
 
 def create_action(path: Path, payload: dict[str, Any]) -> dict[str, Any]:
@@ -88,12 +180,40 @@ def create_action(path: Path, payload: dict[str, Any]) -> dict[str, Any]:
     if len(project_id) > 80 or len(candidate_title) > 200:
         raise StoreError("候选风险引用无效")
     migrate(path)
+    risk_decision_id = str(payload.get("risk_decision_id", "")).strip()
     with connect(path) as connection:
         candidate = connection.execute("SELECT 1 FROM risk_candidates WHERE candidate_id=?", (values["candidate_id"],)).fetchone()
         if not candidate:
-            connection.execute("INSERT OR IGNORE INTO projects VALUES(?,?,?)", (project_id, project_id, stamp))
-            connection.execute("INSERT INTO risk_candidates VALUES(?,?,?,?,?)", (values["candidate_id"], project_id, candidate_title, "confirmed", stamp))
-        connection.execute("INSERT INTO action_items VALUES(?,?,?,?,?,?,?,?,?)", (action_id, values["candidate_id"], values["title"], values["owner_role"], values["due_date"], values["completion_signal"], "open", stamp, stamp))
+            raise StoreError("候选风险尚未记录人工决策")
+        latest_decision = connection.execute(
+            "SELECT decision_id,decision FROM human_decisions WHERE entity_type='risk_candidate' AND entity_id=? ORDER BY created_at DESC,rowid DESC LIMIT 1",
+            (values["candidate_id"],),
+        ).fetchone()
+        if not latest_decision or latest_decision["decision"] != "confirm":
+            raise StoreError("风险必须先由人工确认，才能创建行动")
+        if risk_decision_id and risk_decision_id != latest_decision["decision_id"]:
+            raise StoreError("行动必须引用当前有效的风险确认记录")
+        risk_decision_id = latest_decision["decision_id"]
+        connection.execute(
+            """INSERT INTO action_items(
+                   action_id,candidate_id,title,owner_role,due_date,completion_signal,status,
+                   created_at,updated_at,risk_decision_id,plan_run_id,plan_step
+               ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)""",
+            (
+                action_id,
+                values["candidate_id"],
+                values["title"],
+                values["owner_role"],
+                values["due_date"],
+                values["completion_signal"],
+                "open",
+                stamp,
+                stamp,
+                risk_decision_id,
+                str(payload.get("plan_run_id") or "")[:120] or None,
+                int(payload.get("plan_step") or 0) or None,
+            ),
+        )
         connection.execute("INSERT INTO human_decisions VALUES(?,?,?,?,?,?,?)", (f"decision-{uuid4().hex[:12]}", "action", action_id, "create", values["actor"], str(payload.get("note", ""))[:500], stamp))
         connection.execute("INSERT INTO action_events VALUES(?,?,?,?,?,?,?)", (f"event-{uuid4().hex[:12]}", action_id, None, "open", values["actor"], "人工确认创建", stamp))
     return get_action(path, action_id)
@@ -109,7 +229,12 @@ def get_action(path: Path, action_id: str) -> dict[str, Any]:
 
 
 def transition_action(path: Path, action_id: str, status: str, actor: str, note: str = "") -> dict[str, Any]:
-    allowed = {"open": {"in_progress", "cancelled"}, "in_progress": {"completed", "open", "cancelled"}, "completed": set(), "cancelled": set()}
+    allowed = {
+        "open": {"in_progress", "cancelled"},
+        "in_progress": {"completed", "open", "cancelled"},
+        "completed": {"open"},
+        "cancelled": {"open"},
+    }
     actor = str(actor).strip()
     if not actor:
         raise StoreError("请填写操作人")

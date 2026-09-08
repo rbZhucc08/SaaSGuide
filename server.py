@@ -13,7 +13,7 @@ from typing import Any, Callable
 from uuid import uuid4
 
 from flask import Flask, Response, jsonify, request, send_file, send_from_directory, url_for
-from database.store import StoreError, create_action, dashboard as action_dashboard, transition_action
+from database.store import StoreError, create_action, dashboard as action_dashboard, record_candidate_decision, transition_action
 
 from deepseek_ask_build import DeepSeekError, ModelOutputError, evaluate_brief
 from deepseek_ask_build import DeepSeekClient
@@ -159,9 +159,14 @@ def _read_json_lines(path: Path) -> list[dict[str, Any]]:
 def build_runtime_report(risk_decisions_path: Path, database_path: Path, as_of: str | None = None) -> dict[str, Any]:
     today = date.fromisoformat(as_of) if as_of else date.today()
     decisions = _read_json_lines(risk_decisions_path)
+    latest_by_candidate: dict[str, dict[str, Any]] = {}
+    for item in decisions:
+        candidate_id = str(item.get("candidate_id") or "")
+        if candidate_id:
+            latest_by_candidate[candidate_id] = item
     risks = []
     status_map = {"confirm": "confirmed", "watch": "observing", "reject": "dismissed", "false_positive": "dismissed"}
-    for item in decisions:
+    for item in latest_by_candidate.values():
         stamp = str(item.get("recorded_at") or today.isoformat())
         risks.append({
             "id": str(item.get("candidate_id") or "unknown"),
@@ -172,10 +177,16 @@ def build_runtime_report(risk_decisions_path: Path, database_path: Path, as_of: 
             "resolution_hours": None,
         })
     action_data = action_dashboard(database_path, today.isoformat())
-    actions = [{"id": item["action_id"], "title": item["title"], "owner_role": item["owner_role"], "due_date": item["due_date"], "status": item["status"]} for item in action_data["actions"]]
+    actions = [{"id": item["action_id"], "candidate_id": item["candidate_id"], "risk_decision_id": item.get("risk_decision_id"), "plan_run_id": item.get("plan_run_id"), "plan_step": item.get("plan_step"), "title": item["title"], "owner_role": item["owner_role"], "due_date": item["due_date"], "status": item["status"]} for item in action_data["actions"]]
     dates = [item["date"] for item in risks]
     period = f"{min(dates)} / {max(dates)}" if dates else "暂无人工风险记录"
-    return calculate_report({"period": period, "risks": risks, "actions": actions, "scope": "runtime_local_records"}, today.isoformat())
+    result = calculate_report({"period": period, "risks": risks, "actions": actions, "scope": "runtime_local_records"}, today.isoformat())
+    result["traceability"] = {
+        "latest_decision_ids": [item.get("decision_id") for item in latest_by_candidate.values()],
+        "candidate_ids": sorted(latest_by_candidate),
+        "action_ids": [item["id"] for item in actions],
+    }
+    return result
 
 
 def build_dashboard_payload(normalized_dir: Path, risk_decisions_path: Path, evidence_reviews_path: Path, database_path: Path, knowledge_path: Path) -> dict[str, Any]:
@@ -878,6 +889,22 @@ def create_app(
         try:
             with RISK_DECISION_LOCK:
                 record = save_human_decision(risk_decision_file, payload)
+                record_candidate_decision(
+                    database_path,
+                    {
+                        "candidate_id": record["candidate_id"],
+                        "project_id": record.get("project_id", "local-project"),
+                        "project_name": record.get("project_name", "本地项目"),
+                        "title": record.get("title", record["candidate_id"]),
+                        "company_id": record.get("company_id", ""),
+                        "task_id": record.get("task_id", ""),
+                        "source_id": record.get("source_id", ""),
+                        "scan_id": record.get("scan_id", ""),
+                        "evidence": record.get("evidence", []),
+                        "citations": record.get("citations", []),
+                    },
+                    record,
+                )
             return jsonify({"message": "人工选择已记录", "record": record}), 201
         except RiskScanError as error:
             return jsonify({"error": str(error), "code": error.code}), error.status

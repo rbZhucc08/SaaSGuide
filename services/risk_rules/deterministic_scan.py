@@ -247,7 +247,11 @@ def scan_project(document: dict[str, Any], as_of: str | date | None = None) -> d
         candidates.values(),
         key=lambda item: (-SEVERITY_ORDER[item["severity"]], item["task_id"], item["risk_type"]),
     )
+    scan_id = "scan-" + hashlib.sha256(
+        f"{source_id}:{project_id}:{scan_date.isoformat()}:{'v2-p2-rules-v1'}".encode("utf-8")
+    ).hexdigest()[:16]
     return {
+        "scan_id": scan_id,
         "scan_version": "v2-p2-rules-v1",
         "as_of": scan_date.isoformat(),
         "source": {
@@ -319,6 +323,9 @@ def save_human_decision(
     if not isinstance(note, str) or len(note.strip()) > 500:
         raise RiskScanError("invalid_decision_note", "人工说明必须是不超过 500 字的文字")
     record = {
+        "decision_id": "decision-" + hashlib.sha256(
+            f"{candidate_id}:{decision}:{recorded_at or datetime.now().astimezone().isoformat()}".encode("utf-8")
+        ).hexdigest()[:16],
         "candidate_id": candidate_id,
         "candidate_key": candidate_key,
         "decision": decision,
@@ -333,6 +340,9 @@ def save_human_decision(
         "title": 200,
         "severity": 20,
         "risk_type": 80,
+        "task_id": 80,
+        "scan_id": 120,
+        "actor": 80,
     }
     for key, maximum in optional_text.items():
         value = payload.get(key)
@@ -340,6 +350,12 @@ def save_human_decision(
             if not isinstance(value, str) or len(value.strip()) > maximum:
                 raise RiskScanError("invalid_decision_metadata", "人工决策附加信息无效")
             record[key] = value.strip()
+    for key in ("evidence", "citations"):
+        value = payload.get(key)
+        if value is not None:
+            if not isinstance(value, list) or len(value) > 50:
+                raise RiskScanError("invalid_decision_metadata", "候选证据或引用信息无效")
+            record[key] = value
     decision_path.parent.mkdir(parents=True, exist_ok=True)
     with decision_path.open("a", encoding="utf-8") as output:
         output.write(json.dumps(record, ensure_ascii=False) + "\n")

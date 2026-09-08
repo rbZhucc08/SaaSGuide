@@ -134,7 +134,7 @@ function appendTextList(parent, title, items, ordered = false) {
   parent.append(block);
 }
 
-function renderAgentResult(container, result) {
+function renderAgentResult(container, result, candidate, card) {
   container.replaceChildren();
   container.dataset.decision = result.decision;
   const meta = document.createElement("div");
@@ -159,6 +159,31 @@ function renderAgentResult(container, result) {
     appendTextList(container, "行动草稿", result.actions, true);
     appendTextList(container, "注意事项", result.cautions);
     appendTextList(container, "引用", (result.citations || []).filter((item) => result.citationIds.includes(item.citation_id)).map((item) => `${item.title} v${item.version}：${item.quote}`));
+    card.dataset.citations = JSON.stringify(
+      (result.citations || []).filter((item) => result.citationIds.includes(item.citation_id))
+    );
+    const prefill = document.createElement("button");
+    prefill.type = "button";
+    prefill.className = "secondary-button prefill-action";
+    prefill.textContent = "预填行动表单";
+    prefill.disabled = !card.dataset.riskDecisionId;
+    prefill.title = prefill.disabled ? "请先完成风险人工确认" : "只预填，不会自动保存";
+    prefill.addEventListener("click", () => {
+      const drafts = result.actions.map((item) => ({
+        candidate_id: candidate.candidate_id,
+        candidate_title: candidate.title,
+        project_id: currentScan.project.project_id,
+        risk_decision_id: card.dataset.riskDecisionId,
+        plan_run_id: result.run_id,
+        plan_step: item.step,
+        title: item.action,
+        owner_role: item.ownerRole,
+        completion_signal: item.successSignal,
+      }));
+      sessionStorage.setItem("saasguide.actionDrafts", JSON.stringify(drafts));
+      location.href = "/action-tracker?draft=1";
+    });
+    container.append(prefill);
   } else {
     appendTextList(container, "需要补充", result.questions);
   }
@@ -188,7 +213,7 @@ async function runAgent(button, container, candidate, contextNote) {
     });
     const data = await readJson(response);
     if (!response.ok) throw new Error(data.error || `AI 研判失败（HTTP ${response.status}）`);
-    renderAgentResult(container, data);
+    renderAgentResult(container, data, candidate, button.closest(".candidate-card"));
   } catch (error) {
     container.textContent = error.message || "AI 研判失败；确定性扫描结果仍可使用。";
   } finally {
@@ -339,12 +364,24 @@ async function saveDecision(card, candidate, decision, note) {
         title: candidate.title,
         severity: candidate.severity,
         risk_type: candidate.risk_type,
+        task_id: candidate.task_id,
+        scan_id: currentScan.scan_id,
+        evidence: candidate.evidence,
+        citations: JSON.parse(card.dataset.citations || "[]"),
+        actor: "本地演示用户",
       }),
     });
     const data = await readJson(response);
     if (!response.ok) throw new Error(data.error || `保存失败（HTTP ${response.status}）`);
     const labels = { confirm: "已确认", watch: "已设为观察", reject: "已驳回", false_positive: "已标记误报" };
     status.textContent = `${labels[decision]}；只写入审计记录，没有修改任务或 V1 风险。`;
+    if (decision === "confirm") card.dataset.riskDecisionId = data.record.decision_id;
+    else delete card.dataset.riskDecisionId;
+    const prefill = card.querySelector(".prefill-action");
+    if (prefill) {
+      prefill.disabled = decision !== "confirm";
+      prefill.title = prefill.disabled ? "请先完成风险人工确认" : "只预填，不会自动保存";
+    }
   } catch (error) {
     status.textContent = error.message || "人工选择保存失败。";
   } finally {

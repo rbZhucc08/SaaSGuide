@@ -1,4 +1,6 @@
 .form { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px 16px; margin-top: 18px; }
+.draft-banner { display:flex; align-items:center; justify-content:space-between; gap:20px; margin:0 0 20px; padding:16px 18px; border:1px solid #bfe7d8; border-radius:16px; background:var(--success-soft); color:#174f40; box-shadow:var(--shadow-card); }
+.draft-banner div,.draft-banner label { display:grid; gap:4px; }.draft-banner span { font-size:12px; }.draft-banner label { color:#476d63; font-size:11px; font-weight:700; }.draft-banner select { min-width:220px; padding:9px 10px; }
 .form label { display: grid; gap: 6px; color: var(--ink-soft); font-size: 12px; font-weight: 700; }
 .form input { min-height: 42px; padding: 10px 11px; }
 .form .check { display: flex; align-items: center; padding: 12px; border: 1px solid #d9d4ff; border-radius: 11px; background: #faf9ff; color: var(--brand-dark); }
@@ -10,6 +12,7 @@
 .action small { color: var(--muted); overflow-wrap: anywhere; }
 .action select { min-height: 40px; padding: 8px 10px; }
 @media (max-width:700px) {
+  .draft-banner { align-items:stretch; flex-direction:column; }.draft-banner select { width:100%; min-width:0; }
   .form { grid-template-columns:1fr; }
   .action { grid-template-columns:1fr; }
   .action select { width:100%; }

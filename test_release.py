@@ -121,6 +121,15 @@ class ReleaseTests(unittest.TestCase):
         self.assertIn("navigation.scrollTo", script)
         self.assertNotIn("fetch(", script)
 
+    def test_plan_draft_prefill_keeps_both_human_gates(self):
+        root = Path(__file__).resolve().parent
+        risk_script = (root / "risk-radar.js").read_text(encoding="utf-8")
+        action_script = (root / "action-tracker.js").read_text(encoding="utf-8")
+        self.assertIn("saasguide.actionDrafts", risk_script)
+        self.assertIn("prefill.disabled = !card.dataset.riskDecisionId", risk_script)
+        self.assertIn("human_confirmed: $(\"#confirmed\").checked", action_script)
+        self.assertIn("risk_decision_id: activeDraft?.risk_decision_id", action_script)
+
     def test_ui_refinement_preserves_critical_dom_and_api_contracts(self):
         root = Path(__file__).resolve().parent
         contracts = {
