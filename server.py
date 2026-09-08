@@ -73,6 +73,7 @@ from services.company_data.store import (
     update_project,
 )
 from services.evaluation.company_benchmark import CompanyBenchmarkError, run_company_benchmark
+from services.security.governance import LocalRateLimiter, assess_sensitive_text, readiness_status
 from routes.v3_operations import create_v3_operations_blueprint
 from validate_data import RISK_FILE, validate_risk_data
 
@@ -485,6 +486,7 @@ def create_app(
 ) -> Flask:
     app = Flask(__name__, static_folder=None)
     app.config["MAX_CONTENT_LENGTH"] = 3 * 1024 * 1024
+    write_limiter = LocalRateLimiter()
     company_data_path = company_data_file or output_dir / "company-data.json"
     app.register_blueprint(create_v3_operations_blueprint(
         development_blind_file=V3_DEVELOPMENT_BLIND_FILE,
@@ -500,6 +502,13 @@ def create_app(
     def begin_request_trace():
         g.request_id = f"http-{uuid4().hex[:12]}"
         g.request_started = time.perf_counter()
+        if request.method in {"POST", "PUT", "PATCH", "DELETE"}:
+            allowed, retry_after = write_limiter.allow(request.remote_addr or "local-unknown")
+            if not allowed:
+                response = jsonify({"error": "本地写请求过于频繁，请稍后重试", "code": "local_rate_limited"})
+                response.status_code = 429
+                response.headers["Retry-After"] = str(retry_after)
+                return response
 
     @app.after_request
     def security_headers(response):
@@ -805,7 +814,11 @@ def create_app(
             )
             parsed = parse_xlsx(workbook_path, upload.filename)
             mapping = suggest_mapping(parsed.headers)
-            return jsonify(preview_payload(parsed, mapping, preview_id))
+            response = preview_payload(parsed, mapping, preview_id)
+            response["security"] = assess_sensitive_text(
+                value for row in parsed.rows for value in row.values()
+            )
+            return jsonify(response)
         except IngestionError as error:
             return jsonify({"error": str(error), "code": error.code}), error.status
         except OSError:
@@ -823,6 +836,9 @@ def create_app(
             mapping = suggest_mapping(parsed.headers)
             response = preview_payload(parsed, mapping, preview_id)
             response["sample_mode"] = True
+            response["security"] = assess_sensitive_text(
+                value for row in parsed.rows for value in row.values()
+            )
             return jsonify(response)
         except IngestionError as error:
             return jsonify({"error": str(error), "code": error.code}), error.status
@@ -838,7 +854,11 @@ def create_app(
         try:
             workbook_path, source_name = load_pending(payload.get("preview_id", ""), pending_import_dir)
             parsed = parse_xlsx(workbook_path, source_name)
-            return jsonify(preview_payload(parsed, payload["mapping"], payload["preview_id"]))
+            response = preview_payload(parsed, payload["mapping"], payload["preview_id"])
+            response["security"] = assess_sensitive_text(
+                value for row in parsed.rows for value in row.values()
+            )
+            return jsonify(response)
         except IngestionError as error:
             return jsonify({"error": str(error), "code": error.code}), error.status
 

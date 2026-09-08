@@ -12,6 +12,7 @@ from typing import Any
 from uuid import uuid4
 
 from docx import Document
+from services.security.governance import SecurityInputError, assess_sensitive_text, inspect_office_archive
 
 MAX_TEXT_BYTES = 2 * 1024 * 1024
 ALLOWED_EXTENSIONS = {".txt", ".md", ".docx"}
@@ -144,6 +145,12 @@ def parse_evidence(content: bytes, filename: str) -> dict[str, Any]:
     extension = Path(safe_name).suffix.lower()
     if extension not in ALLOWED_EXTENSIONS:
         raise TextEvidenceError("仅支持 TXT、Markdown 和 DOCX", "extension_not_allowed", 415)
+    archive_security = None
+    if extension == ".docx":
+        try:
+            archive_security = inspect_office_archive(content, safe_name)
+        except SecurityInputError as error:
+            raise TextEvidenceError(str(error), error.code, error.status) from error
     segments = _docx_segments(content) if extension == ".docx" else _plain_segments(content, extension)
     candidates = [item for item in (_candidate(segment) for segment in segments) if item]
     questions = []
@@ -154,6 +161,8 @@ def parse_evidence(content: bytes, filename: str) -> dict[str, Any]:
                 "question": f"请确认或补充：{item['quote'][:80]}",
                 "missing_fields": item["missing_fields"],
             })
+    security = assess_sensitive_text(segment["text"] for segment in segments)
+    security["file_inspection"] = archive_security or {"archive": "not_applicable", "malware_scan": "not_available"}
     return {
         "preview_id": uuid4().hex,
         "source": {
@@ -173,6 +182,7 @@ def parse_evidence(content: bytes, filename: str) -> dict[str, Any]:
             "suspicious_text_count": sum(item["category"] == "suspicious_instruction_text" for item in candidates),
         },
         "model_status": "not_called",
+        "security": security,
         "notice": "当前预览由确定性解析生成；可疑指令只作为文档内容保留。",
     }
 

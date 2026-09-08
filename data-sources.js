@@ -114,6 +114,37 @@ const confirmButton = document.querySelector("#confirm-button");
 const successSection = document.querySelector("#success-section");
 const successDetails = document.querySelector("#success-details");
 
+async function loadSecurityReadiness() {
+  const summary = document.querySelector("#security-readiness-summary");
+  const badge = document.querySelector("#security-readiness-badge");
+  const grid = document.querySelector("#security-control-grid");
+  try {
+    const response = await fetch("/api/security/readiness");
+    const data = await readJson(response);
+    if (!response.ok) throw new Error(data.error || "安全状态不可用");
+    summary.textContent = "当前仅允许模拟或已去标识化测试数据；认证、权限、租户隔离和加密尚未完成。";
+    badge.textContent = "真实数据已阻断";
+    badge.className = "validation-badge is-invalid";
+    grid.replaceChildren();
+    data.controls.forEach((control) => {
+      const item = document.createElement("div");
+      item.className = `security-control ${control.implemented ? "is-ready" : "is-blocked"}`;
+      const label = document.createElement("strong");
+      label.textContent = control.control;
+      const state = document.createElement("span");
+      state.textContent = control.implemented ? "已实现" : "未实现";
+      const evidence = document.createElement("small");
+      evidence.textContent = control.evidence;
+      item.append(label, state, evidence);
+      grid.append(item);
+    });
+  } catch (error) {
+    summary.textContent = error.message || "无法读取安全准备状态。";
+    badge.textContent = "状态不可用";
+    badge.className = "validation-badge is-invalid";
+  }
+}
+
 function setMessage(text = "", type = "error") {
   message.textContent = text;
   message.classList.toggle("is-hidden", !text);
@@ -197,7 +228,8 @@ function renderPreview(data) {
   });
 
   const summary = data.summary;
-  previewSummary.textContent = `${data.source.source_name} · ${data.source.sheet_name} · ${summary.task_count} 条任务 · ${summary.dependency_count} 条依赖 · ${summary.error_count} 个错误${data.preview_truncated ? " · 仅显示前 20 行" : ""}`;
+  const sensitiveNotice = data.security?.sensitive_data_detected ? " · 检出敏感样式，请先去标识化" : "";
+  previewSummary.textContent = `${data.source.source_name} · ${data.source.sheet_name} · ${summary.task_count} 条任务 · ${summary.dependency_count} 条依赖 · ${summary.error_count} 个错误${data.preview_truncated ? " · 仅显示前 20 行" : ""}${sensitiveNotice}`;
   validationBadge.textContent = data.valid ? "校验通过" : `发现 ${summary.error_count} 个错误`;
   validationBadge.className = `validation-badge ${data.valid ? "is-valid" : "is-invalid"}`;
 
@@ -371,3 +403,4 @@ document.querySelector("#delete-company").addEventListener("click",async()=>{if(
 document.querySelector("#reset-company").addEventListener("click", async () => { if (!confirm("恢复会覆盖整个多公司数据集，确定继续？")) return; try { renderCompany(await companyApi("/api/company-data/reset",{method:"POST"})); setMessage("已恢复多公司模拟数据集。", "info"); } catch(error) { setMessage(error.message); } });
 document.querySelector("#clear-company").addEventListener("click", async () => { if (!confirm("清空当前公司的项目和制度？其他公司不受影响。")) return; try { renderCompany(await companyApi("/api/company-data/clear",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({confirmed:true})})); setMessage("当前公司项目和制度已清空；其他公司数据仍保留。", "info"); } catch(error) { setMessage(error.message); } });
 loadCompany();
+loadSecurityReadiness();

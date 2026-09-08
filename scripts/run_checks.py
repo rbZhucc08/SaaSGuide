@@ -30,6 +30,7 @@ def main() -> int:
         run([sys.executable, "-m", "unittest", "discover", "-s", ".", "-p", "test_*.py"])
         run([sys.executable, "scripts/stdlib_coverage.py"])
         run([sys.executable, "scripts/type_contract_check.py"])
+        run([sys.executable, "scripts/scan_tracked_secrets.py"])
         run([sys.executable, "validate_data.py"])
         run([sys.executable, "scripts/check_markdown_links.py"])
         for filename in JAVASCRIPT_FILES:

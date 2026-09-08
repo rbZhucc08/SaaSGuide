@@ -41,6 +41,14 @@ tbody tr:hover { background: #fafbfe; }
 .success-card dt { color: #5d756d; font-size: 10px; }
 .success-card dd { margin: 3px 0 0; overflow-wrap: anywhere; color: #214f40; font-size: 12px; font-weight: 700; }
 .company-workspace { border-top: 0 !important; }
+.security-readiness { border-left:4px solid var(--danger) !important; background:linear-gradient(135deg,#fff,#fff8f8) !important; }
+.security-control-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+.security-control { display:grid; grid-template-columns:1fr auto; gap:5px 10px; padding:12px; border:1px solid var(--line); border-radius:10px; background:#fff; }
+.security-control strong { overflow-wrap:anywhere; font-size:11px; }
+.security-control span { font-size:10px; font-weight:800; }
+.security-control small { grid-column:1/-1; color:var(--muted); font-size:10px; line-height:1.5; }
+.security-control.is-ready span { color:var(--success); }.security-control.is-blocked span { color:var(--danger); }
+.security-footnote { margin:12px 0 0; color:var(--muted); font-size:10px; }
 .import-workflow { grid-template-columns:repeat(4,minmax(0,1fr)); }
 .company-workspace select { min-width:240px; padding:9px 11px; }
 .company-profile { margin-top:16px; padding:12px 14px; border:1px solid #ddd8ff; border-radius:11px; background:var(--brand-soft); color:var(--ink-soft); font-size:12px; line-height:1.7; }
@@ -69,6 +77,7 @@ tbody tr:hover { background: #fafbfe; }
   .upload-card form, .sample-loader { width: 100%; }
   .mapping-grid { grid-template-columns: 1fr; }
   .coverage-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .security-control-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
 }
 @media (max-width: 700px) {
   .import-workflow { grid-template-columns:1fr 1fr; }
@@ -82,4 +91,5 @@ tbody tr:hover { background: #fafbfe; }
   .record-card { align-items:stretch; flex-direction:column; }.record-card > div:last-child { width:100%; }.record-card > div:last-child > * { flex:1; }
   .project-fields { grid-template-columns:1fr; }.project-fields .wide { grid-column:auto; }
   .coverage-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }.company-workspace select { min-width:0; width:100%; }
+  .security-control-grid { grid-template-columns:1fr; }
 }

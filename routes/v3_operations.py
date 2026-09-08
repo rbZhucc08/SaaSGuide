@@ -8,6 +8,7 @@ from typing import Any, Callable
 from flask import Blueprint, jsonify
 
 from services.evaluation.independent import EvaluationError, framework_status
+from services.security.governance import readiness_status
 
 
 def create_v3_operations_blueprint(
@@ -57,5 +58,9 @@ def create_v3_operations_blueprint(
             "skills": skill_catalog(),
             "human_confirmation_required": True,
         })
+
+    @blueprint.get("/api/security/readiness")
+    def security_readiness() -> Any:
+        return jsonify(readiness_status())
 
     return blueprint
