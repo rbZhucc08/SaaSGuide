@@ -1096,9 +1096,12 @@ def create_app(
         payload = request.get_json(silent=True)
         if not isinstance(payload, dict) or not isinstance(payload.get("question"), str):
             return jsonify({"error": "请求必须包含 question 文字", "code": "question_required"}), 400
+        filters = payload.get("filters") or {}
+        if not isinstance(filters, dict) or set(filters) - {"document_id", "status", "company_id", "document_type", "tags"}:
+            return jsonify({"error": "知识检索筛选条件无效", "code": "filters_invalid"}), 400
         try:
             documents = read_company_data(company_data_path, company_seed_file)["policies"]
-            return jsonify(knowledge_answer(payload["question"], documents))
+            return jsonify(knowledge_answer(payload["question"], documents, filters))
         except (CompanyDataError, OSError, ValueError, json.JSONDecodeError):
             app.logger.exception("Unable to query knowledge base")
             return jsonify({"error": "知识库当前无法读取", "code": "knowledge_unavailable"}), 500

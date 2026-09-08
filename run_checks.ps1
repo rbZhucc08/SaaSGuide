@@ -12,7 +12,7 @@ if (-not (Test-Path -LiteralPath $pythonPath)) {
 
 Push-Location $projectRoot
 try {
-    & $pythonPath -m unittest test_validator.py test_deepseek_ask_build.py test_risk_assistant.py test_server.py test_xlsx_import.py test_risk_rules.py test_text_evidence.py test_knowledge_base.py test_sqlite_store.py test_reporting.py test_multimodal_adapters.py test_ai_orchestrator.py test_company_data.py test_company_benchmark.py test_release.py test_v3_workflow.py test_independent_evaluation.py test_model_reliability.py
+    & $pythonPath -m unittest test_validator.py test_deepseek_ask_build.py test_risk_assistant.py test_server.py test_xlsx_import.py test_risk_rules.py test_text_evidence.py test_knowledge_base.py test_document_retrieval.py test_sqlite_store.py test_reporting.py test_multimodal_adapters.py test_ai_orchestrator.py test_company_data.py test_company_benchmark.py test_release.py test_v3_workflow.py test_independent_evaluation.py test_model_reliability.py
     if ($LASTEXITCODE -ne 0) { throw "Python 自动测试失败。" }
 
     & $pythonPath .\validate_data.py
