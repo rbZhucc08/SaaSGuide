@@ -210,11 +210,12 @@ class ReleaseTests(unittest.TestCase):
         self.assertIn("不是企业准确率", readme)
         self.assertIn("不是多 Agent 系统", readme)
 
-    def test_github_workflow_reuses_local_release_command(self):
+    def test_github_workflow_reuses_cross_platform_check_runner(self):
         root = Path(__file__).resolve().parent
         workflow = (root / ".github/workflows/checks.yml").read_text(encoding="utf-8")
         self.assertIn("windows-latest", workflow)
-        self.assertIn(".\\run_checks.ps1", workflow)
+        self.assertIn("ubuntu-latest", workflow)
+        self.assertIn("python scripts/run_checks.py", workflow)
         self.assertNotIn("DEEPSEEK_API_KEY", workflow)
 
 

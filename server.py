@@ -7,12 +7,13 @@ import json
 import os
 import sqlite3
 import threading
+import time
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 from uuid import uuid4
 
-from flask import Flask, Response, jsonify, request, send_file, send_from_directory, url_for
+from flask import Flask, Response, g, jsonify, request, send_file, send_from_directory, url_for
 from database.store import StoreError, create_action, dashboard as action_dashboard, record_candidate_decision, transition_action
 
 from deepseek_ask_build import DeepSeekError, ModelOutputError, evaluate_brief
@@ -72,7 +73,7 @@ from services.company_data.store import (
     update_project,
 )
 from services.evaluation.company_benchmark import CompanyBenchmarkError, run_company_benchmark
-from services.evaluation.independent import EvaluationError, framework_status
+from routes.v3_operations import create_v3_operations_blueprint
 from validate_data import RISK_FILE, validate_risk_data
 
 
@@ -485,9 +486,24 @@ def create_app(
     app = Flask(__name__, static_folder=None)
     app.config["MAX_CONTENT_LENGTH"] = 3 * 1024 * 1024
     company_data_path = company_data_file or output_dir / "company-data.json"
+    app.register_blueprint(create_v3_operations_blueprint(
+        development_blind_file=V3_DEVELOPMENT_BLIND_FILE,
+        holdout_blind_file=V3_HOLDOUT_BLIND_FILE,
+        annotations_dir=output_dir / "evaluation" / "annotations",
+        client_factory=DeepSeekClient,
+        skill_catalog=ai_skill_catalog,
+        prompt_version=RISK_PROMPT_VERSION,
+        protocol_version=RISK_OUTPUT_PROTOCOL_VERSION,
+    ))
+
+    @app.before_request
+    def begin_request_trace():
+        g.request_id = f"http-{uuid4().hex[:12]}"
+        g.request_started = time.perf_counter()
 
     @app.after_request
     def security_headers(response):
+        response.headers["X-Request-ID"] = g.get("request_id", "http-unknown")
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["Referrer-Policy"] = "no-referrer"
@@ -495,7 +511,15 @@ def create_app(
         response.headers["Content-Security-Policy"] = "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; frame-ancestors 'none'"
         response.headers["Cache-Control"] = "no-store"
         if response.status_code >= 400 and not app.config.get("TESTING"):
-            record = {"created_at": now_iso(), "method": request.method, "path": request.path, "status": response.status_code}
+            record = {
+                "event": "http_error",
+                "request_id": g.get("request_id", "http-unknown"),
+                "created_at": now_iso(),
+                "method": request.method,
+                "path": request.path,
+                "status": response.status_code,
+                "duration_ms": round((time.perf_counter() - g.get("request_started", time.perf_counter())) * 1000),
+            }
             try:
                 with ERROR_LOG_LOCK:
                     HTTP_ERROR_LOG.parent.mkdir(parents=True, exist_ok=True)
@@ -625,19 +649,6 @@ def create_app(
             return jsonify(run_company_benchmark(company_seed_file, company_benchmark_file))
         except CompanyBenchmarkError as error:
             return jsonify({"error": str(error), "code": error.code}), error.status
-
-    @app.get("/api/evaluation/framework")
-    def independent_evaluation_framework():
-        try:
-            return jsonify(
-                framework_status(
-                    V3_DEVELOPMENT_BLIND_FILE,
-                    V3_HOLDOUT_BLIND_FILE,
-                    output_dir / "evaluation" / "annotations",
-                )
-            )
-        except EvaluationError as error:
-            return jsonify({"error": str(error), "code": "evaluation_framework_invalid"}), 500
 
     @app.put("/api/company-data/policies/<document_id>/<version>")
     def edit_company_policy(document_id: str, version: str):
@@ -931,36 +942,6 @@ def create_app(
         except OSError:
             app.logger.exception("Unable to save human risk decision")
             return jsonify({"error": "人工选择无法保存", "code": "decision_save_failed"}), 500
-
-    @app.get("/api/agent/capabilities")
-    def agent_capabilities():
-        client = DeepSeekClient()
-        return jsonify(
-            {
-                "agent": "saasguide-v2-orchestrator",
-                "provider": "deepseek",
-                "provider_configured": client.is_configured,
-                "model": client.model,
-                "model_status": "ready" if client.is_configured else "unconfigured",
-                "model_status_reason": "DeepSeek 密钥已配置；调用失败时规则扫描和人工处理仍可使用" if client.is_configured else "未配置 DeepSeek；规则扫描和人工处理仍可使用",
-                "prompt_version": RISK_PROMPT_VERSION,
-                "protocol_version": RISK_OUTPUT_PROTOCOL_VERSION,
-                "client_protocol_version": "deepseek-json-v1",
-                "timeout_seconds": client.timeout_seconds,
-                "max_retries": client.max_retries,
-                "budget": {
-                    "version": client.budget_policy.version,
-                    "max_input_tokens": client.budget_policy.max_input_tokens,
-                    "max_output_tokens": client.budget_policy.max_output_tokens,
-                    "max_total_tokens": client.budget_policy.max_total_tokens,
-                    "max_batch_calls": client.budget_policy.max_batch_calls,
-                    "max_batch_total_tokens": client.budget_policy.max_batch_total_tokens,
-                },
-                "workflow": "bounded-risk-assessment",
-                "skills": ai_skill_catalog(),
-                "human_confirmation_required": True,
-            }
-        )
 
     @app.post("/api/agent/risk-assessment")
     def agent_risk_assessment():
