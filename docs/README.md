@@ -7,9 +7,10 @@
 适合招聘人员或第一次查看仓库的人：
 
 1. [仓库首页](../README.md)
-2. [项目案例](portfolio/CASE_STUDY.md)
-3. [演示路线](portfolio/DEMO_GUIDE.md)
-4. [可核实证据](portfolio/EVIDENCE_INDEX.md)
+2. [HR 项目讲解稿](portfolio/HR_PROJECT_EXPLAINER.md)
+3. [项目案例](portfolio/CASE_STUDY.md)
+4. [演示路线](portfolio/DEMO_GUIDE.md)
+5. [可核实证据](portfolio/EVIDENCE_INDEX.md)
 
 读完应能回答：项目解决什么问题、AI 在哪里、作者具体做了什么、当前不能证明什么。
 
@@ -32,6 +33,7 @@
 3. [数据与信任边界](architecture/DATA_AND_TRUST_BOUNDARIES.md)
 4. [测试策略](quality/TEST_STRATEGY.md)
 5. [安全说明](../SECURITY.md)
+6. [V2 源码学习指南](../SOURCE_CODE_STUDY_GUIDE.md)
 
 ## 当前状态
 

@@ -10,7 +10,7 @@
 - [x] README 提供项目定位、截图、流程、运行、测试和限制；
 - [x] PRD、功能说明、用户手册和文档导航；
 - [x] 系统架构、Agent 工作流、数据与信任边界图；
-- [x] 案例说明、演示路线和证据索引；
+- [x] 案例说明、HR 讲解稿、演示路线、V2 源码学习指南和证据索引；
 - [x] 测试策略、评测说明和已知限制；
 - [x] MIT License、Security 和 Changelog；
 - [x] GitHub Actions Windows 检查流程；

@@ -5,6 +5,7 @@
 ## [Unreleased]
 
 - 准备私有作品集发布包：统一 README、PRD、用户手册、架构图、案例说明、质量文档、MIT License 和 GitHub Actions。
+- 增加面向项目所有者的 HR 讲解稿，并把旧 V1 源码学习指南更新为当前 V2 架构和运行逻辑。
 
 ## [2.0.0-portfolio] - 2026-09-08
 

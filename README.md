@@ -8,9 +8,10 @@ SaaSGuide 是一个本地运行的项目风险管理 Demo。它把项目数据�
 
 ## 先看什么
 
-- 想快速了解项目：继续阅读本页，然后看[案例说明](docs/portfolio/CASE_STUDY.md)。
+- 想快速了解项目：继续阅读本页，然后看[HR 项目讲解稿](docs/portfolio/HR_PROJECT_EXPLAINER.md)和[案例说明](docs/portfolio/CASE_STUDY.md)。
 - 想看产品设计：阅读[产品需求文档](docs/product/PRD.md)和[功能说明](docs/product/FEATURE_GUIDE.md)。
 - 想看 AI 怎么运行：阅读[Agent 工作流](docs/architecture/AI_AGENT_WORKFLOW.md)。
+- 想从文件开始理解代码：阅读[V2 源码学习指南](SOURCE_CODE_STUDY_GUIDE.md)。
 - 想验证代码：按“本地运行”启动，再执行 `run_checks.ps1`。
 - 想核对完成情况：查看[证据索引](docs/portfolio/EVIDENCE_INDEX.md)。
 

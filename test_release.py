@@ -178,13 +178,18 @@ class ReleaseTests(unittest.TestCase):
             "docs/product/USER_GUIDE.md", "docs/architecture/SYSTEM_ARCHITECTURE.md",
             "docs/architecture/AI_AGENT_WORKFLOW.md", "docs/architecture/DATA_AND_TRUST_BOUNDARIES.md",
             "docs/portfolio/CASE_STUDY.md", "docs/portfolio/DEMO_GUIDE.md",
-            "docs/portfolio/EVIDENCE_INDEX.md", "docs/portfolio/RELEASE_CHECKLIST.md",
+            "docs/portfolio/EVIDENCE_INDEX.md", "docs/portfolio/HR_PROJECT_EXPLAINER.md",
+            "docs/portfolio/RELEASE_CHECKLIST.md", "SOURCE_CODE_STUDY_GUIDE.md",
             "docs/quality/TEST_STRATEGY.md", "docs/quality/EVALUATION_REPORT.md",
             "docs/quality/KNOWN_LIMITATIONS.md",
         )
         for relative in required:
             with self.subTest(relative=relative):
                 self.assertTrue((root / relative).is_file(), relative)
+        source_guide = (root / "SOURCE_CODE_STUDY_GUIDE.md").read_text(encoding="utf-8")
+        self.assertNotIn("/D:/CodexProjects", source_guide)
+        self.assertNotIn("当前 5 条模拟风险", source_guide)
+        self.assertIn("HR_PROJECT_EXPLAINER.md", source_guide)
 
     def test_readme_reports_current_fixed_benchmark_without_claiming_business_accuracy(self):
         root = Path(__file__).resolve().parent

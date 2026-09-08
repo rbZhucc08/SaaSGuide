@@ -2,6 +2,8 @@
 
 这份路线适合 4–6 分钟现场演示。不要逐页介绍所有功能，重点展示一条完整链路和一个真实边界。
 
+如果还不能独立解释 ASK、PLAN、Orchestrator、Skill 和固定评测，先阅读 [HR 项目讲解稿](HR_PROJECT_EXPLAINER.md)。
+
 ## 演示前准备
 
 1. 按 README 启动服务；
