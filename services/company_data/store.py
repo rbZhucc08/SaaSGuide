@@ -58,14 +58,23 @@ def validate_policy(v:Any):
     if not isinstance(tags,list) or len(tags)>12: raise CompanyDataError("invalid_policy_tags","制度标签必须是最多 12 项的列表")
     return {"document_id":_identifier(v.get("document_id"),"制度编号"),"title":_text(v.get("title"),"制度名称",120),"version":_identifier(v.get("version"),"制度版本"),"effective_date":_date(v.get("effective_date"),"生效日期"),"status":status,"tags":[_text(x,"制度标签",30) for x in tags],"content":_text(v.get("content"),"制度正文",5000)}
 
-_PROFILE=("company_id","name","industry","size_band","region","business_model","lifecycle_stage","risk_appetite","description","simulated")
+_PROFILE=("company_id","name","industry","size_band","region","business_model","lifecycle_stage","risk_appetite","operating_characteristics","risk_standard","description","simulated")
+def _risk_standard(v):
+    if not isinstance(v,dict): v={}
+    high=v.get("high_overdue_days",3); due=v.get("due_soon_days",3); blocked=v.get("blocked_hours_high",24)
+    if any(isinstance(x,bool) or not isinstance(x,int) or x<0 or x>365 for x in (high,due,blocked)): raise CompanyDataError("invalid_risk_standard","风险标准数值无效")
+    evidence=v.get("mandatory_evidence",[])
+    if not isinstance(evidence,list) or len(evidence)>12: raise CompanyDataError("invalid_risk_standard","必备证据必须是最多 12 项的列表")
+    return {"high_overdue_days":high,"due_soon_days":due,"blocked_hours_high":blocked,"review_cadence":_text(v.get("review_cadence","每周"),"复核频率",40),"escalation_role":_text(v.get("escalation_role","项目负责人"),"升级角色",60),"mandatory_evidence":[_text(x,"必备证据",60) for x in evidence]}
 def validate_company(v:Any):
     if not isinstance(v,dict): raise CompanyDataError("invalid_company","公司资料必须是对象")
     ds=v.get("departments",[]); ps=v.get("projects",[]); ks=v.get("policies",[])
     if not isinstance(ds,list) or len(ds)>100: raise CompanyDataError("invalid_departments","部门必须是最多 100 项的列表")
     if not isinstance(ps,list) or len(ps)>200: raise CompanyDataError("invalid_projects","单家公司项目必须是最多 200 项的列表")
     if not isinstance(ks,list) or len(ks)>500: raise CompanyDataError("invalid_policies","单家公司制度必须是最多 500 项的列表")
-    r={"company_id":_identifier(v.get("company_id"),"公司编号"),"name":_text(v.get("name"),"公司名称",120),"industry":_text(v.get("industry","其他"),"公司行业",120),"size_band":_text(v.get("size_band","未标注"),"公司规模",40),"region":_text(v.get("region","未标注"),"所在区域",80),"business_model":_text(v.get("business_model","未标注"),"业务模式",80),"lifecycle_stage":_text(v.get("lifecycle_stage","未标注"),"发展阶段",40),"risk_appetite":_text(v.get("risk_appetite","稳健"),"风险偏好",40),"description":_text(v.get("description",""),"公司说明",500,False),"simulated":True,"departments":[_text(x,"部门名称",60) for x in ds],"projects":[validate_project(x) for x in ps],"policies":[validate_policy(x) for x in ks]}
+    characteristics=v.get("operating_characteristics",[])
+    if not isinstance(characteristics,list) or len(characteristics)>12: raise CompanyDataError("invalid_characteristics","经营特征必须是最多 12 项的列表")
+    r={"company_id":_identifier(v.get("company_id"),"公司编号"),"name":_text(v.get("name"),"公司名称",120),"industry":_text(v.get("industry","其他"),"公司行业",120),"size_band":_text(v.get("size_band","未标注"),"公司规模",40),"region":_text(v.get("region","未标注"),"所在区域",80),"business_model":_text(v.get("business_model","未标注"),"业务模式",80),"lifecycle_stage":_text(v.get("lifecycle_stage","未标注"),"发展阶段",40),"risk_appetite":_text(v.get("risk_appetite","稳健"),"风险偏好",40),"operating_characteristics":[_text(x,"经营特征",60) for x in characteristics],"risk_standard":_risk_standard(v.get("risk_standard")),"description":_text(v.get("description",""),"公司说明",500,False),"simulated":True,"departments":[_text(x,"部门名称",60) for x in ds],"projects":[validate_project(x) for x in ps],"policies":[validate_policy(x) for x in ks]}
     pids=[x["project_id"] for x in r["projects"]]; kids=[(x["document_id"],x["version"]) for x in r["policies"]]
     if len(pids)!=len(set(pids)): raise CompanyDataError("duplicate_project_id","同一公司内项目编号不能重复")
     if len(kids)!=len(set(kids)): raise CompanyDataError("duplicate_policy_version","同一公司内制度版本不能重复")

@@ -495,17 +495,8 @@ def create_app(
     @app.get("/api/dashboard")
     def dashboard_data():
         try:
-            payload = build_dashboard_payload(normalized_data_dir, risk_decision_file, evidence_review_file, database_path, knowledge_file)
-            company = read_company_data(company_data_path, company_seed_file)
-            payload["company_workspace"] = {
-                "name": company["company"]["name"],
-                "companies": company["dataset_summary"]["companies"],
-                "projects": len(company["projects"]),
-                "tasks": sum(len(item["tasks"]) for item in company["projects"]),
-                "policy_versions": len(company["policies"]),
-            }
-            return jsonify(payload)
-        except (CompanyDataError, OSError, json.JSONDecodeError):
+            return jsonify(build_dashboard_payload(normalized_data_dir, risk_decision_file, evidence_review_file, database_path, knowledge_file))
+        except (OSError, json.JSONDecodeError):
             return jsonify({"error": "工作台本地状态无法读取", "code": "dashboard_unavailable"}), 500
 
     @app.get("/api/company-data")
@@ -907,12 +898,15 @@ def create_app(
         if not isinstance(payload, dict):
             return jsonify({"error": "请求必须是 JSON 对象", "code": "invalid_request"}), 400
         try:
+            company_context = read_company_data(company_data_path, company_seed_file)
+            project_context = dict(payload.get("project") or {})
+            project_context["company_context"] = company_context["company"]
             result = ai_orchestrator(
                 payload.get("candidate"),
-                payload.get("project"),
+                project_context,
                 payload.get("source"),
                 str(payload.get("context_note", "")),
-                runtime_knowledge_path(read_company_data(company_data_path, company_seed_file), company_data_path),
+                runtime_knowledge_path(company_context, company_data_path),
             )
             record = {
                 "run_id": result.get("run_id"),
@@ -921,7 +915,7 @@ def create_app(
                 "model_status": result.get("model_status", "unknown"),
                 "model": result.get("model"),
                 "candidate_id": str(payload.get("candidate", {}).get("candidate_id", "")) if isinstance(payload.get("candidate"), dict) else "",
-                "company_id": read_company_data(company_data_path, company_seed_file)["active_company_id"],
+                "company_id": company_context["active_company_id"],
                 "trace": result.get("trace", []),
                 "created_at": result.get("created_at", now_iso()),
             }

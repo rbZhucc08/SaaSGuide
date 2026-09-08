@@ -1,5 +1,6 @@
 {
   "schema_version": "2.0-multi-company",
+  "dataset_revision": "2026-09-08-differentiated-v1",
   "active_company_id": "nebula-digital",
   "companies": [
     {
@@ -8,93 +9,112 @@
       "industry": "企业软件与数字化服务",
       "size_band": "200–499人",
       "region": "华东",
-      "business_model": "B2B SaaS",
+      "business_model": "订阅制 B2B SaaS",
       "lifecycle_stage": "成长期",
       "risk_appetite": "稳健",
-      "description": "SaaSGuide 多公司对照使用的虚构画像，不对应任何真实企业、人员或经营结果。",
+      "operating_characteristics": [
+        "续费收入敏感",
+        "多租户架构",
+        "季度版本发布",
+        "大客户定制需求"
+      ],
+      "risk_standard": {
+        "high_overdue_days": 3,
+        "due_soon_days": 5,
+        "blocked_hours_high": 24,
+        "review_cadence": "每周两次",
+        "escalation_role": "交付平台主管",
+        "mandatory_evidence": [
+          "客户影响范围",
+          "错误率曲线",
+          "回滚验证"
+        ]
+      },
+      "description": "提供订阅制项目协作软件，收入同时受产品稳定性、续费和大客户实施进度影响。 全部数据均为虚构。",
       "simulated": true,
       "departments": [
         "产品中心",
-        "研发中心",
-        "交付中心",
+        "平台研发部",
         "客户成功部",
-        "数据与安全部"
+        "交付中心",
+        "数据安全部"
       ],
       "projects": [
         {
           "project_id": "PRJ-C1P1",
-          "project_name": "核心系统升级",
-          "project_type": "系统升级",
-          "department": "产品中心",
-          "stage": "方案设计",
-          "start_date": "2026-07-01",
-          "end_date": "2026-08-25",
-          "background": "用于比较不同公司画像下的系统升级风险信号，全部内容均为确定性生成的模拟数据。",
-          "outcome": "当前仍在执行；包含延期依赖、阻塞评审和待确认验收等可核查模拟状态。",
+          "project_name": "企业客户单点登录上线",
+          "project_type": "客户实施",
+          "department": "交付中心",
+          "stage": "联调",
+          "start_date": "2026-08-01",
+          "end_date": "2026-10-05",
+          "background": "企业客户单点登录上线是该模拟公司特有的客户实施场景，用于验证行业背景和标准如何影响风险判断。",
+          "outcome": "模拟执行中；状态分布用于覆盖健康、阻塞、延期、临期和信息不足场景，不代表真实业务结果。",
           "tasks": [
             {
               "task_id": "C1P1T1",
-              "task_name": "确认范围与验收口径",
-              "owner": "模拟角色1-1",
-              "start_date": "2026-07-01",
-              "due_date": "2026-07-06",
+              "task_name": "确认身份源与租户边界",
+              "owner": "模拟岗位1-1",
+              "start_date": "2026-08-01",
+              "due_date": "2026-08-06",
               "status": "已完成",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [],
               "progress_percent": 100,
-              "effort_hours": 16
+              "effort_hours": 12
             },
             {
               "task_id": "C1P1T2",
-              "task_name": "冻结数据和接口清单",
-              "owner": "模拟角色1-2",
-              "start_date": "2026-07-07",
-              "due_date": "2026-07-12",
-              "status": "进行中",
+              "task_name": "完成 SAML 元数据交换",
+              "owner": "模拟岗位1-2",
+              "start_date": "2026-08-07",
+              "due_date": "2026-08-12",
+              "status": "已完成",
               "priority": "高",
               "dependency_ids": [
                 "C1P1T1"
               ],
-              "progress_percent": 70,
-              "effort_hours": 20
+              "progress_percent": 100,
+              "effort_hours": 17
             },
             {
               "task_id": "C1P1T3",
-              "task_name": "完成跨部门评审",
-              "owner": "模拟角色1-3",
-              "start_date": "2026-07-13",
-              "due_date": "2026-07-18",
+              "task_name": "配置测试租户",
+              "owner": "模拟岗位1-3",
+              "start_date": "2026-08-13",
+              "due_date": "2026-08-18",
               "status": "阻塞",
               "priority": "高",
               "dependency_ids": [
                 "C1P1T2"
               ],
-              "progress_percent": 45,
-              "effort_hours": 24
+              "progress_percent": 35,
+              "effort_hours": 22
             },
             {
               "task_id": "C1P1T4",
-              "task_name": "执行集成验证",
-              "owner": "模拟角色1-4",
-              "start_date": "2026-07-19",
-              "due_date": "2026-07-24",
+              "task_name": "执行权限回归",
+              "owner": "模拟岗位1-4",
+              "start_date": "2026-08-19",
+              "due_date": "2026-08-24",
               "status": "未开始",
               "priority": "高",
               "dependency_ids": [
                 "C1P1T3"
               ],
               "progress_percent": 0,
-              "effort_hours": 28
+              "effort_hours": 27
             },
             {
               "task_id": "C1P1T5",
-              "task_name": "准备回滚与应急方案",
-              "owner": "模拟角色1-5",
-              "start_date": "2026-07-25",
-              "due_date": "2026-07-30",
+              "task_name": "组织客户安全评审",
+              "owner": "模拟岗位1-5",
+              "start_date": "2026-08-25",
+              "due_date": "2026-08-30",
               "status": "未开始",
               "priority": "中",
               "dependency_ids": [
+                "C1P1T3",
                 "C1P1T4"
               ],
               "progress_percent": 0,
@@ -102,94 +122,96 @@
             },
             {
               "task_id": "C1P1T6",
-              "task_name": "取得业务书面验收",
-              "owner": "模拟角色1-6",
-              "start_date": "2026-07-31",
-              "due_date": "2026-08-05",
+              "task_name": "取得上线窗口确认",
+              "owner": "模拟岗位1-6",
+              "start_date": "2026-08-31",
+              "due_date": "2026-09-05",
               "status": "未开始",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [
+                "C1P1T4",
                 "C1P1T5"
               ],
               "progress_percent": 0,
-              "effort_hours": 36
+              "effort_hours": 37
             }
           ]
         },
         {
           "project_id": "PRJ-C1P2",
-          "project_name": "主数据治理",
-          "project_type": "数据治理",
-          "department": "研发中心",
-          "stage": "数据清洗",
-          "start_date": "2026-07-08",
-          "end_date": "2026-09-01",
-          "background": "用于比较不同公司画像下的数据治理风险信号，全部内容均为确定性生成的模拟数据。",
-          "outcome": "当前仍在执行；包含延期依赖、阻塞评审和待确认验收等可核查模拟状态。",
+          "project_name": "季度版本灰度发布",
+          "project_type": "版本发布",
+          "department": "平台研发部",
+          "stage": "灰度",
+          "start_date": "2026-08-06",
+          "end_date": "2026-10-10",
+          "background": "季度版本灰度发布是该模拟公司特有的版本发布场景，用于验证行业背景和标准如何影响风险判断。",
+          "outcome": "模拟执行中；状态分布用于覆盖健康、阻塞、延期、临期和信息不足场景，不代表真实业务结果。",
           "tasks": [
             {
               "task_id": "C1P2T1",
-              "task_name": "确认范围与验收口径",
-              "owner": "模拟角色1-1",
-              "start_date": "2026-07-08",
-              "due_date": "2026-07-13",
+              "task_name": "冻结版本范围",
+              "owner": "模拟岗位1-1",
+              "start_date": "2026-08-06",
+              "due_date": "2026-08-11",
               "status": "已完成",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [],
               "progress_percent": 100,
-              "effort_hours": 16
+              "effort_hours": 12
             },
             {
               "task_id": "C1P2T2",
-              "task_name": "冻结数据和接口清单",
-              "owner": "模拟角色1-2",
-              "start_date": "2026-07-14",
-              "due_date": "2026-07-19",
-              "status": "进行中",
+              "task_name": "关闭阻断缺陷",
+              "owner": "模拟岗位1-2",
+              "start_date": "2026-08-12",
+              "due_date": "2026-08-17",
+              "status": "已完成",
               "priority": "高",
               "dependency_ids": [
                 "C1P2T1"
               ],
-              "progress_percent": 70,
-              "effort_hours": 20
+              "progress_percent": 100,
+              "effort_hours": 17
             },
             {
               "task_id": "C1P2T3",
-              "task_name": "完成跨部门评审",
-              "owner": "模拟角色1-3",
-              "start_date": "2026-07-20",
-              "due_date": "2026-07-25",
-              "status": "阻塞",
+              "task_name": "完成容量压测",
+              "owner": "模拟岗位1-3",
+              "start_date": "2026-08-18",
+              "due_date": "2026-08-23",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C1P2T2"
               ],
               "progress_percent": 45,
-              "effort_hours": 24
+              "effort_hours": 22
             },
             {
               "task_id": "C1P2T4",
-              "task_name": "执行集成验证",
-              "owner": "模拟角色1-4",
-              "start_date": "2026-07-26",
-              "due_date": "2026-07-31",
-              "status": "未开始",
+              "task_name": "验证数据库回滚",
+              "owner": "模拟岗位1-4",
+              "start_date": "2026-08-24",
+              "due_date": "2026-08-29",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C1P2T3"
               ],
-              "progress_percent": 0,
-              "effort_hours": 28
+              "progress_percent": 25,
+              "effort_hours": 27
             },
             {
               "task_id": "C1P2T5",
-              "task_name": "准备回滚与应急方案",
-              "owner": "模拟角色1-5",
-              "start_date": "2026-08-01",
-              "due_date": "2026-08-06",
+              "task_name": "执行百分之十灰度",
+              "owner": "模拟岗位1-5",
+              "start_date": "2026-08-30",
+              "due_date": "2026-09-04",
               "status": "未开始",
               "priority": "中",
               "dependency_ids": [
+                "C1P2T3",
                 "C1P2T4"
               ],
               "progress_percent": 0,
@@ -197,284 +219,290 @@
             },
             {
               "task_id": "C1P2T6",
-              "task_name": "取得业务书面验收",
-              "owner": "模拟角色1-6",
-              "start_date": "2026-08-07",
-              "due_date": "2026-08-12",
+              "task_name": "复核核心错误率",
+              "owner": "模拟岗位1-6",
+              "start_date": "2026-09-05",
+              "due_date": "2026-09-10",
               "status": "未开始",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [
+                "C1P2T4",
                 "C1P2T5"
               ],
               "progress_percent": 0,
-              "effort_hours": 36
+              "effort_hours": 37
             }
           ]
         },
         {
           "project_id": "PRJ-C1P3",
-          "project_name": "供应商切换",
-          "project_type": "供应商管理",
-          "department": "交付中心",
-          "stage": "切换演练",
-          "start_date": "2026-07-15",
-          "end_date": "2026-09-08",
-          "background": "用于比较不同公司画像下的供应商管理风险信号，全部内容均为确定性生成的模拟数据。",
-          "outcome": "当前仍在执行；包含延期依赖、阻塞评审和待确认验收等可核查模拟状态。",
+          "project_name": "续费流失预警看板",
+          "project_type": "数据产品",
+          "department": "客户成功部",
+          "stage": "试运行",
+          "start_date": "2026-08-11",
+          "end_date": "2026-10-15",
+          "background": "续费流失预警看板是该模拟公司特有的数据产品场景，用于验证行业背景和标准如何影响风险判断。",
+          "outcome": "模拟执行中；状态分布用于覆盖健康、阻塞、延期、临期和信息不足场景，不代表真实业务结果。",
           "tasks": [
             {
               "task_id": "C1P3T1",
-              "task_name": "确认范围与验收口径",
-              "owner": "模拟角色1-1",
-              "start_date": "2026-07-15",
-              "due_date": "2026-07-20",
+              "task_name": "统一续费口径",
+              "owner": "模拟岗位1-1",
+              "start_date": "2026-08-11",
+              "due_date": "2026-08-16",
               "status": "已完成",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [],
               "progress_percent": 100,
-              "effort_hours": 16
+              "effort_hours": 12
             },
             {
               "task_id": "C1P3T2",
-              "task_name": "冻结数据和接口清单",
-              "owner": "模拟角色1-2",
-              "start_date": "2026-07-21",
-              "due_date": "2026-07-26",
-              "status": "进行中",
+              "task_name": "清理合同主数据",
+              "owner": "模拟岗位1-2",
+              "start_date": "2026-08-17",
+              "due_date": "2026-08-22",
+              "status": "已完成",
               "priority": "高",
               "dependency_ids": [
                 "C1P3T1"
               ],
-              "progress_percent": 70,
-              "effort_hours": 20
+              "progress_percent": 100,
+              "effort_hours": 17
             },
             {
               "task_id": "C1P3T3",
-              "task_name": "完成跨部门评审",
-              "owner": "模拟角色1-3",
-              "start_date": "2026-07-27",
-              "due_date": "2026-08-01",
-              "status": "阻塞",
+              "task_name": "设计流失特征",
+              "owner": "模拟岗位1-3",
+              "start_date": "2026-08-23",
+              "due_date": "2026-08-28",
+              "status": "已完成",
               "priority": "高",
               "dependency_ids": [
                 "C1P3T2"
               ],
-              "progress_percent": 45,
-              "effort_hours": 24
+              "progress_percent": 100,
+              "effort_hours": 22
             },
             {
               "task_id": "C1P3T4",
-              "task_name": "执行集成验证",
-              "owner": "模拟角色1-4",
-              "start_date": "2026-08-02",
-              "due_date": "2026-08-07",
-              "status": "未开始",
+              "task_name": "校验历史样本",
+              "owner": "模拟岗位1-4",
+              "start_date": "2026-08-29",
+              "due_date": "2026-09-03",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C1P3T3"
               ],
-              "progress_percent": 0,
-              "effort_hours": 28
+              "progress_percent": 75,
+              "effort_hours": 27
             },
             {
               "task_id": "C1P3T5",
-              "task_name": "准备回滚与应急方案",
-              "owner": "模拟角色1-5",
-              "start_date": "2026-08-08",
-              "due_date": "2026-08-13",
-              "status": "未开始",
+              "task_name": "发布客户分层看板",
+              "owner": "模拟岗位1-5",
+              "start_date": "2026-09-04",
+              "due_date": "2026-09-09",
+              "status": "进行中",
               "priority": "中",
               "dependency_ids": [
+                "C1P3T3",
                 "C1P3T4"
               ],
-              "progress_percent": 0,
+              "progress_percent": 60,
               "effort_hours": 32
             },
             {
               "task_id": "C1P3T6",
-              "task_name": "取得业务书面验收",
-              "owner": "模拟角色1-6",
-              "start_date": "2026-08-14",
-              "due_date": "2026-08-19",
+              "task_name": "完成使用培训",
+              "owner": "模拟岗位1-6",
+              "start_date": "2026-09-10",
+              "due_date": "2026-09-15",
               "status": "未开始",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [
+                "C1P3T4",
                 "C1P3T5"
               ],
               "progress_percent": 0,
-              "effort_hours": 36
+              "effort_hours": 37
             }
           ]
         },
         {
           "project_id": "PRJ-C1P4",
-          "project_name": "重点客户交付",
-          "project_type": "客户交付",
-          "department": "客户成功部",
-          "stage": "客户验收",
-          "start_date": "2026-07-22",
-          "end_date": "2026-09-15",
-          "background": "用于比较不同公司画像下的客户交付风险信号，全部内容均为确定性生成的模拟数据。",
-          "outcome": "当前仍在执行；包含延期依赖、阻塞评审和待确认验收等可核查模拟状态。",
+          "project_name": "开放 API 限流升级",
+          "project_type": "平台治理",
+          "department": "平台研发部",
+          "stage": "方案评审",
+          "start_date": "2026-08-16",
+          "end_date": "2026-10-20",
+          "background": "开放 API 限流升级是该模拟公司特有的平台治理场景，用于验证行业背景和标准如何影响风险判断。",
+          "outcome": "模拟执行中；状态分布用于覆盖健康、阻塞、延期、临期和信息不足场景，不代表真实业务结果。",
           "tasks": [
             {
               "task_id": "C1P4T1",
-              "task_name": "确认范围与验收口径",
-              "owner": "模拟角色1-1",
-              "start_date": "2026-07-22",
-              "due_date": "2026-07-27",
+              "task_name": "统计租户调用峰值",
+              "owner": "模拟岗位1-1",
+              "start_date": "2026-08-16",
+              "due_date": "2026-08-21",
               "status": "已完成",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [],
               "progress_percent": 100,
-              "effort_hours": 16
+              "effort_hours": 12
             },
             {
               "task_id": "C1P4T2",
-              "task_name": "冻结数据和接口清单",
-              "owner": "模拟角色1-2",
-              "start_date": "2026-07-28",
-              "due_date": "2026-08-02",
-              "status": "进行中",
+              "task_name": "确定分级限流策略",
+              "owner": "模拟岗位1-2",
+              "start_date": "2026-08-22",
+              "due_date": "2026-08-27",
+              "status": "阻塞",
               "priority": "高",
               "dependency_ids": [
                 "C1P4T1"
               ],
-              "progress_percent": 70,
-              "effort_hours": 20
+              "progress_percent": 55,
+              "effort_hours": 17
             },
             {
               "task_id": "C1P4T3",
-              "task_name": "完成跨部门评审",
-              "owner": "模拟角色1-3",
-              "start_date": "2026-08-03",
-              "due_date": "2026-08-08",
-              "status": "阻塞",
+              "task_name": "完成 SDK 兼容评估",
+              "owner": "模拟岗位1-3",
+              "start_date": "2026-08-28",
+              "due_date": "2026-09-02",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C1P4T2"
               ],
-              "progress_percent": 45,
-              "effort_hours": 24
+              "progress_percent": 40,
+              "effort_hours": 22
             },
             {
               "task_id": "C1P4T4",
-              "task_name": "执行集成验证",
-              "owner": "模拟角色1-4",
-              "start_date": "2026-08-09",
-              "due_date": "2026-08-14",
+              "task_name": "通知重点集成客户",
+              "owner": "模拟岗位1-4",
+              "start_date": "2026-09-03",
+              "due_date": "2026-09-08",
               "status": "未开始",
               "priority": "高",
               "dependency_ids": [
                 "C1P4T3"
               ],
               "progress_percent": 0,
-              "effort_hours": 28
+              "effort_hours": 27
             },
             {
               "task_id": "C1P4T5",
-              "task_name": "准备回滚与应急方案",
-              "owner": "模拟角色1-5",
-              "start_date": "2026-08-15",
-              "due_date": "2026-08-20",
-              "status": "未开始",
+              "task_name": "部署灰度网关",
+              "owner": "模拟岗位1-5",
+              "start_date": "2026-09-09",
+              "due_date": "2026-09-14",
+              "status": "进行中",
               "priority": "中",
               "dependency_ids": [
+                "C1P4T3",
                 "C1P4T4"
               ],
-              "progress_percent": 0,
+              "progress_percent": 20,
               "effort_hours": 32
             },
             {
               "task_id": "C1P4T6",
-              "task_name": "取得业务书面验收",
-              "owner": "模拟角色1-6",
-              "start_date": "2026-08-21",
-              "due_date": "2026-08-26",
+              "task_name": "监控拒绝率与延迟",
+              "owner": "模拟岗位1-6",
+              "start_date": "2026-09-15",
+              "due_date": "2026-09-20",
               "status": "未开始",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [
+                "C1P4T4",
                 "C1P4T5"
               ],
               "progress_percent": 0,
-              "effort_hours": 36
+              "effort_hours": 37
             }
           ]
         },
         {
           "project_id": "PRJ-C1P5",
-          "project_name": "运营流程优化",
-          "project_type": "流程优化",
-          "department": "数据与安全部",
-          "stage": "试运行",
-          "start_date": "2026-07-29",
-          "end_date": "2026-09-22",
-          "background": "用于比较不同公司画像下的流程优化风险信号，全部内容均为确定性生成的模拟数据。",
-          "outcome": "当前仍在执行；包含延期依赖、阻塞评审和待确认验收等可核查模拟状态。",
+          "project_name": "客户数据删除能力",
+          "project_type": "隐私合规",
+          "department": "数据安全部",
+          "stage": "验收",
+          "start_date": "2026-08-21",
+          "end_date": "2026-10-25",
+          "background": "客户数据删除能力是该模拟公司特有的隐私合规场景，用于验证行业背景和标准如何影响风险判断。",
+          "outcome": "模拟执行中；状态分布用于覆盖健康、阻塞、延期、临期和信息不足场景，不代表真实业务结果。",
           "tasks": [
             {
               "task_id": "C1P5T1",
-              "task_name": "确认范围与验收口径",
-              "owner": "模拟角色1-1",
-              "start_date": "2026-07-29",
-              "due_date": "2026-08-03",
+              "task_name": "盘点个人数据位置",
+              "owner": "模拟岗位1-1",
+              "start_date": "2026-08-21",
+              "due_date": "2026-08-26",
               "status": "已完成",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [],
               "progress_percent": 100,
-              "effort_hours": 16
+              "effort_hours": 12
             },
             {
               "task_id": "C1P5T2",
-              "task_name": "冻结数据和接口清单",
-              "owner": "模拟角色1-2",
-              "start_date": "2026-08-04",
-              "due_date": "2026-08-09",
+              "task_name": "确认删除与保留规则",
+              "owner": "模拟岗位1-2",
+              "start_date": "2026-08-27",
+              "due_date": "2026-09-01",
               "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C1P5T1"
               ],
-              "progress_percent": 70,
-              "effort_hours": 20
+              "progress_percent": 80,
+              "effort_hours": 17
             },
             {
               "task_id": "C1P5T3",
-              "task_name": "完成跨部门评审",
-              "owner": "模拟角色1-3",
-              "start_date": "2026-08-10",
-              "due_date": "2026-08-15",
-              "status": "阻塞",
+              "task_name": "开发异步删除任务",
+              "owner": "模拟岗位1-3",
+              "start_date": "2026-09-02",
+              "due_date": "2026-09-07",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C1P5T2"
               ],
-              "progress_percent": 45,
-              "effort_hours": 24
+              "progress_percent": 60,
+              "effort_hours": 22
             },
             {
               "task_id": "C1P5T4",
-              "task_name": "执行集成验证",
-              "owner": "模拟角色1-4",
-              "start_date": "2026-08-16",
-              "due_date": "2026-08-21",
-              "status": "未开始",
+              "task_name": "验证备份处理边界",
+              "owner": "模拟岗位1-4",
+              "start_date": "2026-09-08",
+              "due_date": "2026-09-13",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C1P5T3"
               ],
-              "progress_percent": 0,
-              "effort_hours": 28
+              "progress_percent": 50,
+              "effort_hours": 27
             },
             {
               "task_id": "C1P5T5",
-              "task_name": "准备回滚与应急方案",
-              "owner": "模拟角色1-5",
-              "start_date": "2026-08-22",
-              "due_date": "2026-08-27",
+              "task_name": "完成审计日志检查",
+              "owner": "模拟岗位1-5",
+              "start_date": "2026-09-14",
+              "due_date": "2026-09-19",
               "status": "未开始",
               "priority": "中",
               "dependency_ids": [
+                "C1P5T3",
                 "C1P5T4"
               ],
               "progress_percent": 0,
@@ -482,125 +510,118 @@
             },
             {
               "task_id": "C1P5T6",
-              "task_name": "取得业务书面验收",
-              "owner": "模拟角色1-6",
-              "start_date": "2026-08-28",
-              "due_date": "2026-09-02",
+              "task_name": "准备客户操作说明",
+              "owner": "模拟岗位1-6",
+              "start_date": "2026-09-20",
+              "due_date": "2026-09-25",
               "status": "未开始",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [
+                "C1P5T4",
                 "C1P5T5"
               ],
               "progress_percent": 0,
-              "effort_hours": 36
+              "effort_hours": 37
             }
           ]
         }
       ],
       "policies": [
         {
-          "document_id": "nebula-digital-risk-level",
-          "title": "项目风险分级与升级标准",
+          "document_id": "nebula-digital-availability",
+          "title": "SaaS 可用性事故升级",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "风险",
-            "升级",
-            "企业软件与数字化服务"
+            "企业软件与数字化服务",
+            "availability"
           ],
-          "content": "适用画像：企业软件与数字化服务、200–499人、B2B SaaS。高风险应在一个工作日内由项目负责人核对证据、影响和责任角色；中风险每三个工作日复核。"
+          "content": "核心接口五分钟错误率超过 5% 或单租户故障扩散时，由交付平台主管立即升级并保留监控曲线。"
         },
         {
-          "document_id": "nebula-digital-change-control",
-          "title": "需求变更控制办法",
+          "document_id": "nebula-digital-tenant-data",
+          "title": "租户数据隔离标准",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "变更",
-            "范围",
-            "企业软件与数字化服务"
+            "企业软件与数字化服务",
+            "tenant-data"
           ],
-          "content": "适用画像：企业软件与数字化服务、200–499人、B2B SaaS。变更进入执行前应记录提出方、业务理由、范围、验收条件、测试影响和排期影响。"
+          "content": "跨租户访问迹象按最高风险处理，上线证据必须包含权限回归和审计日志。"
         },
         {
-          "document_id": "nebula-digital-data-security",
-          "title": "数据最小化处理规范",
+          "document_id": "nebula-digital-release",
+          "title": "季度版本灰度规范",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "数据",
-            "安全",
-            "企业软件与数字化服务"
+            "企业软件与数字化服务",
+            "release"
           ],
-          "content": "适用画像：企业软件与数字化服务、200–499人、B2B SaaS。导入资料前应移除无关个人信息与凭证；模拟数据不得冒充真实客户资料。"
+          "content": "灰度前关闭阻断缺陷并验证数据库回滚；错误率超过基线两倍立即停止。"
         },
         {
-          "document_id": "nebula-digital-release-approval",
-          "title": "发布与切换审批清单",
+          "document_id": "nebula-digital-renewal",
+          "title": "续费风险复核规则",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "发布",
-            "回滚",
-            "企业软件与数字化服务"
+            "企业软件与数字化服务",
+            "renewal"
           ],
-          "content": "适用画像：企业软件与数字化服务、200–499人、B2B SaaS。切换前必须核对测试结论、未关闭高优问题、监控指标、回滚方案和值班角色。"
+          "content": "续费风险只能结合合同、使用趋势和客户确认，不得仅凭单一活跃度指标。"
         },
         {
-          "document_id": "nebula-digital-supplier-management",
-          "title": "关键供应商管理规范",
+          "document_id": "nebula-digital-api",
+          "title": "开放 API 变更标准",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "供应商",
-            "SLA",
-            "企业软件与数字化服务"
+            "企业软件与数字化服务",
+            "api"
           ],
-          "content": "适用画像：企业软件与数字化服务、200–499人、B2B SaaS。关键供应商交付前应取得容量证据、故障联系人、服务承诺和替代路径。"
+          "content": "破坏性变更至少提前三十日通知，并提供兼容期和调用方清单。"
         },
         {
-          "document_id": "nebula-digital-customer-acceptance",
-          "title": "客户验收证据要求",
+          "document_id": "nebula-digital-privacy",
+          "title": "客户数据删除规范",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "客户",
-            "验收",
-            "企业软件与数字化服务"
+            "企业软件与数字化服务",
+            "privacy"
           ],
-          "content": "适用画像：企业软件与数字化服务、200–499人、B2B SaaS。验收应对应确认范围，保存测试记录、问题清单和书面结论；未确认不得标记完成。"
+          "content": "删除请求应覆盖主库、缓存、导出和备份边界，并保留不可篡改审计记录。"
         },
         {
-          "document_id": "nebula-digital-ai-usage",
+          "document_id": "nebula-digital-ai-boundary",
           "title": "AI 助手使用边界",
           "version": "1.0",
-          "effective_date": "2026-06-01",
+          "effective_date": "2026-08-25",
           "status": "effective",
           "tags": [
             "AI",
-            "人工确认",
-            "企业软件与数字化服务"
+            "人工确认"
           ],
-          "content": "适用画像：企业软件与数字化服务、200–499人、B2B SaaS。AI 输出只作为草稿，不得自动改变负责人、期限、风险状态或创建正式行动。"
+          "content": "AI 输出仅作草稿；引用必须来自当前公司知识版本，不得自动改变负责人、日期、风险状态或正式行动。"
         },
         {
-          "document_id": "nebula-digital-case-review",
-          "title": "历史案例：依赖未闭环",
+          "document_id": "nebula-digital-record-evidence",
+          "title": "事实与证据记录规范",
           "version": "1.0",
-          "effective_date": "2026-06-01",
+          "effective_date": "2026-05-01",
           "status": "effective",
           "tags": [
-            "案例",
-            "依赖",
-            "企业软件与数字化服务"
+            "证据",
+            "审计"
           ],
-          "content": "适用画像：企业软件与数字化服务、200–499人、B2B SaaS。模拟案例中上游评审阻塞导致验证推迟；团队核对缺口、拆分可并行任务并记录复核日期。"
+          "content": "记录必须区分事实、推测和待验证事项，保留来源、时间、责任角色和下一次检查日期。"
         }
       ]
     },
@@ -610,188 +631,210 @@
       "industry": "跨境电商",
       "size_band": "50–199人",
       "region": "华南",
-      "business_model": "多平台零售",
-      "lifecycle_stage": "成长期",
+      "business_model": "Amazon/Ozon 多平台零售",
+      "lifecycle_stage": "快速扩张期",
       "risk_appetite": "平衡",
-      "description": "SaaSGuide 多公司对照使用的虚构画像，不对应任何真实企业、人员或经营结果。",
+      "operating_characteristics": [
+        "旺季波动明显",
+        "跨境补货周期长",
+        "平台规则变化",
+        "多币种毛利"
+      ],
+      "risk_standard": {
+        "high_overdue_days": 2,
+        "due_soon_days": 10,
+        "blocked_hours_high": 12,
+        "review_cadence": "旺季每日",
+        "escalation_role": "运营负责人",
+        "mandatory_evidence": [
+          "可售库存",
+          "在途节点",
+          "平台通知",
+          "贡献毛利"
+        ]
+      },
+      "description": "经营家居和户外品类，多平台库存、广告、合规和跨境履约相互影响。 全部数据均为虚构。",
       "simulated": true,
       "departments": [
         "商品运营部",
         "供应链部",
         "广告增长部",
-        "客户服务部",
-        "财务合规部"
+        "平台合规部",
+        "客户服务部"
       ],
       "projects": [
         {
           "project_id": "PRJ-C2P1",
-          "project_name": "核心系统升级",
-          "project_type": "系统升级",
-          "department": "商品运营部",
-          "stage": "方案设计",
-          "start_date": "2026-07-01",
-          "end_date": "2026-08-25",
-          "background": "用于比较不同公司画像下的系统升级风险信号，全部内容均为确定性生成的模拟数据。",
-          "outcome": "当前仍在执行；包含延期依赖、阻塞评审和待确认验收等可核查模拟状态。",
+          "project_name": "旺季海外仓补货",
+          "project_type": "库存运营",
+          "department": "供应链部",
+          "stage": "在途补货",
+          "start_date": "2026-08-01",
+          "end_date": "2026-10-05",
+          "background": "旺季海外仓补货是该模拟公司特有的库存运营场景，用于验证行业背景和标准如何影响风险判断。",
+          "outcome": "模拟执行中；状态分布用于覆盖健康、阻塞、延期、临期和信息不足场景，不代表真实业务结果。",
           "tasks": [
             {
               "task_id": "C2P1T1",
-              "task_name": "确认范围与验收口径",
-              "owner": "模拟角色2-1",
-              "start_date": "2026-07-01",
-              "due_date": "2026-07-06",
+              "task_name": "汇总渠道销量预测",
+              "owner": "模拟岗位2-1",
+              "start_date": "2026-08-01",
+              "due_date": "2026-08-06",
               "status": "已完成",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [],
               "progress_percent": 100,
-              "effort_hours": 16
+              "effort_hours": 12
             },
             {
               "task_id": "C2P1T2",
-              "task_name": "冻结数据和接口清单",
-              "owner": "模拟角色2-2",
-              "start_date": "2026-07-07",
-              "due_date": "2026-07-12",
-              "status": "进行中",
+              "task_name": "计算安全库存与覆盖天数",
+              "owner": "模拟岗位2-2",
+              "start_date": "2026-08-07",
+              "due_date": "2026-08-12",
+              "status": "阻塞",
               "priority": "高",
               "dependency_ids": [
                 "C2P1T1"
               ],
-              "progress_percent": 70,
-              "effort_hours": 20
+              "progress_percent": 55,
+              "effort_hours": 17
             },
             {
               "task_id": "C2P1T3",
-              "task_name": "完成跨部门评审",
-              "owner": "模拟角色2-3",
-              "start_date": "2026-07-13",
-              "due_date": "2026-07-18",
-              "status": "阻塞",
+              "task_name": "确认供应商可交数量",
+              "owner": "模拟岗位2-3",
+              "start_date": "2026-08-13",
+              "due_date": "2026-08-18",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C2P1T2"
               ],
-              "progress_percent": 45,
-              "effort_hours": 24
+              "progress_percent": 40,
+              "effort_hours": 22
             },
             {
               "task_id": "C2P1T4",
-              "task_name": "执行集成验证",
-              "owner": "模拟角色2-4",
-              "start_date": "2026-07-19",
-              "due_date": "2026-07-24",
+              "task_name": "锁定海运舱位",
+              "owner": "模拟岗位2-4",
+              "start_date": "2026-08-19",
+              "due_date": "2026-08-24",
               "status": "未开始",
               "priority": "高",
               "dependency_ids": [
                 "C2P1T3"
               ],
               "progress_percent": 0,
-              "effort_hours": 28
+              "effort_hours": 27
             },
             {
               "task_id": "C2P1T5",
-              "task_name": "准备回滚与应急方案",
-              "owner": "模拟角色2-5",
-              "start_date": "2026-07-25",
-              "due_date": "2026-07-30",
-              "status": "未开始",
+              "task_name": "提交清关资料",
+              "owner": "模拟岗位2-5",
+              "start_date": "2026-08-25",
+              "due_date": "2026-08-30",
+              "status": "进行中",
               "priority": "中",
               "dependency_ids": [
+                "C2P1T3",
                 "C2P1T4"
               ],
-              "progress_percent": 0,
+              "progress_percent": 20,
               "effort_hours": 32
             },
             {
               "task_id": "C2P1T6",
-              "task_name": "取得业务书面验收",
-              "owner": "模拟角色2-6",
-              "start_date": "2026-07-31",
-              "due_date": "2026-08-05",
+              "task_name": "跟踪海外仓预约入库",
+              "owner": "模拟岗位2-6",
+              "start_date": "2026-08-31",
+              "due_date": "2026-09-05",
               "status": "未开始",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [
+                "C2P1T4",
                 "C2P1T5"
               ],
               "progress_percent": 0,
-              "effort_hours": 36
+              "effort_hours": 37
             }
           ]
         },
         {
           "project_id": "PRJ-C2P2",
-          "project_name": "主数据治理",
-          "project_type": "数据治理",
-          "department": "供应链部",
-          "stage": "数据清洗",
-          "start_date": "2026-07-08",
-          "end_date": "2026-09-01",
-          "background": "用于比较不同公司画像下的数据治理风险信号，全部内容均为确定性生成的模拟数据。",
-          "outcome": "当前仍在执行；包含延期依赖、阻塞评审和待确认验收等可核查模拟状态。",
+          "project_name": "Ozon 商品卡合规整改",
+          "project_type": "平台合规",
+          "department": "平台合规部",
+          "stage": "批量复核",
+          "start_date": "2026-08-06",
+          "end_date": "2026-10-10",
+          "background": "Ozon 商品卡合规整改是该模拟公司特有的平台合规场景，用于验证行业背景和标准如何影响风险判断。",
+          "outcome": "模拟执行中；状态分布用于覆盖健康、阻塞、延期、临期和信息不足场景，不代表真实业务结果。",
           "tasks": [
             {
               "task_id": "C2P2T1",
-              "task_name": "确认范围与验收口径",
-              "owner": "模拟角色2-1",
-              "start_date": "2026-07-08",
-              "due_date": "2026-07-13",
+              "task_name": "导出违规商品清单",
+              "owner": "模拟岗位2-1",
+              "start_date": "2026-08-06",
+              "due_date": "2026-08-11",
               "status": "已完成",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [],
               "progress_percent": 100,
-              "effort_hours": 16
+              "effort_hours": 12
             },
             {
               "task_id": "C2P2T2",
-              "task_name": "冻结数据和接口清单",
-              "owner": "模拟角色2-2",
-              "start_date": "2026-07-14",
-              "due_date": "2026-07-19",
-              "status": "进行中",
+              "task_name": "核对标题与属性规则",
+              "owner": "模拟岗位2-2",
+              "start_date": "2026-08-12",
+              "due_date": "2026-08-17",
+              "status": "已完成",
               "priority": "高",
               "dependency_ids": [
                 "C2P2T1"
               ],
-              "progress_percent": 70,
-              "effort_hours": 20
+              "progress_percent": 100,
+              "effort_hours": 17
             },
             {
               "task_id": "C2P2T3",
-              "task_name": "完成跨部门评审",
-              "owner": "模拟角色2-3",
-              "start_date": "2026-07-20",
-              "due_date": "2026-07-25",
+              "task_name": "复查图片和认证材料",
+              "owner": "模拟岗位2-3",
+              "start_date": "2026-08-18",
+              "due_date": "2026-08-23",
               "status": "阻塞",
               "priority": "高",
               "dependency_ids": [
                 "C2P2T2"
               ],
-              "progress_percent": 45,
-              "effort_hours": 24
+              "progress_percent": 35,
+              "effort_hours": 22
             },
             {
               "task_id": "C2P2T4",
-              "task_name": "执行集成验证",
-              "owner": "模拟角色2-4",
-              "start_date": "2026-07-26",
-              "due_date": "2026-07-31",
+              "task_name": "完成俄文信息修订",
+              "owner": "模拟岗位2-4",
+              "start_date": "2026-08-24",
+              "due_date": "2026-08-29",
               "status": "未开始",
               "priority": "高",
               "dependency_ids": [
                 "C2P2T3"
               ],
               "progress_percent": 0,
-              "effort_hours": 28
+              "effort_hours": 27
             },
             {
               "task_id": "C2P2T5",
-              "task_name": "准备回滚与应急方案",
-              "owner": "模拟角色2-5",
-              "start_date": "2026-08-01",
-              "due_date": "2026-08-06",
+              "task_name": "提交平台复审",
+              "owner": "模拟岗位2-5",
+              "start_date": "2026-08-30",
+              "due_date": "2026-09-04",
               "status": "未开始",
               "priority": "中",
               "dependency_ids": [
+                "C2P2T3",
                 "C2P2T4"
               ],
               "progress_percent": 0,
@@ -799,189 +842,193 @@
             },
             {
               "task_id": "C2P2T6",
-              "task_name": "取得业务书面验收",
-              "owner": "模拟角色2-6",
-              "start_date": "2026-08-07",
-              "due_date": "2026-08-12",
+              "task_name": "监控下架与恢复状态",
+              "owner": "模拟岗位2-6",
+              "start_date": "2026-09-05",
+              "due_date": "2026-09-10",
               "status": "未开始",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [
+                "C2P2T4",
                 "C2P2T5"
               ],
               "progress_percent": 0,
-              "effort_hours": 36
+              "effort_hours": 37
             }
           ]
         },
         {
           "project_id": "PRJ-C2P3",
-          "project_name": "供应商切换",
-          "project_type": "供应商管理",
+          "project_name": "Amazon 广告预算重分配",
+          "project_type": "广告优化",
           "department": "广告增长部",
-          "stage": "切换演练",
-          "start_date": "2026-07-15",
-          "end_date": "2026-09-08",
-          "background": "用于比较不同公司画像下的供应商管理风险信号，全部内容均为确定性生成的模拟数据。",
-          "outcome": "当前仍在执行；包含延期依赖、阻塞评审和待确认验收等可核查模拟状态。",
+          "stage": "观察期",
+          "start_date": "2026-08-11",
+          "end_date": "2026-10-15",
+          "background": "Amazon 广告预算重分配是该模拟公司特有的广告优化场景，用于验证行业背景和标准如何影响风险判断。",
+          "outcome": "模拟执行中；状态分布用于覆盖健康、阻塞、延期、临期和信息不足场景，不代表真实业务结果。",
           "tasks": [
             {
               "task_id": "C2P3T1",
-              "task_name": "确认范围与验收口径",
-              "owner": "模拟角色2-1",
-              "start_date": "2026-07-15",
-              "due_date": "2026-07-20",
+              "task_name": "统一广告归因窗口",
+              "owner": "模拟岗位2-1",
+              "start_date": "2026-08-11",
+              "due_date": "2026-08-16",
               "status": "已完成",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [],
               "progress_percent": 100,
-              "effort_hours": 16
+              "effort_hours": 12
             },
             {
               "task_id": "C2P3T2",
-              "task_name": "冻结数据和接口清单",
-              "owner": "模拟角色2-2",
-              "start_date": "2026-07-21",
-              "due_date": "2026-07-26",
-              "status": "进行中",
+              "task_name": "分解品牌与非品牌词",
+              "owner": "模拟岗位2-2",
+              "start_date": "2026-08-17",
+              "due_date": "2026-08-22",
+              "status": "已完成",
               "priority": "高",
               "dependency_ids": [
                 "C2P3T1"
               ],
-              "progress_percent": 70,
-              "effort_hours": 20
+              "progress_percent": 100,
+              "effort_hours": 17
             },
             {
               "task_id": "C2P3T3",
-              "task_name": "完成跨部门评审",
-              "owner": "模拟角色2-3",
-              "start_date": "2026-07-27",
-              "due_date": "2026-08-01",
-              "status": "阻塞",
+              "task_name": "识别高花费低转化组",
+              "owner": "模拟岗位2-3",
+              "start_date": "2026-08-23",
+              "due_date": "2026-08-28",
+              "status": "已完成",
               "priority": "高",
               "dependency_ids": [
                 "C2P3T2"
               ],
-              "progress_percent": 45,
-              "effort_hours": 24
+              "progress_percent": 100,
+              "effort_hours": 22
             },
             {
               "task_id": "C2P3T4",
-              "task_name": "执行集成验证",
-              "owner": "模拟角色2-4",
-              "start_date": "2026-08-02",
-              "due_date": "2026-08-07",
-              "status": "未开始",
+              "task_name": "调整活动预算上限",
+              "owner": "模拟岗位2-4",
+              "start_date": "2026-08-29",
+              "due_date": "2026-09-03",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C2P3T3"
               ],
-              "progress_percent": 0,
-              "effort_hours": 28
+              "progress_percent": 75,
+              "effort_hours": 27
             },
             {
               "task_id": "C2P3T5",
-              "task_name": "准备回滚与应急方案",
-              "owner": "模拟角色2-5",
-              "start_date": "2026-08-08",
-              "due_date": "2026-08-13",
-              "status": "未开始",
+              "task_name": "保留实验对照组",
+              "owner": "模拟岗位2-5",
+              "start_date": "2026-09-04",
+              "due_date": "2026-09-09",
+              "status": "进行中",
               "priority": "中",
               "dependency_ids": [
+                "C2P3T3",
                 "C2P3T4"
               ],
-              "progress_percent": 0,
+              "progress_percent": 60,
               "effort_hours": 32
             },
             {
               "task_id": "C2P3T6",
-              "task_name": "取得业务书面验收",
-              "owner": "模拟角色2-6",
-              "start_date": "2026-08-14",
-              "due_date": "2026-08-19",
+              "task_name": "复核 ACOS 与贡献毛利",
+              "owner": "模拟岗位2-6",
+              "start_date": "2026-09-10",
+              "due_date": "2026-09-15",
               "status": "未开始",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [
+                "C2P3T4",
                 "C2P3T5"
               ],
               "progress_percent": 0,
-              "effort_hours": 36
+              "effort_hours": 37
             }
           ]
         },
         {
           "project_id": "PRJ-C2P4",
-          "project_name": "重点客户交付",
-          "project_type": "客户交付",
-          "department": "客户服务部",
-          "stage": "客户验收",
-          "start_date": "2026-07-22",
-          "end_date": "2026-09-15",
-          "background": "用于比较不同公司画像下的客户交付风险信号，全部内容均为确定性生成的模拟数据。",
-          "outcome": "当前仍在执行；包含延期依赖、阻塞评审和待确认验收等可核查模拟状态。",
+          "project_name": "高退货 SKU 治理",
+          "project_type": "商品运营",
+          "department": "商品运营部",
+          "stage": "原因核查",
+          "start_date": "2026-08-16",
+          "end_date": "2026-10-20",
+          "background": "高退货 SKU 治理是该模拟公司特有的商品运营场景，用于验证行业背景和标准如何影响风险判断。",
+          "outcome": "模拟执行中；状态分布用于覆盖健康、阻塞、延期、临期和信息不足场景，不代表真实业务结果。",
           "tasks": [
             {
               "task_id": "C2P4T1",
-              "task_name": "确认范围与验收口径",
-              "owner": "模拟角色2-1",
-              "start_date": "2026-07-22",
-              "due_date": "2026-07-27",
+              "task_name": "按原因拆解退货记录",
+              "owner": "模拟岗位2-1",
+              "start_date": "2026-08-16",
+              "due_date": "2026-08-21",
               "status": "已完成",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [],
               "progress_percent": 100,
-              "effort_hours": 16
+              "effort_hours": 12
             },
             {
               "task_id": "C2P4T2",
-              "task_name": "冻结数据和接口清单",
-              "owner": "模拟角色2-2",
-              "start_date": "2026-07-28",
-              "due_date": "2026-08-02",
-              "status": "进行中",
+              "task_name": "抽检尺码与包装问题",
+              "owner": "模拟岗位2-2",
+              "start_date": "2026-08-22",
+              "due_date": "2026-08-27",
+              "status": "已完成",
               "priority": "高",
               "dependency_ids": [
                 "C2P4T1"
               ],
-              "progress_percent": 70,
-              "effort_hours": 20
+              "progress_percent": 100,
+              "effort_hours": 17
             },
             {
               "task_id": "C2P4T3",
-              "task_name": "完成跨部门评审",
-              "owner": "模拟角色2-3",
-              "start_date": "2026-08-03",
-              "due_date": "2026-08-08",
-              "status": "阻塞",
+              "task_name": "比对详情页承诺",
+              "owner": "模拟岗位2-3",
+              "start_date": "2026-08-28",
+              "due_date": "2026-09-02",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C2P4T2"
               ],
               "progress_percent": 45,
-              "effort_hours": 24
+              "effort_hours": 22
             },
             {
               "task_id": "C2P4T4",
-              "task_name": "执行集成验证",
-              "owner": "模拟角色2-4",
-              "start_date": "2026-08-09",
-              "due_date": "2026-08-14",
-              "status": "未开始",
+              "task_name": "联系供应商确认批次",
+              "owner": "模拟岗位2-4",
+              "start_date": "2026-09-03",
+              "due_date": "2026-09-08",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C2P4T3"
               ],
-              "progress_percent": 0,
-              "effort_hours": 28
+              "progress_percent": 25,
+              "effort_hours": 27
             },
             {
               "task_id": "C2P4T5",
-              "task_name": "准备回滚与应急方案",
-              "owner": "模拟角色2-5",
-              "start_date": "2026-08-15",
-              "due_date": "2026-08-20",
+              "task_name": "更新客服问题标签",
+              "owner": "模拟岗位2-5",
+              "start_date": "2026-09-09",
+              "due_date": "2026-09-14",
               "status": "未开始",
               "priority": "中",
               "dependency_ids": [
+                "C2P4T3",
                 "C2P4T4"
               ],
               "progress_percent": 0,
@@ -989,94 +1036,96 @@
             },
             {
               "task_id": "C2P4T6",
-              "task_name": "取得业务书面验收",
-              "owner": "模拟角色2-6",
-              "start_date": "2026-08-21",
-              "due_date": "2026-08-26",
+              "task_name": "验证两周退货趋势",
+              "owner": "模拟岗位2-6",
+              "start_date": "2026-09-15",
+              "due_date": "2026-09-20",
               "status": "未开始",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [
+                "C2P4T4",
                 "C2P4T5"
               ],
               "progress_percent": 0,
-              "effort_hours": 36
+              "effort_hours": 37
             }
           ]
         },
         {
           "project_id": "PRJ-C2P5",
-          "project_name": "运营流程优化",
-          "project_type": "流程优化",
-          "department": "财务合规部",
-          "stage": "试运行",
-          "start_date": "2026-07-29",
-          "end_date": "2026-09-22",
-          "background": "用于比较不同公司画像下的流程优化风险信号，全部内容均为确定性生成的模拟数据。",
-          "outcome": "当前仍在执行；包含延期依赖、阻塞评审和待确认验收等可核查模拟状态。",
+          "project_name": "多平台库存同步",
+          "project_type": "系统集成",
+          "department": "供应链部",
+          "stage": "联调",
+          "start_date": "2026-08-21",
+          "end_date": "2026-10-25",
+          "background": "多平台库存同步是该模拟公司特有的系统集成场景，用于验证行业背景和标准如何影响风险判断。",
+          "outcome": "模拟执行中；状态分布用于覆盖健康、阻塞、延期、临期和信息不足场景，不代表真实业务结果。",
           "tasks": [
             {
               "task_id": "C2P5T1",
-              "task_name": "确认范围与验收口径",
-              "owner": "模拟角色2-1",
-              "start_date": "2026-07-29",
-              "due_date": "2026-08-03",
+              "task_name": "梳理平台库存口径",
+              "owner": "模拟岗位2-1",
+              "start_date": "2026-08-21",
+              "due_date": "2026-08-26",
               "status": "已完成",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [],
               "progress_percent": 100,
-              "effort_hours": 16
+              "effort_hours": 12
             },
             {
               "task_id": "C2P5T2",
-              "task_name": "冻结数据和接口清单",
-              "owner": "模拟角色2-2",
-              "start_date": "2026-08-04",
-              "due_date": "2026-08-09",
+              "task_name": "定义预占与释放时点",
+              "owner": "模拟岗位2-2",
+              "start_date": "2026-08-27",
+              "due_date": "2026-09-01",
               "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C2P5T1"
               ],
-              "progress_percent": 70,
-              "effort_hours": 20
+              "progress_percent": 80,
+              "effort_hours": 17
             },
             {
               "task_id": "C2P5T3",
-              "task_name": "完成跨部门评审",
-              "owner": "模拟角色2-3",
-              "start_date": "2026-08-10",
-              "due_date": "2026-08-15",
-              "status": "阻塞",
+              "task_name": "建立 SKU 映射",
+              "owner": "模拟岗位2-3",
+              "start_date": "2026-09-02",
+              "due_date": "2026-09-07",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C2P5T2"
               ],
-              "progress_percent": 45,
-              "effort_hours": 24
+              "progress_percent": 60,
+              "effort_hours": 22
             },
             {
               "task_id": "C2P5T4",
-              "task_name": "执行集成验证",
-              "owner": "模拟角色2-4",
-              "start_date": "2026-08-16",
-              "due_date": "2026-08-21",
-              "status": "未开始",
+              "task_name": "模拟超卖并发请求",
+              "owner": "模拟岗位2-4",
+              "start_date": "2026-09-08",
+              "due_date": "2026-09-13",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C2P5T3"
               ],
-              "progress_percent": 0,
-              "effort_hours": 28
+              "progress_percent": 50,
+              "effort_hours": 27
             },
             {
               "task_id": "C2P5T5",
-              "task_name": "准备回滚与应急方案",
-              "owner": "模拟角色2-5",
-              "start_date": "2026-08-22",
-              "due_date": "2026-08-27",
+              "task_name": "验证失败补偿队列",
+              "owner": "模拟岗位2-5",
+              "start_date": "2026-09-14",
+              "due_date": "2026-09-19",
               "status": "未开始",
               "priority": "中",
               "dependency_ids": [
+                "C2P5T3",
                 "C2P5T4"
               ],
               "progress_percent": 0,
@@ -1084,125 +1133,118 @@
             },
             {
               "task_id": "C2P5T6",
-              "task_name": "取得业务书面验收",
-              "owner": "模拟角色2-6",
-              "start_date": "2026-08-28",
-              "due_date": "2026-09-02",
+              "task_name": "完成手工兜底预案",
+              "owner": "模拟岗位2-6",
+              "start_date": "2026-09-20",
+              "due_date": "2026-09-25",
               "status": "未开始",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [
+                "C2P5T4",
                 "C2P5T5"
               ],
               "progress_percent": 0,
-              "effort_hours": 36
+              "effort_hours": 37
             }
           ]
         }
       ],
       "policies": [
         {
-          "document_id": "seaway-commerce-risk-level",
-          "title": "项目风险分级与升级标准",
+          "document_id": "seaway-commerce-stock",
+          "title": "跨境库存预警标准",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "风险",
-            "升级",
-            "跨境电商"
+            "跨境电商",
+            "stock"
           ],
-          "content": "适用画像：跨境电商、50–199人、多平台零售。高风险应在一个工作日内由项目负责人核对证据、影响和责任角色；中风险每三个工作日复核。"
+          "content": "旺季覆盖天数低于补货周期加安全缓冲时升级；必须同时核对可售、锁定和在途库存。"
         },
         {
-          "document_id": "seaway-commerce-change-control",
-          "title": "需求变更控制办法",
+          "document_id": "seaway-commerce-listing",
+          "title": "平台商品合规复核",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "变更",
-            "范围",
-            "跨境电商"
+            "跨境电商",
+            "listing"
           ],
-          "content": "适用画像：跨境电商、50–199人、多平台零售。变更进入执行前应记录提出方、业务理由、范围、验收条件、测试影响和排期影响。"
+          "content": "商品卡整改必须保存平台通知、版本差异、认证材料和复审结果，不得把恢复上架视为永久合规。"
         },
         {
-          "document_id": "seaway-commerce-data-security",
-          "title": "数据最小化处理规范",
+          "document_id": "seaway-commerce-ads",
+          "title": "广告预算异常规则",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "数据",
-            "安全",
-            "跨境电商"
+            "跨境电商",
+            "ads"
           ],
-          "content": "适用画像：跨境电商、50–199人、多平台零售。导入资料前应移除无关个人信息与凭证；模拟数据不得冒充真实客户资料。"
+          "content": "广告调整同时核对 ACOS、转化率和贡献毛利；单日波动不足以直接停投。"
         },
         {
-          "document_id": "seaway-commerce-release-approval",
-          "title": "发布与切换审批清单",
+          "document_id": "seaway-commerce-logistics",
+          "title": "跨境在途升级标准",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "发布",
-            "回滚",
-            "跨境电商"
+            "跨境电商",
+            "logistics"
           ],
-          "content": "适用画像：跨境电商、50–199人、多平台零售。切换前必须核对测试结论、未关闭高优问题、监控指标、回滚方案和值班角色。"
+          "content": "关键入仓节点超过承诺两日未更新时升级，并核对承运商回执和清关状态。"
         },
         {
-          "document_id": "seaway-commerce-supplier-management",
-          "title": "关键供应商管理规范",
+          "document_id": "seaway-commerce-returns",
+          "title": "高退货治理要求",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "供应商",
-            "SLA",
-            "跨境电商"
+            "跨境电商",
+            "returns"
           ],
-          "content": "适用画像：跨境电商、50–199人、多平台零售。关键供应商交付前应取得容量证据、故障联系人、服务承诺和替代路径。"
+          "content": "退货率判断应按 SKU、批次、国家和原因拆分，样本过少时只能观察。"
         },
         {
-          "document_id": "seaway-commerce-customer-acceptance",
-          "title": "客户验收证据要求",
+          "document_id": "seaway-commerce-currency",
+          "title": "多币种毛利口径",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "客户",
-            "验收",
-            "跨境电商"
+            "跨境电商",
+            "currency"
           ],
-          "content": "适用画像：跨境电商、50–199人、多平台零售。验收应对应确认范围，保存测试记录、问题清单和书面结论；未确认不得标记完成。"
+          "content": "毛利报告应记录汇率日期、平台佣金、物流、广告和退货成本口径。"
         },
         {
-          "document_id": "seaway-commerce-ai-usage",
+          "document_id": "seaway-commerce-ai-boundary",
           "title": "AI 助手使用边界",
           "version": "1.0",
-          "effective_date": "2026-06-01",
+          "effective_date": "2026-08-25",
           "status": "effective",
           "tags": [
             "AI",
-            "人工确认",
-            "跨境电商"
+            "人工确认"
           ],
-          "content": "适用画像：跨境电商、50–199人、多平台零售。AI 输出只作为草稿，不得自动改变负责人、期限、风险状态或创建正式行动。"
+          "content": "AI 输出仅作草稿；引用必须来自当前公司知识版本，不得自动改变负责人、日期、风险状态或正式行动。"
         },
         {
-          "document_id": "seaway-commerce-case-review",
-          "title": "历史案例：依赖未闭环",
+          "document_id": "seaway-commerce-record-evidence",
+          "title": "事实与证据记录规范",
           "version": "1.0",
-          "effective_date": "2026-06-01",
+          "effective_date": "2026-05-01",
           "status": "effective",
           "tags": [
-            "案例",
-            "依赖",
-            "跨境电商"
+            "证据",
+            "审计"
           ],
-          "content": "适用画像：跨境电商、50–199人、多平台零售。模拟案例中上游评审阻塞导致验证推迟；团队核对缺口、拆分可并行任务并记录复核日期。"
+          "content": "记录必须区分事实、推测和待验证事项，保留来源、时间、责任角色和下一次检查日期。"
         }
       ]
     },
@@ -1212,10 +1254,29 @@
       "industry": "智能制造",
       "size_band": "500–999人",
       "region": "华中",
-      "business_model": "订单制造",
-      "lifecycle_stage": "成熟期",
+      "business_model": "按订单生产 MTO",
+      "lifecycle_stage": "数字化转型期",
       "risk_appetite": "保守",
-      "description": "SaaSGuide 多公司对照使用的虚构画像，不对应任何真实企业、人员或经营结果。",
+      "operating_characteristics": [
+        "关键设备单点依赖",
+        "批次质量追溯",
+        "原料交期波动",
+        "停线成本高"
+      ],
+      "risk_standard": {
+        "high_overdue_days": 1,
+        "due_soon_days": 7,
+        "blocked_hours_high": 4,
+        "review_cadence": "每日班前会",
+        "escalation_role": "生产总监",
+        "mandatory_evidence": [
+          "设备报警记录",
+          "批次检验报告",
+          "产能缺口",
+          "替代物料批准"
+        ]
+      },
+      "description": "按客户订单组织生产，设备、原料、质量和排产异常会直接影响交期。 全部数据均为虚构。",
       "simulated": true,
       "departments": [
         "生产计划部",
@@ -1227,78 +1288,79 @@
       "projects": [
         {
           "project_id": "PRJ-C3P1",
-          "project_name": "核心系统升级",
-          "project_type": "系统升级",
-          "department": "生产计划部",
-          "stage": "方案设计",
-          "start_date": "2026-07-01",
-          "end_date": "2026-08-25",
-          "background": "用于比较不同公司画像下的系统升级风险信号，全部内容均为确定性生成的模拟数据。",
-          "outcome": "当前仍在执行；包含延期依赖、阻塞评审和待确认验收等可核查模拟状态。",
+          "project_name": "关键机床预测性维护",
+          "project_type": "设备维护",
+          "department": "设备工程部",
+          "stage": "试运行",
+          "start_date": "2026-08-01",
+          "end_date": "2026-10-05",
+          "background": "关键机床预测性维护是该模拟公司特有的设备维护场景，用于验证行业背景和标准如何影响风险判断。",
+          "outcome": "模拟执行中；状态分布用于覆盖健康、阻塞、延期、临期和信息不足场景，不代表真实业务结果。",
           "tasks": [
             {
               "task_id": "C3P1T1",
-              "task_name": "确认范围与验收口径",
-              "owner": "模拟角色3-1",
-              "start_date": "2026-07-01",
-              "due_date": "2026-07-06",
+              "task_name": "采集主轴振动基线",
+              "owner": "模拟岗位3-1",
+              "start_date": "2026-08-01",
+              "due_date": "2026-08-06",
               "status": "已完成",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [],
               "progress_percent": 100,
-              "effort_hours": 16
+              "effort_hours": 12
             },
             {
               "task_id": "C3P1T2",
-              "task_name": "冻结数据和接口清单",
-              "owner": "模拟角色3-2",
-              "start_date": "2026-07-07",
-              "due_date": "2026-07-12",
-              "status": "进行中",
+              "task_name": "校准温度传感器",
+              "owner": "模拟岗位3-2",
+              "start_date": "2026-08-07",
+              "due_date": "2026-08-12",
+              "status": "已完成",
               "priority": "高",
               "dependency_ids": [
                 "C3P1T1"
               ],
-              "progress_percent": 70,
-              "effort_hours": 20
+              "progress_percent": 100,
+              "effort_hours": 17
             },
             {
               "task_id": "C3P1T3",
-              "task_name": "完成跨部门评审",
-              "owner": "模拟角色3-3",
-              "start_date": "2026-07-13",
-              "due_date": "2026-07-18",
+              "task_name": "设定异常阈值",
+              "owner": "模拟岗位3-3",
+              "start_date": "2026-08-13",
+              "due_date": "2026-08-18",
               "status": "阻塞",
               "priority": "高",
               "dependency_ids": [
                 "C3P1T2"
               ],
-              "progress_percent": 45,
-              "effort_hours": 24
+              "progress_percent": 35,
+              "effort_hours": 22
             },
             {
               "task_id": "C3P1T4",
-              "task_name": "执行集成验证",
-              "owner": "模拟角色3-4",
-              "start_date": "2026-07-19",
-              "due_date": "2026-07-24",
+              "task_name": "安排低峰停机检查",
+              "owner": "模拟岗位3-4",
+              "start_date": "2026-08-19",
+              "due_date": "2026-08-24",
               "status": "未开始",
               "priority": "高",
               "dependency_ids": [
                 "C3P1T3"
               ],
               "progress_percent": 0,
-              "effort_hours": 28
+              "effort_hours": 27
             },
             {
               "task_id": "C3P1T5",
-              "task_name": "准备回滚与应急方案",
-              "owner": "模拟角色3-5",
-              "start_date": "2026-07-25",
-              "due_date": "2026-07-30",
+              "task_name": "更换高风险轴承",
+              "owner": "模拟岗位3-5",
+              "start_date": "2026-08-25",
+              "due_date": "2026-08-30",
               "status": "未开始",
               "priority": "中",
               "dependency_ids": [
+                "C3P1T3",
                 "C3P1T4"
               ],
               "progress_percent": 0,
@@ -1306,189 +1368,193 @@
             },
             {
               "task_id": "C3P1T6",
-              "task_name": "取得业务书面验收",
-              "owner": "模拟角色3-6",
-              "start_date": "2026-07-31",
-              "due_date": "2026-08-05",
+              "task_name": "验证复机首件质量",
+              "owner": "模拟岗位3-6",
+              "start_date": "2026-08-31",
+              "due_date": "2026-09-05",
               "status": "未开始",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [
+                "C3P1T4",
                 "C3P1T5"
               ],
               "progress_percent": 0,
-              "effort_hours": 36
+              "effort_hours": 37
             }
           ]
         },
         {
           "project_id": "PRJ-C3P2",
-          "project_name": "主数据治理",
-          "project_type": "数据治理",
-          "department": "设备工程部",
-          "stage": "数据清洗",
-          "start_date": "2026-07-08",
-          "end_date": "2026-09-01",
-          "background": "用于比较不同公司画像下的数据治理风险信号，全部内容均为确定性生成的模拟数据。",
-          "outcome": "当前仍在执行；包含延期依赖、阻塞评审和待确认验收等可核查模拟状态。",
+          "project_name": "原料短缺替代认证",
+          "project_type": "供应保障",
+          "department": "采购部",
+          "stage": "材料验证",
+          "start_date": "2026-08-06",
+          "end_date": "2026-10-10",
+          "background": "原料短缺替代认证是该模拟公司特有的供应保障场景，用于验证行业背景和标准如何影响风险判断。",
+          "outcome": "模拟执行中；状态分布用于覆盖健康、阻塞、延期、临期和信息不足场景，不代表真实业务结果。",
           "tasks": [
             {
               "task_id": "C3P2T1",
-              "task_name": "确认范围与验收口径",
-              "owner": "模拟角色3-1",
-              "start_date": "2026-07-08",
-              "due_date": "2026-07-13",
+              "task_name": "确认缺料订单范围",
+              "owner": "模拟岗位3-1",
+              "start_date": "2026-08-06",
+              "due_date": "2026-08-11",
               "status": "已完成",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [],
               "progress_percent": 100,
-              "effort_hours": 16
+              "effort_hours": 12
             },
             {
               "task_id": "C3P2T2",
-              "task_name": "冻结数据和接口清单",
-              "owner": "模拟角色3-2",
-              "start_date": "2026-07-14",
-              "due_date": "2026-07-19",
-              "status": "进行中",
+              "task_name": "获取替代材料样本",
+              "owner": "模拟岗位3-2",
+              "start_date": "2026-08-12",
+              "due_date": "2026-08-17",
+              "status": "阻塞",
               "priority": "高",
               "dependency_ids": [
                 "C3P2T1"
               ],
-              "progress_percent": 70,
-              "effort_hours": 20
+              "progress_percent": 55,
+              "effort_hours": 17
             },
             {
               "task_id": "C3P2T3",
-              "task_name": "完成跨部门评审",
-              "owner": "模拟角色3-3",
-              "start_date": "2026-07-20",
-              "due_date": "2026-07-25",
-              "status": "阻塞",
+              "task_name": "完成成分与强度检测",
+              "owner": "模拟岗位3-3",
+              "start_date": "2026-08-18",
+              "due_date": "2026-08-23",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C3P2T2"
               ],
-              "progress_percent": 45,
-              "effort_hours": 24
+              "progress_percent": 40,
+              "effort_hours": 22
             },
             {
               "task_id": "C3P2T4",
-              "task_name": "执行集成验证",
-              "owner": "模拟角色3-4",
-              "start_date": "2026-07-26",
-              "due_date": "2026-07-31",
+              "task_name": "评估工艺参数变化",
+              "owner": "模拟岗位3-4",
+              "start_date": "2026-08-24",
+              "due_date": "2026-08-29",
               "status": "未开始",
               "priority": "高",
               "dependency_ids": [
                 "C3P2T3"
               ],
               "progress_percent": 0,
-              "effort_hours": 28
+              "effort_hours": 27
             },
             {
               "task_id": "C3P2T5",
-              "task_name": "准备回滚与应急方案",
-              "owner": "模拟角色3-5",
-              "start_date": "2026-08-01",
-              "due_date": "2026-08-06",
-              "status": "未开始",
+              "task_name": "取得客户偏差许可",
+              "owner": "模拟岗位3-5",
+              "start_date": "2026-08-30",
+              "due_date": "2026-09-04",
+              "status": "进行中",
               "priority": "中",
               "dependency_ids": [
+                "C3P2T3",
                 "C3P2T4"
               ],
-              "progress_percent": 0,
+              "progress_percent": 20,
               "effort_hours": 32
             },
             {
               "task_id": "C3P2T6",
-              "task_name": "取得业务书面验收",
-              "owner": "模拟角色3-6",
-              "start_date": "2026-08-07",
-              "due_date": "2026-08-12",
+              "task_name": "更新采购与排产计划",
+              "owner": "模拟岗位3-6",
+              "start_date": "2026-09-05",
+              "due_date": "2026-09-10",
               "status": "未开始",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [
+                "C3P2T4",
                 "C3P2T5"
               ],
               "progress_percent": 0,
-              "effort_hours": 36
+              "effort_hours": 37
             }
           ]
         },
         {
           "project_id": "PRJ-C3P3",
-          "project_name": "供应商切换",
-          "project_type": "供应商管理",
+          "project_name": "批次质量追溯整改",
+          "project_type": "质量治理",
           "department": "质量管理部",
-          "stage": "切换演练",
-          "start_date": "2026-07-15",
-          "end_date": "2026-09-08",
-          "background": "用于比较不同公司画像下的供应商管理风险信号，全部内容均为确定性生成的模拟数据。",
-          "outcome": "当前仍在执行；包含延期依赖、阻塞评审和待确认验收等可核查模拟状态。",
+          "stage": "闭环验证",
+          "start_date": "2026-08-11",
+          "end_date": "2026-10-15",
+          "background": "批次质量追溯整改是该模拟公司特有的质量治理场景，用于验证行业背景和标准如何影响风险判断。",
+          "outcome": "模拟执行中；状态分布用于覆盖健康、阻塞、延期、临期和信息不足场景，不代表真实业务结果。",
           "tasks": [
             {
               "task_id": "C3P3T1",
-              "task_name": "确认范围与验收口径",
-              "owner": "模拟角色3-1",
-              "start_date": "2026-07-15",
-              "due_date": "2026-07-20",
+              "task_name": "隔离疑似批次",
+              "owner": "模拟岗位3-1",
+              "start_date": "2026-08-11",
+              "due_date": "2026-08-16",
               "status": "已完成",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [],
               "progress_percent": 100,
-              "effort_hours": 16
+              "effort_hours": 12
             },
             {
               "task_id": "C3P3T2",
-              "task_name": "冻结数据和接口清单",
-              "owner": "模拟角色3-2",
-              "start_date": "2026-07-21",
-              "due_date": "2026-07-26",
-              "status": "进行中",
+              "task_name": "复核首检与巡检记录",
+              "owner": "模拟岗位3-2",
+              "start_date": "2026-08-17",
+              "due_date": "2026-08-22",
+              "status": "已完成",
               "priority": "高",
               "dependency_ids": [
                 "C3P3T1"
               ],
-              "progress_percent": 70,
-              "effort_hours": 20
+              "progress_percent": 100,
+              "effort_hours": 17
             },
             {
               "task_id": "C3P3T3",
-              "task_name": "完成跨部门评审",
-              "owner": "模拟角色3-3",
-              "start_date": "2026-07-27",
-              "due_date": "2026-08-01",
-              "status": "阻塞",
+              "task_name": "追溯设备和操作班组",
+              "owner": "模拟岗位3-3",
+              "start_date": "2026-08-23",
+              "due_date": "2026-08-28",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C3P3T2"
               ],
               "progress_percent": 45,
-              "effort_hours": 24
+              "effort_hours": 22
             },
             {
               "task_id": "C3P3T4",
-              "task_name": "执行集成验证",
-              "owner": "模拟角色3-4",
-              "start_date": "2026-08-02",
-              "due_date": "2026-08-07",
-              "status": "未开始",
+              "task_name": "完成根因试验",
+              "owner": "模拟岗位3-4",
+              "start_date": "2026-08-29",
+              "due_date": "2026-09-03",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C3P3T3"
               ],
-              "progress_percent": 0,
-              "effort_hours": 28
+              "progress_percent": 25,
+              "effort_hours": 27
             },
             {
               "task_id": "C3P3T5",
-              "task_name": "准备回滚与应急方案",
-              "owner": "模拟角色3-5",
-              "start_date": "2026-08-08",
-              "due_date": "2026-08-13",
+              "task_name": "实施纠正预防措施",
+              "owner": "模拟岗位3-5",
+              "start_date": "2026-09-04",
+              "due_date": "2026-09-09",
               "status": "未开始",
               "priority": "中",
               "dependency_ids": [
+                "C3P3T3",
                 "C3P3T4"
               ],
               "progress_percent": 0,
@@ -1496,189 +1562,193 @@
             },
             {
               "task_id": "C3P3T6",
-              "task_name": "取得业务书面验收",
-              "owner": "模拟角色3-6",
-              "start_date": "2026-08-14",
-              "due_date": "2026-08-19",
+              "task_name": "验证连续三批结果",
+              "owner": "模拟岗位3-6",
+              "start_date": "2026-09-10",
+              "due_date": "2026-09-15",
               "status": "未开始",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [
+                "C3P3T4",
                 "C3P3T5"
               ],
               "progress_percent": 0,
-              "effort_hours": 36
+              "effort_hours": 37
             }
           ]
         },
         {
           "project_id": "PRJ-C3P4",
-          "project_name": "重点客户交付",
-          "project_type": "客户交付",
-          "department": "采购部",
-          "stage": "客户验收",
-          "start_date": "2026-07-22",
-          "end_date": "2026-09-15",
-          "background": "用于比较不同公司画像下的客户交付风险信号，全部内容均为确定性生成的模拟数据。",
-          "outcome": "当前仍在执行；包含延期依赖、阻塞评审和待确认验收等可核查模拟状态。",
+          "project_name": "MES 工单接口改造",
+          "project_type": "系统升级",
+          "department": "信息化部",
+          "stage": "联调",
+          "start_date": "2026-08-16",
+          "end_date": "2026-10-20",
+          "background": "MES 工单接口改造是该模拟公司特有的系统升级场景，用于验证行业背景和标准如何影响风险判断。",
+          "outcome": "模拟执行中；状态分布用于覆盖健康、阻塞、延期、临期和信息不足场景，不代表真实业务结果。",
           "tasks": [
             {
               "task_id": "C3P4T1",
-              "task_name": "确认范围与验收口径",
-              "owner": "模拟角色3-1",
-              "start_date": "2026-07-22",
-              "due_date": "2026-07-27",
+              "task_name": "冻结工单字段字典",
+              "owner": "模拟岗位3-1",
+              "start_date": "2026-08-16",
+              "due_date": "2026-08-21",
               "status": "已完成",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [],
               "progress_percent": 100,
-              "effort_hours": 16
+              "effort_hours": 12
             },
             {
               "task_id": "C3P4T2",
-              "task_name": "冻结数据和接口清单",
-              "owner": "模拟角色3-2",
-              "start_date": "2026-07-28",
-              "due_date": "2026-08-02",
-              "status": "进行中",
+              "task_name": "核对 ERP 下发规则",
+              "owner": "模拟岗位3-2",
+              "start_date": "2026-08-22",
+              "due_date": "2026-08-27",
+              "status": "已完成",
               "priority": "高",
               "dependency_ids": [
                 "C3P4T1"
               ],
-              "progress_percent": 70,
-              "effort_hours": 20
+              "progress_percent": 100,
+              "effort_hours": 17
             },
             {
               "task_id": "C3P4T3",
-              "task_name": "完成跨部门评审",
-              "owner": "模拟角色3-3",
-              "start_date": "2026-08-03",
-              "due_date": "2026-08-08",
-              "status": "阻塞",
+              "task_name": "开发异常重传机制",
+              "owner": "模拟岗位3-3",
+              "start_date": "2026-08-28",
+              "due_date": "2026-09-02",
+              "status": "已完成",
               "priority": "高",
               "dependency_ids": [
                 "C3P4T2"
               ],
-              "progress_percent": 45,
-              "effort_hours": 24
+              "progress_percent": 100,
+              "effort_hours": 22
             },
             {
               "task_id": "C3P4T4",
-              "task_name": "执行集成验证",
-              "owner": "模拟角色3-4",
-              "start_date": "2026-08-09",
-              "due_date": "2026-08-14",
-              "status": "未开始",
+              "task_name": "执行班组终端测试",
+              "owner": "模拟岗位3-4",
+              "start_date": "2026-09-03",
+              "due_date": "2026-09-08",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C3P4T3"
               ],
-              "progress_percent": 0,
-              "effort_hours": 28
+              "progress_percent": 75,
+              "effort_hours": 27
             },
             {
               "task_id": "C3P4T5",
-              "task_name": "准备回滚与应急方案",
-              "owner": "模拟角色3-5",
-              "start_date": "2026-08-15",
-              "due_date": "2026-08-20",
-              "status": "未开始",
+              "task_name": "完成历史工单迁移",
+              "owner": "模拟岗位3-5",
+              "start_date": "2026-09-09",
+              "due_date": "2026-09-14",
+              "status": "进行中",
               "priority": "中",
               "dependency_ids": [
+                "C3P4T3",
                 "C3P4T4"
               ],
-              "progress_percent": 0,
+              "progress_percent": 60,
               "effort_hours": 32
             },
             {
               "task_id": "C3P4T6",
-              "task_name": "取得业务书面验收",
-              "owner": "模拟角色3-6",
-              "start_date": "2026-08-21",
-              "due_date": "2026-08-26",
+              "task_name": "组织生产切换演练",
+              "owner": "模拟岗位3-6",
+              "start_date": "2026-09-15",
+              "due_date": "2026-09-20",
               "status": "未开始",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [
+                "C3P4T4",
                 "C3P4T5"
               ],
               "progress_percent": 0,
-              "effort_hours": 36
+              "effort_hours": 37
             }
           ]
         },
         {
           "project_id": "PRJ-C3P5",
-          "project_name": "运营流程优化",
-          "project_type": "流程优化",
-          "department": "信息化部",
-          "stage": "试运行",
-          "start_date": "2026-07-29",
-          "end_date": "2026-09-22",
-          "background": "用于比较不同公司画像下的流程优化风险信号，全部内容均为确定性生成的模拟数据。",
-          "outcome": "当前仍在执行；包含延期依赖、阻塞评审和待确认验收等可核查模拟状态。",
+          "project_name": "旺季产能平衡",
+          "project_type": "生产计划",
+          "department": "生产计划部",
+          "stage": "滚动排产",
+          "start_date": "2026-08-21",
+          "end_date": "2026-10-25",
+          "background": "旺季产能平衡是该模拟公司特有的生产计划场景，用于验证行业背景和标准如何影响风险判断。",
+          "outcome": "模拟执行中；状态分布用于覆盖健康、阻塞、延期、临期和信息不足场景，不代表真实业务结果。",
           "tasks": [
             {
               "task_id": "C3P5T1",
-              "task_name": "确认范围与验收口径",
-              "owner": "模拟角色3-1",
-              "start_date": "2026-07-29",
-              "due_date": "2026-08-03",
+              "task_name": "汇总确认订单需求",
+              "owner": "模拟岗位3-1",
+              "start_date": "2026-08-21",
+              "due_date": "2026-08-26",
               "status": "已完成",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [],
               "progress_percent": 100,
-              "effort_hours": 16
+              "effort_hours": 12
             },
             {
               "task_id": "C3P5T2",
-              "task_name": "冻结数据和接口清单",
-              "owner": "模拟角色3-2",
-              "start_date": "2026-08-04",
-              "due_date": "2026-08-09",
+              "task_name": "计算瓶颈工序负荷",
+              "owner": "模拟岗位3-2",
+              "start_date": "2026-08-27",
+              "due_date": "2026-09-01",
               "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C3P5T1"
               ],
-              "progress_percent": 70,
-              "effort_hours": 20
+              "progress_percent": 80,
+              "effort_hours": 17
             },
             {
               "task_id": "C3P5T3",
-              "task_name": "完成跨部门评审",
-              "owner": "模拟角色3-3",
-              "start_date": "2026-08-10",
-              "due_date": "2026-08-15",
-              "status": "阻塞",
+              "task_name": "核对人员班次限制",
+              "owner": "模拟岗位3-3",
+              "start_date": "2026-09-02",
+              "due_date": "2026-09-07",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C3P5T2"
               ],
-              "progress_percent": 45,
-              "effort_hours": 24
+              "progress_percent": 60,
+              "effort_hours": 22
             },
             {
               "task_id": "C3P5T4",
-              "task_name": "执行集成验证",
-              "owner": "模拟角色3-4",
-              "start_date": "2026-08-16",
-              "due_date": "2026-08-21",
-              "status": "未开始",
+              "task_name": "评估外协可用产能",
+              "owner": "模拟岗位3-4",
+              "start_date": "2026-09-08",
+              "due_date": "2026-09-13",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C3P5T3"
               ],
-              "progress_percent": 0,
-              "effort_hours": 28
+              "progress_percent": 50,
+              "effort_hours": 27
             },
             {
               "task_id": "C3P5T5",
-              "task_name": "准备回滚与应急方案",
-              "owner": "模拟角色3-5",
-              "start_date": "2026-08-22",
-              "due_date": "2026-08-27",
+              "task_name": "发布周滚动计划",
+              "owner": "模拟岗位3-5",
+              "start_date": "2026-09-14",
+              "due_date": "2026-09-19",
               "status": "未开始",
               "priority": "中",
               "dependency_ids": [
+                "C3P5T3",
                 "C3P5T4"
               ],
               "progress_percent": 0,
@@ -1686,125 +1756,118 @@
             },
             {
               "task_id": "C3P5T6",
-              "task_name": "取得业务书面验收",
-              "owner": "模拟角色3-6",
-              "start_date": "2026-08-28",
-              "due_date": "2026-09-02",
+              "task_name": "监控计划达成率",
+              "owner": "模拟岗位3-6",
+              "start_date": "2026-09-20",
+              "due_date": "2026-09-25",
               "status": "未开始",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [
+                "C3P5T4",
                 "C3P5T5"
               ],
               "progress_percent": 0,
-              "effort_hours": 36
+              "effort_hours": 37
             }
           ]
         }
       ],
       "policies": [
         {
-          "document_id": "forge-manufacturing-risk-level",
-          "title": "项目风险分级与升级标准",
+          "document_id": "forge-manufacturing-downtime",
+          "title": "关键设备停机升级",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "风险",
-            "升级",
-            "智能制造"
+            "智能制造",
+            "downtime"
           ],
-          "content": "适用画像：智能制造、500–999人、订单制造。高风险应在一个工作日内由项目负责人核对证据、影响和责任角色；中风险每三个工作日复核。"
+          "content": "瓶颈设备预计停机超过四小时按高风险升级，必须记录报警、备件和产能缺口。"
         },
         {
-          "document_id": "forge-manufacturing-change-control",
-          "title": "需求变更控制办法",
+          "document_id": "forge-manufacturing-quality",
+          "title": "批次质量隔离标准",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "变更",
-            "范围",
-            "智能制造"
+            "智能制造",
+            "quality"
           ],
-          "content": "适用画像：智能制造、500–999人、订单制造。变更进入执行前应记录提出方、业务理由、范围、验收条件、测试影响和排期影响。"
+          "content": "关键尺寸或安全指标异常应立即隔离批次，在连续三批验证前不得关闭。"
         },
         {
-          "document_id": "forge-manufacturing-data-security",
-          "title": "数据最小化处理规范",
+          "document_id": "forge-manufacturing-material",
+          "title": "替代材料批准要求",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "数据",
-            "安全",
-            "智能制造"
+            "智能制造",
+            "material"
           ],
-          "content": "适用画像：智能制造、500–999人、订单制造。导入资料前应移除无关个人信息与凭证；模拟数据不得冒充真实客户资料。"
+          "content": "替代材料需完成检验、工艺评估和客户偏差许可，不得由采购单方放行。"
         },
         {
-          "document_id": "forge-manufacturing-release-approval",
-          "title": "发布与切换审批清单",
+          "document_id": "forge-manufacturing-capacity",
+          "title": "产能冲突复核",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "发布",
-            "回滚",
-            "智能制造"
+            "智能制造",
+            "capacity"
           ],
-          "content": "适用画像：智能制造、500–999人、订单制造。切换前必须核对测试结论、未关闭高优问题、监控指标、回滚方案和值班角色。"
+          "content": "排产应核对设备、模具、人员和外协四类约束，不能只比较总工时。"
         },
         {
-          "document_id": "forge-manufacturing-supplier-management",
-          "title": "关键供应商管理规范",
+          "document_id": "forge-manufacturing-mes",
+          "title": "MES 切换标准",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "供应商",
-            "SLA",
-            "智能制造"
+            "智能制造",
+            "mes"
           ],
-          "content": "适用画像：智能制造、500–999人、订单制造。关键供应商交付前应取得容量证据、故障联系人、服务承诺和替代路径。"
+          "content": "切换前完成工单重传、终端离线和历史追溯演练，并保留纸质兜底流程。"
         },
         {
-          "document_id": "forge-manufacturing-customer-acceptance",
-          "title": "客户验收证据要求",
+          "document_id": "forge-manufacturing-supplier",
+          "title": "来料供应风险标准",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "客户",
-            "验收",
-            "智能制造"
+            "智能制造",
+            "supplier"
           ],
-          "content": "适用画像：智能制造、500–999人、订单制造。验收应对应确认范围，保存测试记录、问题清单和书面结论；未确认不得标记完成。"
+          "content": "关键原料交期变化超过一天即复核，缺少替代来源时升级生产总监。"
         },
         {
-          "document_id": "forge-manufacturing-ai-usage",
+          "document_id": "forge-manufacturing-ai-boundary",
           "title": "AI 助手使用边界",
           "version": "1.0",
-          "effective_date": "2026-06-01",
+          "effective_date": "2026-08-25",
           "status": "effective",
           "tags": [
             "AI",
-            "人工确认",
-            "智能制造"
+            "人工确认"
           ],
-          "content": "适用画像：智能制造、500–999人、订单制造。AI 输出只作为草稿，不得自动改变负责人、期限、风险状态或创建正式行动。"
+          "content": "AI 输出仅作草稿；引用必须来自当前公司知识版本，不得自动改变负责人、日期、风险状态或正式行动。"
         },
         {
-          "document_id": "forge-manufacturing-case-review",
-          "title": "历史案例：依赖未闭环",
+          "document_id": "forge-manufacturing-record-evidence",
+          "title": "事实与证据记录规范",
           "version": "1.0",
-          "effective_date": "2026-06-01",
+          "effective_date": "2026-05-01",
           "status": "effective",
           "tags": [
-            "案例",
-            "依赖",
-            "智能制造"
+            "证据",
+            "审计"
           ],
-          "content": "适用画像：智能制造、500–999人、订单制造。模拟案例中上游评审阻塞导致验证推迟；团队核对缺口、拆分可并行任务并记录复核日期。"
+          "content": "记录必须区分事实、推测和待验证事项，保留来源、时间、责任角色和下一次检查日期。"
         }
       ]
     },
@@ -1814,10 +1877,29 @@
       "industry": "物流与仓储",
       "size_band": "200–499人",
       "region": "华东",
-      "business_model": "合同物流",
-      "lifecycle_stage": "扩张期",
+      "business_model": "合同物流与区域配送",
+      "lifecycle_stage": "网络扩张期",
       "risk_appetite": "平衡",
-      "description": "SaaSGuide 多公司对照使用的虚构画像，不对应任何真实企业、人员或经营结果。",
+      "operating_characteristics": [
+        "时效 SLA",
+        "仓容峰谷",
+        "承运商协同",
+        "天气与线路扰动"
+      ],
+      "risk_standard": {
+        "high_overdue_days": 1,
+        "due_soon_days": 3,
+        "blocked_hours_high": 6,
+        "review_cadence": "每日早晚两次",
+        "escalation_role": "区域运营经理",
+        "mandatory_evidence": [
+          "轨迹节点",
+          "仓容利用率",
+          "承运商回执",
+          "客户SLA"
+        ]
+      },
+      "description": "为零售客户提供仓配服务，核心约束是仓容、干线、末端时效和货物安全。 全部数据均为虚构。",
       "simulated": true,
       "departments": [
         "运输运营部",
@@ -1829,78 +1911,79 @@
       "projects": [
         {
           "project_id": "PRJ-C4P1",
-          "project_name": "核心系统升级",
-          "project_type": "系统升级",
+          "project_name": "华东暴雨线路改道",
+          "project_type": "运输应急",
           "department": "运输运营部",
-          "stage": "方案设计",
-          "start_date": "2026-07-01",
-          "end_date": "2026-08-25",
-          "background": "用于比较不同公司画像下的系统升级风险信号，全部内容均为确定性生成的模拟数据。",
-          "outcome": "当前仍在执行；包含延期依赖、阻塞评审和待确认验收等可核查模拟状态。",
+          "stage": "应急执行",
+          "start_date": "2026-08-01",
+          "end_date": "2026-10-05",
+          "background": "华东暴雨线路改道是该模拟公司特有的运输应急场景，用于验证行业背景和标准如何影响风险判断。",
+          "outcome": "模拟执行中；状态分布用于覆盖健康、阻塞、延期、临期和信息不足场景，不代表真实业务结果。",
           "tasks": [
             {
               "task_id": "C4P1T1",
-              "task_name": "确认范围与验收口径",
-              "owner": "模拟角色4-1",
-              "start_date": "2026-07-01",
-              "due_date": "2026-07-06",
+              "task_name": "识别受影响干线车辆",
+              "owner": "模拟岗位4-1",
+              "start_date": "2026-08-01",
+              "due_date": "2026-08-06",
               "status": "已完成",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [],
               "progress_percent": 100,
-              "effort_hours": 16
+              "effort_hours": 12
             },
             {
               "task_id": "C4P1T2",
-              "task_name": "冻结数据和接口清单",
-              "owner": "模拟角色4-2",
-              "start_date": "2026-07-07",
-              "due_date": "2026-07-12",
-              "status": "进行中",
+              "task_name": "核对高速与港区封闭信息",
+              "owner": "模拟岗位4-2",
+              "start_date": "2026-08-07",
+              "due_date": "2026-08-12",
+              "status": "已完成",
               "priority": "高",
               "dependency_ids": [
                 "C4P1T1"
               ],
-              "progress_percent": 70,
-              "effort_hours": 20
+              "progress_percent": 100,
+              "effort_hours": 17
             },
             {
               "task_id": "C4P1T3",
-              "task_name": "完成跨部门评审",
-              "owner": "模拟角色4-3",
-              "start_date": "2026-07-13",
-              "due_date": "2026-07-18",
+              "task_name": "规划替代中转节点",
+              "owner": "模拟岗位4-3",
+              "start_date": "2026-08-13",
+              "due_date": "2026-08-18",
               "status": "阻塞",
               "priority": "高",
               "dependency_ids": [
                 "C4P1T2"
               ],
-              "progress_percent": 45,
-              "effort_hours": 24
+              "progress_percent": 35,
+              "effort_hours": 22
             },
             {
               "task_id": "C4P1T4",
-              "task_name": "执行集成验证",
-              "owner": "模拟角色4-4",
-              "start_date": "2026-07-19",
-              "due_date": "2026-07-24",
+              "task_name": "通知承运商调整班次",
+              "owner": "模拟岗位4-4",
+              "start_date": "2026-08-19",
+              "due_date": "2026-08-24",
               "status": "未开始",
               "priority": "高",
               "dependency_ids": [
                 "C4P1T3"
               ],
               "progress_percent": 0,
-              "effort_hours": 28
+              "effort_hours": 27
             },
             {
               "task_id": "C4P1T5",
-              "task_name": "准备回滚与应急方案",
-              "owner": "模拟角色4-5",
-              "start_date": "2026-07-25",
-              "due_date": "2026-07-30",
+              "task_name": "向客户更新预计到达",
+              "owner": "模拟岗位4-5",
+              "start_date": "2026-08-25",
+              "due_date": "2026-08-30",
               "status": "未开始",
               "priority": "中",
               "dependency_ids": [
+                "C4P1T3",
                 "C4P1T4"
               ],
               "progress_percent": 0,
@@ -1908,189 +1991,193 @@
             },
             {
               "task_id": "C4P1T6",
-              "task_name": "取得业务书面验收",
-              "owner": "模拟角色4-6",
-              "start_date": "2026-07-31",
-              "due_date": "2026-08-05",
+              "task_name": "复盘额外成本与晚点",
+              "owner": "模拟岗位4-6",
+              "start_date": "2026-08-31",
+              "due_date": "2026-09-05",
               "status": "未开始",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [
+                "C4P1T4",
                 "C4P1T5"
               ],
               "progress_percent": 0,
-              "effort_hours": 36
+              "effort_hours": 37
             }
           ]
         },
         {
           "project_id": "PRJ-C4P2",
-          "project_name": "主数据治理",
-          "project_type": "数据治理",
+          "project_name": "双十一仓容扩展",
+          "project_type": "仓储能力",
           "department": "仓储运营部",
-          "stage": "数据清洗",
-          "start_date": "2026-07-08",
-          "end_date": "2026-09-01",
-          "background": "用于比较不同公司画像下的数据治理风险信号，全部内容均为确定性生成的模拟数据。",
-          "outcome": "当前仍在执行；包含延期依赖、阻塞评审和待确认验收等可核查模拟状态。",
+          "stage": "容量准备",
+          "start_date": "2026-08-06",
+          "end_date": "2026-10-10",
+          "background": "双十一仓容扩展是该模拟公司特有的仓储能力场景，用于验证行业背景和标准如何影响风险判断。",
+          "outcome": "模拟执行中；状态分布用于覆盖健康、阻塞、延期、临期和信息不足场景，不代表真实业务结果。",
           "tasks": [
             {
               "task_id": "C4P2T1",
-              "task_name": "确认范围与验收口径",
-              "owner": "模拟角色4-1",
-              "start_date": "2026-07-08",
-              "due_date": "2026-07-13",
+              "task_name": "预测每日入出库峰值",
+              "owner": "模拟岗位4-1",
+              "start_date": "2026-08-06",
+              "due_date": "2026-08-11",
               "status": "已完成",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [],
               "progress_percent": 100,
-              "effort_hours": 16
+              "effort_hours": 12
             },
             {
               "task_id": "C4P2T2",
-              "task_name": "冻结数据和接口清单",
-              "owner": "模拟角色4-2",
-              "start_date": "2026-07-14",
-              "due_date": "2026-07-19",
-              "status": "进行中",
+              "task_name": "盘点可用库位和设备",
+              "owner": "模拟岗位4-2",
+              "start_date": "2026-08-12",
+              "due_date": "2026-08-17",
+              "status": "阻塞",
               "priority": "高",
               "dependency_ids": [
                 "C4P2T1"
               ],
-              "progress_percent": 70,
-              "effort_hours": 20
+              "progress_percent": 55,
+              "effort_hours": 17
             },
             {
               "task_id": "C4P2T3",
-              "task_name": "完成跨部门评审",
-              "owner": "模拟角色4-3",
-              "start_date": "2026-07-20",
-              "due_date": "2026-07-25",
-              "status": "阻塞",
+              "task_name": "规划临时外租仓",
+              "owner": "模拟岗位4-3",
+              "start_date": "2026-08-18",
+              "due_date": "2026-08-23",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C4P2T2"
               ],
-              "progress_percent": 45,
-              "effort_hours": 24
+              "progress_percent": 40,
+              "effort_hours": 22
             },
             {
               "task_id": "C4P2T4",
-              "task_name": "执行集成验证",
-              "owner": "模拟角色4-4",
-              "start_date": "2026-07-26",
-              "due_date": "2026-07-31",
+              "task_name": "招聘并培训临时人员",
+              "owner": "模拟岗位4-4",
+              "start_date": "2026-08-24",
+              "due_date": "2026-08-29",
               "status": "未开始",
               "priority": "高",
               "dependency_ids": [
                 "C4P2T3"
               ],
               "progress_percent": 0,
-              "effort_hours": 28
+              "effort_hours": 27
             },
             {
               "task_id": "C4P2T5",
-              "task_name": "准备回滚与应急方案",
-              "owner": "模拟角色4-5",
-              "start_date": "2026-08-01",
-              "due_date": "2026-08-06",
-              "status": "未开始",
+              "task_name": "执行峰值压力演练",
+              "owner": "模拟岗位4-5",
+              "start_date": "2026-08-30",
+              "due_date": "2026-09-04",
+              "status": "进行中",
               "priority": "中",
               "dependency_ids": [
+                "C4P2T3",
                 "C4P2T4"
               ],
-              "progress_percent": 0,
+              "progress_percent": 20,
               "effort_hours": 32
             },
             {
               "task_id": "C4P2T6",
-              "task_name": "取得业务书面验收",
-              "owner": "模拟角色4-6",
-              "start_date": "2026-08-07",
-              "due_date": "2026-08-12",
+              "task_name": "监控仓容与积压小时",
+              "owner": "模拟岗位4-6",
+              "start_date": "2026-09-05",
+              "due_date": "2026-09-10",
               "status": "未开始",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [
+                "C4P2T4",
                 "C4P2T5"
               ],
               "progress_percent": 0,
-              "effort_hours": 36
+              "effort_hours": 37
             }
           ]
         },
         {
           "project_id": "PRJ-C4P3",
-          "project_name": "供应商切换",
-          "project_type": "供应商管理",
-          "department": "网络规划部",
-          "stage": "切换演练",
-          "start_date": "2026-07-15",
-          "end_date": "2026-09-08",
-          "background": "用于比较不同公司画像下的供应商管理风险信号，全部内容均为确定性生成的模拟数据。",
-          "outcome": "当前仍在执行；包含延期依赖、阻塞评审和待确认验收等可核查模拟状态。",
+          "project_name": "冷链承运商准入",
+          "project_type": "供应商准入",
+          "department": "安全质量部",
+          "stage": "资质核验",
+          "start_date": "2026-08-11",
+          "end_date": "2026-10-15",
+          "background": "冷链承运商准入是该模拟公司特有的供应商准入场景，用于验证行业背景和标准如何影响风险判断。",
+          "outcome": "模拟执行中；状态分布用于覆盖健康、阻塞、延期、临期和信息不足场景，不代表真实业务结果。",
           "tasks": [
             {
               "task_id": "C4P3T1",
-              "task_name": "确认范围与验收口径",
-              "owner": "模拟角色4-1",
-              "start_date": "2026-07-15",
-              "due_date": "2026-07-20",
+              "task_name": "核验运输与保险资质",
+              "owner": "模拟岗位4-1",
+              "start_date": "2026-08-11",
+              "due_date": "2026-08-16",
               "status": "已完成",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [],
               "progress_percent": 100,
-              "effort_hours": 16
+              "effort_hours": 12
             },
             {
               "task_id": "C4P3T2",
-              "task_name": "冻结数据和接口清单",
-              "owner": "模拟角色4-2",
-              "start_date": "2026-07-21",
-              "due_date": "2026-07-26",
-              "status": "进行中",
+              "task_name": "抽查温控设备校准证书",
+              "owner": "模拟岗位4-2",
+              "start_date": "2026-08-17",
+              "due_date": "2026-08-22",
+              "status": "已完成",
               "priority": "高",
               "dependency_ids": [
                 "C4P3T1"
               ],
-              "progress_percent": 70,
-              "effort_hours": 20
+              "progress_percent": 100,
+              "effort_hours": 17
             },
             {
               "task_id": "C4P3T3",
-              "task_name": "完成跨部门评审",
-              "owner": "模拟角色4-3",
-              "start_date": "2026-07-27",
-              "due_date": "2026-08-01",
-              "status": "阻塞",
+              "task_name": "评估历史断链记录",
+              "owner": "模拟岗位4-3",
+              "start_date": "2026-08-23",
+              "due_date": "2026-08-28",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C4P3T2"
               ],
               "progress_percent": 45,
-              "effort_hours": 24
+              "effort_hours": 22
             },
             {
               "task_id": "C4P3T4",
-              "task_name": "执行集成验证",
-              "owner": "模拟角色4-4",
-              "start_date": "2026-08-02",
-              "due_date": "2026-08-07",
-              "status": "未开始",
+              "task_name": "执行模拟线路测试",
+              "owner": "模拟岗位4-4",
+              "start_date": "2026-08-29",
+              "due_date": "2026-09-03",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C4P3T3"
               ],
-              "progress_percent": 0,
-              "effort_hours": 28
+              "progress_percent": 25,
+              "effort_hours": 27
             },
             {
               "task_id": "C4P3T5",
-              "task_name": "准备回滚与应急方案",
-              "owner": "模拟角色4-5",
-              "start_date": "2026-08-08",
-              "due_date": "2026-08-13",
+              "task_name": "确认异常赔付条款",
+              "owner": "模拟岗位4-5",
+              "start_date": "2026-09-04",
+              "due_date": "2026-09-09",
               "status": "未开始",
               "priority": "中",
               "dependency_ids": [
+                "C4P3T3",
                 "C4P3T4"
               ],
               "progress_percent": 0,
@@ -2098,189 +2185,193 @@
             },
             {
               "task_id": "C4P3T6",
-              "task_name": "取得业务书面验收",
-              "owner": "模拟角色4-6",
-              "start_date": "2026-08-14",
-              "due_date": "2026-08-19",
+              "task_name": "完成准入评审签字",
+              "owner": "模拟岗位4-6",
+              "start_date": "2026-09-10",
+              "due_date": "2026-09-15",
               "status": "未开始",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [
+                "C4P3T4",
                 "C4P3T5"
               ],
               "progress_percent": 0,
-              "effort_hours": 36
+              "effort_hours": 37
             }
           ]
         },
         {
           "project_id": "PRJ-C4P4",
-          "project_name": "重点客户交付",
-          "project_type": "客户交付",
+          "project_name": "重点客户 SLA 看板",
+          "project_type": "客户运营",
           "department": "客户方案部",
-          "stage": "客户验收",
-          "start_date": "2026-07-22",
-          "end_date": "2026-09-15",
-          "background": "用于比较不同公司画像下的客户交付风险信号，全部内容均为确定性生成的模拟数据。",
-          "outcome": "当前仍在执行；包含延期依赖、阻塞评审和待确认验收等可核查模拟状态。",
+          "stage": "上线",
+          "start_date": "2026-08-16",
+          "end_date": "2026-10-20",
+          "background": "重点客户 SLA 看板是该模拟公司特有的客户运营场景，用于验证行业背景和标准如何影响风险判断。",
+          "outcome": "模拟执行中；状态分布用于覆盖健康、阻塞、延期、临期和信息不足场景，不代表真实业务结果。",
           "tasks": [
             {
               "task_id": "C4P4T1",
-              "task_name": "确认范围与验收口径",
-              "owner": "模拟角色4-1",
-              "start_date": "2026-07-22",
-              "due_date": "2026-07-27",
+              "task_name": "确认客户时效定义",
+              "owner": "模拟岗位4-1",
+              "start_date": "2026-08-16",
+              "due_date": "2026-08-21",
               "status": "已完成",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [],
               "progress_percent": 100,
-              "effort_hours": 16
+              "effort_hours": 12
             },
             {
               "task_id": "C4P4T2",
-              "task_name": "冻结数据和接口清单",
-              "owner": "模拟角色4-2",
-              "start_date": "2026-07-28",
-              "due_date": "2026-08-02",
-              "status": "进行中",
+              "task_name": "接入揽收与签收轨迹",
+              "owner": "模拟岗位4-2",
+              "start_date": "2026-08-22",
+              "due_date": "2026-08-27",
+              "status": "已完成",
               "priority": "高",
               "dependency_ids": [
                 "C4P4T1"
               ],
-              "progress_percent": 70,
-              "effort_hours": 20
+              "progress_percent": 100,
+              "effort_hours": 17
             },
             {
               "task_id": "C4P4T3",
-              "task_name": "完成跨部门评审",
-              "owner": "模拟角色4-3",
-              "start_date": "2026-08-03",
-              "due_date": "2026-08-08",
-              "status": "阻塞",
+              "task_name": "处理异常节点去重",
+              "owner": "模拟岗位4-3",
+              "start_date": "2026-08-28",
+              "due_date": "2026-09-02",
+              "status": "已完成",
               "priority": "高",
               "dependency_ids": [
                 "C4P4T2"
               ],
-              "progress_percent": 45,
-              "effort_hours": 24
+              "progress_percent": 100,
+              "effort_hours": 22
             },
             {
               "task_id": "C4P4T4",
-              "task_name": "执行集成验证",
-              "owner": "模拟角色4-4",
-              "start_date": "2026-08-09",
-              "due_date": "2026-08-14",
-              "status": "未开始",
+              "task_name": "建立超时预警规则",
+              "owner": "模拟岗位4-4",
+              "start_date": "2026-09-03",
+              "due_date": "2026-09-08",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C4P4T3"
               ],
-              "progress_percent": 0,
-              "effort_hours": 28
+              "progress_percent": 75,
+              "effort_hours": 27
             },
             {
               "task_id": "C4P4T5",
-              "task_name": "准备回滚与应急方案",
-              "owner": "模拟角色4-5",
-              "start_date": "2026-08-15",
-              "due_date": "2026-08-20",
-              "status": "未开始",
+              "task_name": "与客户核对样本",
+              "owner": "模拟岗位4-5",
+              "start_date": "2026-09-09",
+              "due_date": "2026-09-14",
+              "status": "进行中",
               "priority": "中",
               "dependency_ids": [
+                "C4P4T3",
                 "C4P4T4"
               ],
-              "progress_percent": 0,
+              "progress_percent": 60,
               "effort_hours": 32
             },
             {
               "task_id": "C4P4T6",
-              "task_name": "取得业务书面验收",
-              "owner": "模拟角色4-6",
-              "start_date": "2026-08-21",
-              "due_date": "2026-08-26",
+              "task_name": "发布周度服务报告",
+              "owner": "模拟岗位4-6",
+              "start_date": "2026-09-15",
+              "due_date": "2026-09-20",
               "status": "未开始",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [
+                "C4P4T4",
                 "C4P4T5"
               ],
               "progress_percent": 0,
-              "effort_hours": 36
+              "effort_hours": 37
             }
           ]
         },
         {
           "project_id": "PRJ-C4P5",
-          "project_name": "运营流程优化",
-          "project_type": "流程优化",
-          "department": "安全质量部",
-          "stage": "试运行",
-          "start_date": "2026-07-29",
-          "end_date": "2026-09-22",
-          "background": "用于比较不同公司画像下的流程优化风险信号，全部内容均为确定性生成的模拟数据。",
-          "outcome": "当前仍在执行；包含延期依赖、阻塞评审和待确认验收等可核查模拟状态。",
+          "project_name": "区域分拨中心选址",
+          "project_type": "网络规划",
+          "department": "网络规划部",
+          "stage": "方案比选",
+          "start_date": "2026-08-21",
+          "end_date": "2026-10-25",
+          "background": "区域分拨中心选址是该模拟公司特有的网络规划场景，用于验证行业背景和标准如何影响风险判断。",
+          "outcome": "模拟执行中；状态分布用于覆盖健康、阻塞、延期、临期和信息不足场景，不代表真实业务结果。",
           "tasks": [
             {
               "task_id": "C4P5T1",
-              "task_name": "确认范围与验收口径",
-              "owner": "模拟角色4-1",
-              "start_date": "2026-07-29",
-              "due_date": "2026-08-03",
+              "task_name": "收集订单热力分布",
+              "owner": "模拟岗位4-1",
+              "start_date": "2026-08-21",
+              "due_date": "2026-08-26",
               "status": "已完成",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [],
               "progress_percent": 100,
-              "effort_hours": 16
+              "effort_hours": 12
             },
             {
               "task_id": "C4P5T2",
-              "task_name": "冻结数据和接口清单",
-              "owner": "模拟角色4-2",
-              "start_date": "2026-08-04",
-              "due_date": "2026-08-09",
+              "task_name": "估算干支线运输成本",
+              "owner": "模拟岗位4-2",
+              "start_date": "2026-08-27",
+              "due_date": "2026-09-01",
               "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C4P5T1"
               ],
-              "progress_percent": 70,
-              "effort_hours": 20
+              "progress_percent": 80,
+              "effort_hours": 17
             },
             {
               "task_id": "C4P5T3",
-              "task_name": "完成跨部门评审",
-              "owner": "模拟角色4-3",
-              "start_date": "2026-08-10",
-              "due_date": "2026-08-15",
-              "status": "阻塞",
+              "task_name": "比较租金与改造投入",
+              "owner": "模拟岗位4-3",
+              "start_date": "2026-09-02",
+              "due_date": "2026-09-07",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C4P5T2"
               ],
-              "progress_percent": 45,
-              "effort_hours": 24
+              "progress_percent": 60,
+              "effort_hours": 22
             },
             {
               "task_id": "C4P5T4",
-              "task_name": "执行集成验证",
-              "owner": "模拟角色4-4",
-              "start_date": "2026-08-16",
-              "due_date": "2026-08-21",
-              "status": "未开始",
+              "task_name": "评估劳动力供给",
+              "owner": "模拟岗位4-4",
+              "start_date": "2026-09-08",
+              "due_date": "2026-09-13",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C4P5T3"
               ],
-              "progress_percent": 0,
-              "effort_hours": 28
+              "progress_percent": 50,
+              "effort_hours": 27
             },
             {
               "task_id": "C4P5T5",
-              "task_name": "准备回滚与应急方案",
-              "owner": "模拟角色4-5",
-              "start_date": "2026-08-22",
-              "due_date": "2026-08-27",
+              "task_name": "模拟旺季网络韧性",
+              "owner": "模拟岗位4-5",
+              "start_date": "2026-09-14",
+              "due_date": "2026-09-19",
               "status": "未开始",
               "priority": "中",
               "dependency_ids": [
+                "C4P5T3",
                 "C4P5T4"
               ],
               "progress_percent": 0,
@@ -2288,125 +2379,118 @@
             },
             {
               "task_id": "C4P5T6",
-              "task_name": "取得业务书面验收",
-              "owner": "模拟角色4-6",
-              "start_date": "2026-08-28",
-              "due_date": "2026-09-02",
+              "task_name": "提交投资决策材料",
+              "owner": "模拟岗位4-6",
+              "start_date": "2026-09-20",
+              "due_date": "2026-09-25",
               "status": "未开始",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [
+                "C4P5T4",
                 "C4P5T5"
               ],
               "progress_percent": 0,
-              "effort_hours": 36
+              "effort_hours": 37
             }
           ]
         }
       ],
       "policies": [
         {
-          "document_id": "swift-logistics-risk-level",
-          "title": "项目风险分级与升级标准",
+          "document_id": "swift-logistics-sla",
+          "title": "运输时效升级标准",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "风险",
-            "升级",
-            "物流与仓储"
+            "物流与仓储",
+            "sla"
           ],
-          "content": "适用画像：物流与仓储、200–499人、合同物流。高风险应在一个工作日内由项目负责人核对证据、影响和责任角色；中风险每三个工作日复核。"
+          "content": "预计晚于客户 SLA 三小时即预警，超过六小时由区域运营经理升级。"
         },
         {
-          "document_id": "swift-logistics-change-control",
-          "title": "需求变更控制办法",
+          "document_id": "swift-logistics-weather",
+          "title": "极端天气应急规则",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "变更",
-            "范围",
-            "物流与仓储"
+            "物流与仓储",
+            "weather"
           ],
-          "content": "适用画像：物流与仓储、200–499人、合同物流。变更进入执行前应记录提出方、业务理由、范围、验收条件、测试影响和排期影响。"
+          "content": "天气预警需结合实际封路、车辆位置和替代线路，不得只凭天气等级停运。"
         },
         {
-          "document_id": "swift-logistics-data-security",
-          "title": "数据最小化处理规范",
+          "document_id": "swift-logistics-capacity",
+          "title": "仓容峰值控制",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "数据",
-            "安全",
-            "物流与仓储"
+            "物流与仓储",
+            "capacity"
           ],
-          "content": "适用画像：物流与仓储、200–499人、合同物流。导入资料前应移除无关个人信息与凭证；模拟数据不得冒充真实客户资料。"
+          "content": "库位利用率持续超过 90% 或积压超过八小时应启动外溢方案。"
         },
         {
-          "document_id": "swift-logistics-release-approval",
-          "title": "发布与切换审批清单",
+          "document_id": "swift-logistics-carrier",
+          "title": "承运商准入规范",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "发布",
-            "回滚",
-            "物流与仓储"
+            "物流与仓储",
+            "carrier"
           ],
-          "content": "适用画像：物流与仓储、200–499人、合同物流。切换前必须核对测试结论、未关闭高优问题、监控指标、回滚方案和值班角色。"
+          "content": "准入必须核验资质、保险、设备、历史事故和异常赔付条款。"
         },
         {
-          "document_id": "swift-logistics-supplier-management",
-          "title": "关键供应商管理规范",
+          "document_id": "swift-logistics-cold-chain",
+          "title": "冷链断链处理",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "供应商",
-            "SLA",
-            "物流与仓储"
+            "物流与仓储",
+            "cold-chain"
           ],
-          "content": "适用画像：物流与仓储、200–499人、合同物流。关键供应商交付前应取得容量证据、故障联系人、服务承诺和替代路径。"
+          "content": "温度超限应隔离货物、保存连续温控记录并等待质量结论。"
         },
         {
-          "document_id": "swift-logistics-customer-acceptance",
-          "title": "客户验收证据要求",
+          "document_id": "swift-logistics-damage",
+          "title": "货损证据标准",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "客户",
-            "验收",
-            "物流与仓储"
+            "物流与仓储",
+            "damage"
           ],
-          "content": "适用画像：物流与仓储、200–499人、合同物流。验收应对应确认范围，保存测试记录、问题清单和书面结论；未确认不得标记完成。"
+          "content": "货损处理应关联交接照片、包装状态、轨迹节点和责任方回执。"
         },
         {
-          "document_id": "swift-logistics-ai-usage",
+          "document_id": "swift-logistics-ai-boundary",
           "title": "AI 助手使用边界",
           "version": "1.0",
-          "effective_date": "2026-06-01",
+          "effective_date": "2026-08-25",
           "status": "effective",
           "tags": [
             "AI",
-            "人工确认",
-            "物流与仓储"
+            "人工确认"
           ],
-          "content": "适用画像：物流与仓储、200–499人、合同物流。AI 输出只作为草稿，不得自动改变负责人、期限、风险状态或创建正式行动。"
+          "content": "AI 输出仅作草稿；引用必须来自当前公司知识版本，不得自动改变负责人、日期、风险状态或正式行动。"
         },
         {
-          "document_id": "swift-logistics-case-review",
-          "title": "历史案例：依赖未闭环",
+          "document_id": "swift-logistics-record-evidence",
+          "title": "事实与证据记录规范",
           "version": "1.0",
-          "effective_date": "2026-06-01",
+          "effective_date": "2026-05-01",
           "status": "effective",
           "tags": [
-            "案例",
-            "依赖",
-            "物流与仓储"
+            "证据",
+            "审计"
           ],
-          "content": "适用画像：物流与仓储、200–499人、合同物流。模拟案例中上游评审阻塞导致验证推迟；团队核对缺口、拆分可并行任务并记录复核日期。"
+          "content": "记录必须区分事实、推测和待验证事项，保留来源、时间、责任角色和下一次检查日期。"
         }
       ]
     },
@@ -2416,10 +2500,29 @@
       "industry": "营销服务",
       "size_band": "50–199人",
       "region": "华北",
-      "business_model": "项目制服务",
+      "business_model": "项目制整合营销",
       "lifecycle_stage": "成长期",
       "risk_appetite": "进取",
-      "description": "SaaSGuide 多公司对照使用的虚构画像，不对应任何真实企业、人员或经营结果。",
+      "operating_characteristics": [
+        "客户审批链长",
+        "热点窗口短",
+        "媒体预算波动",
+        "归因口径争议"
+      ],
+      "risk_standard": {
+        "high_overdue_days": 4,
+        "due_soon_days": 5,
+        "blocked_hours_high": 48,
+        "review_cadence": "每周三次",
+        "escalation_role": "客户合伙人",
+        "mandatory_evidence": [
+          "客户书面确认",
+          "媒介排期",
+          "预算消耗",
+          "归因口径"
+        ]
+      },
+      "description": "同时管理品牌和效果项目，范围变更、素材审批、投放窗口和数据归因是主要风险源。 全部数据均为虚构。",
       "simulated": true,
       "departments": [
         "策略部",
@@ -2431,78 +2534,79 @@
       "projects": [
         {
           "project_id": "PRJ-C5P1",
-          "project_name": "核心系统升级",
-          "project_type": "系统升级",
-          "department": "策略部",
-          "stage": "方案设计",
-          "start_date": "2026-07-01",
-          "end_date": "2026-08-25",
-          "background": "用于比较不同公司画像下的系统升级风险信号，全部内容均为确定性生成的模拟数据。",
-          "outcome": "当前仍在执行；包含延期依赖、阻塞评审和待确认验收等可核查模拟状态。",
+          "project_name": "新品整合传播战役",
+          "project_type": "品牌营销",
+          "department": "客户部",
+          "stage": "创意制作",
+          "start_date": "2026-08-01",
+          "end_date": "2026-10-05",
+          "background": "新品整合传播战役是该模拟公司特有的品牌营销场景，用于验证行业背景和标准如何影响风险判断。",
+          "outcome": "模拟执行中；状态分布用于覆盖健康、阻塞、延期、临期和信息不足场景，不代表真实业务结果。",
           "tasks": [
             {
               "task_id": "C5P1T1",
-              "task_name": "确认范围与验收口径",
-              "owner": "模拟角色5-1",
-              "start_date": "2026-07-01",
-              "due_date": "2026-07-06",
+              "task_name": "确认传播目标与受众",
+              "owner": "模拟岗位5-1",
+              "start_date": "2026-08-01",
+              "due_date": "2026-08-06",
               "status": "已完成",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [],
               "progress_percent": 100,
-              "effort_hours": 16
+              "effort_hours": 12
             },
             {
               "task_id": "C5P1T2",
-              "task_name": "冻结数据和接口清单",
-              "owner": "模拟角色5-2",
-              "start_date": "2026-07-07",
-              "due_date": "2026-07-12",
-              "status": "进行中",
+              "task_name": "锁定创意主概念",
+              "owner": "模拟岗位5-2",
+              "start_date": "2026-08-07",
+              "due_date": "2026-08-12",
+              "status": "已完成",
               "priority": "高",
               "dependency_ids": [
                 "C5P1T1"
               ],
-              "progress_percent": 70,
-              "effort_hours": 20
+              "progress_percent": 100,
+              "effort_hours": 17
             },
             {
               "task_id": "C5P1T3",
-              "task_name": "完成跨部门评审",
-              "owner": "模拟角色5-3",
-              "start_date": "2026-07-13",
-              "due_date": "2026-07-18",
+              "task_name": "完成主视觉与脚本",
+              "owner": "模拟岗位5-3",
+              "start_date": "2026-08-13",
+              "due_date": "2026-08-18",
               "status": "阻塞",
               "priority": "高",
               "dependency_ids": [
                 "C5P1T2"
               ],
-              "progress_percent": 45,
-              "effort_hours": 24
+              "progress_percent": 35,
+              "effort_hours": 22
             },
             {
               "task_id": "C5P1T4",
-              "task_name": "执行集成验证",
-              "owner": "模拟角色5-4",
-              "start_date": "2026-07-19",
-              "due_date": "2026-07-24",
+              "task_name": "取得客户法务审批",
+              "owner": "模拟岗位5-4",
+              "start_date": "2026-08-19",
+              "due_date": "2026-08-24",
               "status": "未开始",
               "priority": "高",
               "dependency_ids": [
                 "C5P1T3"
               ],
               "progress_percent": 0,
-              "effort_hours": 28
+              "effort_hours": 27
             },
             {
               "task_id": "C5P1T5",
-              "task_name": "准备回滚与应急方案",
-              "owner": "模拟角色5-5",
-              "start_date": "2026-07-25",
-              "due_date": "2026-07-30",
+              "task_name": "排定达人和媒体档期",
+              "owner": "模拟岗位5-5",
+              "start_date": "2026-08-25",
+              "due_date": "2026-08-30",
               "status": "未开始",
               "priority": "中",
               "dependency_ids": [
+                "C5P1T3",
                 "C5P1T4"
               ],
               "progress_percent": 0,
@@ -2510,94 +2614,96 @@
             },
             {
               "task_id": "C5P1T6",
-              "task_name": "取得业务书面验收",
-              "owner": "模拟角色5-6",
-              "start_date": "2026-07-31",
-              "due_date": "2026-08-05",
+              "task_name": "准备上线舆情预案",
+              "owner": "模拟岗位5-6",
+              "start_date": "2026-08-31",
+              "due_date": "2026-09-05",
               "status": "未开始",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [
+                "C5P1T4",
                 "C5P1T5"
               ],
               "progress_percent": 0,
-              "effort_hours": 36
+              "effort_hours": 37
             }
           ]
         },
         {
           "project_id": "PRJ-C5P2",
-          "project_name": "主数据治理",
-          "project_type": "数据治理",
-          "department": "创意部",
-          "stage": "数据清洗",
-          "start_date": "2026-07-08",
-          "end_date": "2026-09-01",
-          "background": "用于比较不同公司画像下的数据治理风险信号，全部内容均为确定性生成的模拟数据。",
-          "outcome": "当前仍在执行；包含延期依赖、阻塞评审和待确认验收等可核查模拟状态。",
+          "project_name": "效果广告归因校准",
+          "project_type": "数据分析",
+          "department": "数据分析部",
+          "stage": "口径验证",
+          "start_date": "2026-08-06",
+          "end_date": "2026-10-10",
+          "background": "效果广告归因校准是该模拟公司特有的数据分析场景，用于验证行业背景和标准如何影响风险判断。",
+          "outcome": "模拟执行中；状态分布用于覆盖健康、阻塞、延期、临期和信息不足场景，不代表真实业务结果。",
           "tasks": [
             {
               "task_id": "C5P2T1",
-              "task_name": "确认范围与验收口径",
-              "owner": "模拟角色5-1",
-              "start_date": "2026-07-08",
-              "due_date": "2026-07-13",
+              "task_name": "盘点各渠道转化事件",
+              "owner": "模拟岗位5-1",
+              "start_date": "2026-08-06",
+              "due_date": "2026-08-11",
               "status": "已完成",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [],
               "progress_percent": 100,
-              "effort_hours": 16
+              "effort_hours": 12
             },
             {
               "task_id": "C5P2T2",
-              "task_name": "冻结数据和接口清单",
-              "owner": "模拟角色5-2",
-              "start_date": "2026-07-14",
-              "due_date": "2026-07-19",
+              "task_name": "统一点击与曝光窗口",
+              "owner": "模拟岗位5-2",
+              "start_date": "2026-08-12",
+              "due_date": "2026-08-17",
               "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C5P2T1"
               ],
-              "progress_percent": 70,
-              "effort_hours": 20
+              "progress_percent": 80,
+              "effort_hours": 17
             },
             {
               "task_id": "C5P2T3",
-              "task_name": "完成跨部门评审",
-              "owner": "模拟角色5-3",
-              "start_date": "2026-07-20",
-              "due_date": "2026-07-25",
-              "status": "阻塞",
+              "task_name": "检查埋点缺失比例",
+              "owner": "模拟岗位5-3",
+              "start_date": "2026-08-18",
+              "due_date": "2026-08-23",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C5P2T2"
               ],
-              "progress_percent": 45,
-              "effort_hours": 24
+              "progress_percent": 60,
+              "effort_hours": 22
             },
             {
               "task_id": "C5P2T4",
-              "task_name": "执行集成验证",
-              "owner": "模拟角色5-4",
-              "start_date": "2026-07-26",
-              "due_date": "2026-07-31",
-              "status": "未开始",
+              "task_name": "对齐平台与内部订单",
+              "owner": "模拟岗位5-4",
+              "start_date": "2026-08-24",
+              "due_date": "2026-08-29",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C5P2T3"
               ],
-              "progress_percent": 0,
-              "effort_hours": 28
+              "progress_percent": 50,
+              "effort_hours": 27
             },
             {
               "task_id": "C5P2T5",
-              "task_name": "准备回滚与应急方案",
-              "owner": "模拟角色5-5",
-              "start_date": "2026-08-01",
-              "due_date": "2026-08-06",
+              "task_name": "重算历史归因结果",
+              "owner": "模拟岗位5-5",
+              "start_date": "2026-08-30",
+              "due_date": "2026-09-04",
               "status": "未开始",
               "priority": "中",
               "dependency_ids": [
+                "C5P2T3",
                 "C5P2T4"
               ],
               "progress_percent": 0,
@@ -2605,94 +2711,96 @@
             },
             {
               "task_id": "C5P2T6",
-              "task_name": "取得业务书面验收",
-              "owner": "模拟角色5-6",
-              "start_date": "2026-08-07",
-              "due_date": "2026-08-12",
+              "task_name": "取得客户口径确认",
+              "owner": "模拟岗位5-6",
+              "start_date": "2026-09-05",
+              "due_date": "2026-09-10",
               "status": "未开始",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [
+                "C5P2T4",
                 "C5P2T5"
               ],
               "progress_percent": 0,
-              "effort_hours": 36
+              "effort_hours": 37
             }
           ]
         },
         {
           "project_id": "PRJ-C5P3",
-          "project_name": "供应商切换",
-          "project_type": "供应商管理",
-          "department": "媒介部",
-          "stage": "切换演练",
-          "start_date": "2026-07-15",
-          "end_date": "2026-09-08",
-          "background": "用于比较不同公司画像下的供应商管理风险信号，全部内容均为确定性生成的模拟数据。",
-          "outcome": "当前仍在执行；包含延期依赖、阻塞评审和待确认验收等可核查模拟状态。",
+          "project_name": "直播发布会执行",
+          "project_type": "活动运营",
+          "department": "创意部",
+          "stage": "上线准备",
+          "start_date": "2026-08-11",
+          "end_date": "2026-10-15",
+          "background": "直播发布会执行是该模拟公司特有的活动运营场景，用于验证行业背景和标准如何影响风险判断。",
+          "outcome": "模拟执行中；状态分布用于覆盖健康、阻塞、延期、临期和信息不足场景，不代表真实业务结果。",
           "tasks": [
             {
               "task_id": "C5P3T1",
-              "task_name": "确认范围与验收口径",
-              "owner": "模拟角色5-1",
-              "start_date": "2026-07-15",
-              "due_date": "2026-07-20",
+              "task_name": "冻结直播流程与嘉宾",
+              "owner": "模拟岗位5-1",
+              "start_date": "2026-08-11",
+              "due_date": "2026-08-16",
               "status": "已完成",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [],
               "progress_percent": 100,
-              "effort_hours": 16
+              "effort_hours": 12
             },
             {
               "task_id": "C5P3T2",
-              "task_name": "冻结数据和接口清单",
-              "owner": "模拟角色5-2",
-              "start_date": "2026-07-21",
-              "due_date": "2026-07-26",
-              "status": "进行中",
+              "task_name": "完成场地网络压测",
+              "owner": "模拟岗位5-2",
+              "start_date": "2026-08-17",
+              "due_date": "2026-08-22",
+              "status": "已完成",
               "priority": "高",
               "dependency_ids": [
                 "C5P3T1"
               ],
-              "progress_percent": 70,
-              "effort_hours": 20
+              "progress_percent": 100,
+              "effort_hours": 17
             },
             {
               "task_id": "C5P3T3",
-              "task_name": "完成跨部门评审",
-              "owner": "模拟角色5-3",
-              "start_date": "2026-07-27",
-              "due_date": "2026-08-01",
-              "status": "阻塞",
+              "task_name": "交付视频与包装素材",
+              "owner": "模拟岗位5-3",
+              "start_date": "2026-08-23",
+              "due_date": "2026-08-28",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C5P3T2"
               ],
               "progress_percent": 45,
-              "effort_hours": 24
+              "effort_hours": 22
             },
             {
               "task_id": "C5P3T4",
-              "task_name": "执行集成验证",
-              "owner": "模拟角色5-4",
-              "start_date": "2026-08-02",
-              "due_date": "2026-08-07",
-              "status": "未开始",
+              "task_name": "执行全流程彩排",
+              "owner": "模拟岗位5-4",
+              "start_date": "2026-08-29",
+              "due_date": "2026-09-03",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C5P3T3"
               ],
-              "progress_percent": 0,
-              "effort_hours": 28
+              "progress_percent": 25,
+              "effort_hours": 27
             },
             {
               "task_id": "C5P3T5",
-              "task_name": "准备回滚与应急方案",
-              "owner": "模拟角色5-5",
-              "start_date": "2026-08-08",
-              "due_date": "2026-08-13",
+              "task_name": "配置评论应急机制",
+              "owner": "模拟岗位5-5",
+              "start_date": "2026-09-04",
+              "due_date": "2026-09-09",
               "status": "未开始",
               "priority": "中",
               "dependency_ids": [
+                "C5P3T3",
                 "C5P3T4"
               ],
               "progress_percent": 0,
@@ -2700,315 +2808,312 @@
             },
             {
               "task_id": "C5P3T6",
-              "task_name": "取得业务书面验收",
-              "owner": "模拟角色5-6",
-              "start_date": "2026-08-14",
-              "due_date": "2026-08-19",
+              "task_name": "汇总直播效果数据",
+              "owner": "模拟岗位5-6",
+              "start_date": "2026-09-10",
+              "due_date": "2026-09-15",
               "status": "未开始",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [
+                "C5P3T4",
                 "C5P3T5"
               ],
               "progress_percent": 0,
-              "effort_hours": 36
+              "effort_hours": 37
             }
           ]
         },
         {
           "project_id": "PRJ-C5P4",
-          "project_name": "重点客户交付",
-          "project_type": "客户交付",
-          "department": "客户部",
-          "stage": "客户验收",
-          "start_date": "2026-07-22",
-          "end_date": "2026-09-15",
-          "background": "用于比较不同公司画像下的客户交付风险信号，全部内容均为确定性生成的模拟数据。",
-          "outcome": "当前仍在执行；包含延期依赖、阻塞评审和待确认验收等可核查模拟状态。",
+          "project_name": "年度媒介框架采购",
+          "project_type": "媒介采购",
+          "department": "媒介部",
+          "stage": "商务谈判",
+          "start_date": "2026-08-16",
+          "end_date": "2026-10-20",
+          "background": "年度媒介框架采购是该模拟公司特有的媒介采购场景，用于验证行业背景和标准如何影响风险判断。",
+          "outcome": "模拟执行中；状态分布用于覆盖健康、阻塞、延期、临期和信息不足场景，不代表真实业务结果。",
           "tasks": [
             {
               "task_id": "C5P4T1",
-              "task_name": "确认范围与验收口径",
-              "owner": "模拟角色5-1",
-              "start_date": "2026-07-22",
-              "due_date": "2026-07-27",
+              "task_name": "汇总客户投放需求",
+              "owner": "模拟岗位5-1",
+              "start_date": "2026-08-16",
+              "due_date": "2026-08-21",
               "status": "已完成",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [],
               "progress_percent": 100,
-              "effort_hours": 16
+              "effort_hours": 12
             },
             {
               "task_id": "C5P4T2",
-              "task_name": "冻结数据和接口清单",
-              "owner": "模拟角色5-2",
-              "start_date": "2026-07-28",
-              "due_date": "2026-08-02",
-              "status": "进行中",
+              "task_name": "分析历史媒体效率",
+              "owner": "模拟岗位5-2",
+              "start_date": "2026-08-22",
+              "due_date": "2026-08-27",
+              "status": "已完成",
               "priority": "高",
               "dependency_ids": [
                 "C5P4T1"
               ],
-              "progress_percent": 70,
-              "effort_hours": 20
+              "progress_percent": 100,
+              "effort_hours": 17
             },
             {
               "task_id": "C5P4T3",
-              "task_name": "完成跨部门评审",
-              "owner": "模拟角色5-3",
-              "start_date": "2026-08-03",
-              "due_date": "2026-08-08",
-              "status": "阻塞",
+              "task_name": "发出供应商询价",
+              "owner": "模拟岗位5-3",
+              "start_date": "2026-08-28",
+              "due_date": "2026-09-02",
+              "status": "已完成",
               "priority": "高",
               "dependency_ids": [
                 "C5P4T2"
               ],
-              "progress_percent": 45,
-              "effort_hours": 24
+              "progress_percent": 100,
+              "effort_hours": 22
             },
             {
               "task_id": "C5P4T4",
-              "task_name": "执行集成验证",
-              "owner": "模拟角色5-4",
-              "start_date": "2026-08-09",
-              "due_date": "2026-08-14",
-              "status": "未开始",
+              "task_name": "比较返点与资源包",
+              "owner": "模拟岗位5-4",
+              "start_date": "2026-09-03",
+              "due_date": "2026-09-08",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C5P4T3"
               ],
-              "progress_percent": 0,
-              "effort_hours": 28
+              "progress_percent": 75,
+              "effort_hours": 27
             },
             {
               "task_id": "C5P4T5",
-              "task_name": "准备回滚与应急方案",
-              "owner": "模拟角色5-5",
-              "start_date": "2026-08-15",
-              "due_date": "2026-08-20",
-              "status": "未开始",
+              "task_name": "完成合规比价审批",
+              "owner": "模拟岗位5-5",
+              "start_date": "2026-09-09",
+              "due_date": "2026-09-14",
+              "status": "进行中",
               "priority": "中",
               "dependency_ids": [
+                "C5P4T3",
                 "C5P4T4"
               ],
-              "progress_percent": 0,
+              "progress_percent": 60,
               "effort_hours": 32
             },
             {
               "task_id": "C5P4T6",
-              "task_name": "取得业务书面验收",
-              "owner": "模拟角色5-6",
-              "start_date": "2026-08-21",
-              "due_date": "2026-08-26",
+              "task_name": "签署年度框架协议",
+              "owner": "模拟岗位5-6",
+              "start_date": "2026-09-15",
+              "due_date": "2026-09-20",
               "status": "未开始",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [
+                "C5P4T4",
                 "C5P4T5"
               ],
               "progress_percent": 0,
-              "effort_hours": 36
+              "effort_hours": 37
             }
           ]
         },
         {
           "project_id": "PRJ-C5P5",
-          "project_name": "运营流程优化",
-          "project_type": "流程优化",
-          "department": "数据分析部",
-          "stage": "试运行",
-          "start_date": "2026-07-29",
-          "end_date": "2026-09-22",
-          "background": "用于比较不同公司画像下的流程优化风险信号，全部内容均为确定性生成的模拟数据。",
-          "outcome": "当前仍在执行；包含延期依赖、阻塞评审和待确认验收等可核查模拟状态。",
+          "project_name": "客户临时范围变更",
+          "project_type": "项目管理",
+          "department": "策略部",
+          "stage": "影响评估",
+          "start_date": "2026-08-21",
+          "end_date": "2026-10-25",
+          "background": "客户临时范围变更是该模拟公司特有的项目管理场景，用于验证行业背景和标准如何影响风险判断。",
+          "outcome": "模拟执行中；状态分布用于覆盖健康、阻塞、延期、临期和信息不足场景，不代表真实业务结果。",
           "tasks": [
             {
               "task_id": "C5P5T1",
-              "task_name": "确认范围与验收口径",
-              "owner": "模拟角色5-1",
-              "start_date": "2026-07-29",
-              "due_date": "2026-08-03",
+              "task_name": "记录新增交付要求",
+              "owner": "模拟岗位5-1",
+              "start_date": "2026-08-21",
+              "due_date": "2026-08-26",
               "status": "已完成",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [],
               "progress_percent": 100,
-              "effort_hours": 16
+              "effort_hours": 12
             },
             {
               "task_id": "C5P5T2",
-              "task_name": "冻结数据和接口清单",
-              "owner": "模拟角色5-2",
-              "start_date": "2026-08-04",
-              "due_date": "2026-08-09",
-              "status": "进行中",
+              "task_name": "拆分人力与外采成本",
+              "owner": "模拟岗位5-2",
+              "start_date": "2026-08-27",
+              "due_date": "2026-09-01",
+              "status": "阻塞",
               "priority": "高",
               "dependency_ids": [
                 "C5P5T1"
               ],
-              "progress_percent": 70,
-              "effort_hours": 20
+              "progress_percent": 55,
+              "effort_hours": 17
             },
             {
               "task_id": "C5P5T3",
-              "task_name": "完成跨部门评审",
-              "owner": "模拟角色5-3",
-              "start_date": "2026-08-10",
-              "due_date": "2026-08-15",
-              "status": "阻塞",
+              "task_name": "识别原排期冲突",
+              "owner": "模拟岗位5-3",
+              "start_date": "2026-09-02",
+              "due_date": "2026-09-07",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C5P5T2"
               ],
-              "progress_percent": 45,
-              "effort_hours": 24
+              "progress_percent": 40,
+              "effort_hours": 22
             },
             {
               "task_id": "C5P5T4",
-              "task_name": "执行集成验证",
-              "owner": "模拟角色5-4",
-              "start_date": "2026-08-16",
-              "due_date": "2026-08-21",
+              "task_name": "提出范围取舍方案",
+              "owner": "模拟岗位5-4",
+              "start_date": "2026-09-08",
+              "due_date": "2026-09-13",
               "status": "未开始",
               "priority": "高",
               "dependency_ids": [
                 "C5P5T3"
               ],
               "progress_percent": 0,
-              "effort_hours": 28
+              "effort_hours": 27
             },
             {
               "task_id": "C5P5T5",
-              "task_name": "准备回滚与应急方案",
-              "owner": "模拟角色5-5",
-              "start_date": "2026-08-22",
-              "due_date": "2026-08-27",
-              "status": "未开始",
+              "task_name": "取得费用与日期确认",
+              "owner": "模拟岗位5-5",
+              "start_date": "2026-09-14",
+              "due_date": "2026-09-19",
+              "status": "进行中",
               "priority": "中",
               "dependency_ids": [
+                "C5P5T3",
                 "C5P5T4"
               ],
-              "progress_percent": 0,
+              "progress_percent": 20,
               "effort_hours": 32
             },
             {
               "task_id": "C5P5T6",
-              "task_name": "取得业务书面验收",
-              "owner": "模拟角色5-6",
-              "start_date": "2026-08-28",
-              "due_date": "2026-09-02",
+              "task_name": "更新交付基线",
+              "owner": "模拟岗位5-6",
+              "start_date": "2026-09-20",
+              "due_date": "2026-09-25",
               "status": "未开始",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [
+                "C5P5T4",
                 "C5P5T5"
               ],
               "progress_percent": 0,
-              "effort_hours": 36
+              "effort_hours": 37
             }
           ]
         }
       ],
       "policies": [
         {
-          "document_id": "bright-marketing-risk-level",
-          "title": "项目风险分级与升级标准",
+          "document_id": "bright-marketing-scope",
+          "title": "客户范围变更规则",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "风险",
-            "升级",
-            "营销服务"
+            "营销服务",
+            "scope"
           ],
-          "content": "适用画像：营销服务、50–199人、项目制服务。高风险应在一个工作日内由项目负责人核对证据、影响和责任角色；中风险每三个工作日复核。"
+          "content": "新增交付必须记录费用、排期和原范围取舍；口头要求不得直接进入制作。"
         },
         {
-          "document_id": "bright-marketing-change-control",
-          "title": "需求变更控制办法",
+          "document_id": "bright-marketing-approval",
+          "title": "素材审批标准",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "变更",
-            "范围",
-            "营销服务"
+            "营销服务",
+            "approval"
           ],
-          "content": "适用画像：营销服务、50–199人、项目制服务。变更进入执行前应记录提出方、业务理由、范围、验收条件、测试影响和排期影响。"
+          "content": "涉及品牌、法务或代言人内容必须取得书面批准，未批准不得投放。"
         },
         {
-          "document_id": "bright-marketing-data-security",
-          "title": "数据最小化处理规范",
+          "document_id": "bright-marketing-budget",
+          "title": "媒介预算控制",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "数据",
-            "安全",
-            "营销服务"
+            "营销服务",
+            "budget"
           ],
-          "content": "适用画像：营销服务、50–199人、项目制服务。导入资料前应移除无关个人信息与凭证；模拟数据不得冒充真实客户资料。"
+          "content": "累计消耗偏离计划 10% 时复核，调整需保留客户确认和版本记录。"
         },
         {
-          "document_id": "bright-marketing-release-approval",
-          "title": "发布与切换审批清单",
+          "document_id": "bright-marketing-attribution",
+          "title": "营销归因口径",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "发布",
-            "回滚",
-            "营销服务"
+            "营销服务",
+            "attribution"
           ],
-          "content": "适用画像：营销服务、50–199人、项目制服务。切换前必须核对测试结论、未关闭高优问题、监控指标、回滚方案和值班角色。"
+          "content": "归因结论应标明窗口、去重和跨设备限制，不得把相关性表述为因果。"
         },
         {
-          "document_id": "bright-marketing-supplier-management",
-          "title": "关键供应商管理规范",
+          "document_id": "bright-marketing-event",
+          "title": "直播活动应急规范",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "供应商",
-            "SLA",
-            "营销服务"
+            "营销服务",
+            "event"
           ],
-          "content": "适用画像：营销服务、50–199人、项目制服务。关键供应商交付前应取得容量证据、故障联系人、服务承诺和替代路径。"
+          "content": "上线前完成网络、内容、舆情和备用信号演练，明确现场决策人。"
         },
         {
-          "document_id": "bright-marketing-customer-acceptance",
-          "title": "客户验收证据要求",
+          "document_id": "bright-marketing-vendor",
+          "title": "内容供应商采购规范",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "客户",
-            "验收",
-            "营销服务"
+            "营销服务",
+            "vendor"
           ],
-          "content": "适用画像：营销服务、50–199人、项目制服务。验收应对应确认范围，保存测试记录、问题清单和书面结论；未确认不得标记完成。"
+          "content": "外采内容需确认版权范围、交付格式、修改轮次和使用期限。"
         },
         {
-          "document_id": "bright-marketing-ai-usage",
+          "document_id": "bright-marketing-ai-boundary",
           "title": "AI 助手使用边界",
           "version": "1.0",
-          "effective_date": "2026-06-01",
+          "effective_date": "2026-08-25",
           "status": "effective",
           "tags": [
             "AI",
-            "人工确认",
-            "营销服务"
+            "人工确认"
           ],
-          "content": "适用画像：营销服务、50–199人、项目制服务。AI 输出只作为草稿，不得自动改变负责人、期限、风险状态或创建正式行动。"
+          "content": "AI 输出仅作草稿；引用必须来自当前公司知识版本，不得自动改变负责人、日期、风险状态或正式行动。"
         },
         {
-          "document_id": "bright-marketing-case-review",
-          "title": "历史案例：依赖未闭环",
+          "document_id": "bright-marketing-record-evidence",
+          "title": "事实与证据记录规范",
           "version": "1.0",
-          "effective_date": "2026-06-01",
+          "effective_date": "2026-05-01",
           "status": "effective",
           "tags": [
-            "案例",
-            "依赖",
-            "营销服务"
+            "证据",
+            "审计"
           ],
-          "content": "适用画像：营销服务、50–199人、项目制服务。模拟案例中上游评审阻塞导致验证推迟；团队核对缺口、拆分可并行任务并记录复核日期。"
+          "content": "记录必须区分事实、推测和待验证事项，保留来源、时间、责任角色和下一次检查日期。"
         }
       ]
     },
@@ -3018,10 +3123,29 @@
       "industry": "医疗信息化",
       "size_band": "200–499人",
       "region": "西南",
-      "business_model": "B2B 项目交付",
+      "business_model": "医院项目交付与运维",
       "lifecycle_stage": "成熟期",
       "risk_appetite": "保守",
-      "description": "SaaSGuide 多公司对照使用的虚构画像，不对应任何真实企业、人员或经营结果。",
+      "operating_characteristics": [
+        "敏感数据",
+        "院内多系统接口",
+        "严格变更窗口",
+        "验收材料密集"
+      ],
+      "risk_standard": {
+        "high_overdue_days": 1,
+        "due_soon_days": 7,
+        "blocked_hours_high": 2,
+        "review_cadence": "每日",
+        "escalation_role": "质量与安全负责人",
+        "mandatory_evidence": [
+          "脱敏证明",
+          "接口测试报告",
+          "变更审批单",
+          "应急回退记录"
+        ]
+      },
+      "description": "交付院内业务系统，隐私、安全、接口兼容和上线审批优先于交付速度。 全部数据均为虚构。",
       "simulated": true,
       "departments": [
         "产品部",
@@ -3033,78 +3157,79 @@
       "projects": [
         {
           "project_id": "PRJ-C6P1",
-          "project_name": "核心系统升级",
-          "project_type": "系统升级",
-          "department": "产品部",
-          "stage": "方案设计",
-          "start_date": "2026-07-01",
-          "end_date": "2026-08-25",
-          "background": "用于比较不同公司画像下的系统升级风险信号，全部内容均为确定性生成的模拟数据。",
-          "outcome": "当前仍在执行；包含延期依赖、阻塞评审和待确认验收等可核查模拟状态。",
+          "project_name": "医院核心接口升级",
+          "project_type": "系统集成",
+          "department": "实施交付部",
+          "stage": "院内联调",
+          "start_date": "2026-08-01",
+          "end_date": "2026-10-05",
+          "background": "医院核心接口升级是该模拟公司特有的系统集成场景，用于验证行业背景和标准如何影响风险判断。",
+          "outcome": "模拟执行中；状态分布用于覆盖健康、阻塞、延期、临期和信息不足场景，不代表真实业务结果。",
           "tasks": [
             {
               "task_id": "C6P1T1",
-              "task_name": "确认范围与验收口径",
-              "owner": "模拟角色6-1",
-              "start_date": "2026-07-01",
-              "due_date": "2026-07-06",
+              "task_name": "确认 HIS 接口变更清单",
+              "owner": "模拟岗位6-1",
+              "start_date": "2026-08-01",
+              "due_date": "2026-08-06",
               "status": "已完成",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [],
               "progress_percent": 100,
-              "effort_hours": 16
+              "effort_hours": 12
             },
             {
               "task_id": "C6P1T2",
-              "task_name": "冻结数据和接口清单",
-              "owner": "模拟角色6-2",
-              "start_date": "2026-07-07",
-              "due_date": "2026-07-12",
-              "status": "进行中",
+              "task_name": "搭建脱敏联调环境",
+              "owner": "模拟岗位6-2",
+              "start_date": "2026-08-07",
+              "due_date": "2026-08-12",
+              "status": "已完成",
               "priority": "高",
               "dependency_ids": [
                 "C6P1T1"
               ],
-              "progress_percent": 70,
-              "effort_hours": 20
+              "progress_percent": 100,
+              "effort_hours": 17
             },
             {
               "task_id": "C6P1T3",
-              "task_name": "完成跨部门评审",
-              "owner": "模拟角色6-3",
-              "start_date": "2026-07-13",
-              "due_date": "2026-07-18",
+              "task_name": "执行患者主索引测试",
+              "owner": "模拟岗位6-3",
+              "start_date": "2026-08-13",
+              "due_date": "2026-08-18",
               "status": "阻塞",
               "priority": "高",
               "dependency_ids": [
                 "C6P1T2"
               ],
-              "progress_percent": 45,
-              "effort_hours": 24
+              "progress_percent": 35,
+              "effort_hours": 22
             },
             {
               "task_id": "C6P1T4",
-              "task_name": "执行集成验证",
-              "owner": "模拟角色6-4",
-              "start_date": "2026-07-19",
-              "due_date": "2026-07-24",
+              "task_name": "核验医嘱状态映射",
+              "owner": "模拟岗位6-4",
+              "start_date": "2026-08-19",
+              "due_date": "2026-08-24",
               "status": "未开始",
               "priority": "高",
               "dependency_ids": [
                 "C6P1T3"
               ],
               "progress_percent": 0,
-              "effort_hours": 28
+              "effort_hours": 27
             },
             {
               "task_id": "C6P1T5",
-              "task_name": "准备回滚与应急方案",
-              "owner": "模拟角色6-5",
-              "start_date": "2026-07-25",
-              "due_date": "2026-07-30",
+              "task_name": "完成接口性能测试",
+              "owner": "模拟岗位6-5",
+              "start_date": "2026-08-25",
+              "due_date": "2026-08-30",
               "status": "未开始",
               "priority": "中",
               "dependency_ids": [
+                "C6P1T3",
                 "C6P1T4"
               ],
               "progress_percent": 0,
@@ -3112,189 +3237,193 @@
             },
             {
               "task_id": "C6P1T6",
-              "task_name": "取得业务书面验收",
-              "owner": "模拟角色6-6",
-              "start_date": "2026-07-31",
-              "due_date": "2026-08-05",
+              "task_name": "取得信息科上线批准",
+              "owner": "模拟岗位6-6",
+              "start_date": "2026-08-31",
+              "due_date": "2026-09-05",
               "status": "未开始",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [
+                "C6P1T4",
                 "C6P1T5"
               ],
               "progress_percent": 0,
-              "effort_hours": 36
+              "effort_hours": 37
             }
           ]
         },
         {
           "project_id": "PRJ-C6P2",
-          "project_name": "主数据治理",
-          "project_type": "数据治理",
-          "department": "实施交付部",
-          "stage": "数据清洗",
-          "start_date": "2026-07-08",
-          "end_date": "2026-09-01",
-          "background": "用于比较不同公司画像下的数据治理风险信号，全部内容均为确定性生成的模拟数据。",
-          "outcome": "当前仍在执行；包含延期依赖、阻塞评审和待确认验收等可核查模拟状态。",
+          "project_name": "患者数据脱敏整改",
+          "project_type": "数据安全",
+          "department": "信息安全部",
+          "stage": "安全验证",
+          "start_date": "2026-08-06",
+          "end_date": "2026-10-10",
+          "background": "患者数据脱敏整改是该模拟公司特有的数据安全场景，用于验证行业背景和标准如何影响风险判断。",
+          "outcome": "模拟执行中；状态分布用于覆盖健康、阻塞、延期、临期和信息不足场景，不代表真实业务结果。",
           "tasks": [
             {
               "task_id": "C6P2T1",
-              "task_name": "确认范围与验收口径",
-              "owner": "模拟角色6-1",
-              "start_date": "2026-07-08",
-              "due_date": "2026-07-13",
+              "task_name": "盘点测试环境敏感字段",
+              "owner": "模拟岗位6-1",
+              "start_date": "2026-08-06",
+              "due_date": "2026-08-11",
               "status": "已完成",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [],
               "progress_percent": 100,
-              "effort_hours": 16
+              "effort_hours": 12
             },
             {
               "task_id": "C6P2T2",
-              "task_name": "冻结数据和接口清单",
-              "owner": "模拟角色6-2",
-              "start_date": "2026-07-14",
-              "due_date": "2026-07-19",
-              "status": "进行中",
+              "task_name": "定义不可逆脱敏规则",
+              "owner": "模拟岗位6-2",
+              "start_date": "2026-08-12",
+              "due_date": "2026-08-17",
+              "status": "阻塞",
               "priority": "高",
               "dependency_ids": [
                 "C6P2T1"
               ],
-              "progress_percent": 70,
-              "effort_hours": 20
+              "progress_percent": 55,
+              "effort_hours": 17
             },
             {
               "task_id": "C6P2T3",
-              "task_name": "完成跨部门评审",
-              "owner": "模拟角色6-3",
-              "start_date": "2026-07-20",
-              "due_date": "2026-07-25",
-              "status": "阻塞",
+              "task_name": "替换历史测试数据",
+              "owner": "模拟岗位6-3",
+              "start_date": "2026-08-18",
+              "due_date": "2026-08-23",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C6P2T2"
               ],
-              "progress_percent": 45,
-              "effort_hours": 24
+              "progress_percent": 40,
+              "effort_hours": 22
             },
             {
               "task_id": "C6P2T4",
-              "task_name": "执行集成验证",
-              "owner": "模拟角色6-4",
-              "start_date": "2026-07-26",
-              "due_date": "2026-07-31",
+              "task_name": "检查日志与导出文件",
+              "owner": "模拟岗位6-4",
+              "start_date": "2026-08-24",
+              "due_date": "2026-08-29",
               "status": "未开始",
               "priority": "高",
               "dependency_ids": [
                 "C6P2T3"
               ],
               "progress_percent": 0,
-              "effort_hours": 28
+              "effort_hours": 27
             },
             {
               "task_id": "C6P2T5",
-              "task_name": "准备回滚与应急方案",
-              "owner": "模拟角色6-5",
-              "start_date": "2026-08-01",
-              "due_date": "2026-08-06",
-              "status": "未开始",
+              "task_name": "执行再识别风险评估",
+              "owner": "模拟岗位6-5",
+              "start_date": "2026-08-30",
+              "due_date": "2026-09-04",
+              "status": "进行中",
               "priority": "中",
               "dependency_ids": [
+                "C6P2T3",
                 "C6P2T4"
               ],
-              "progress_percent": 0,
+              "progress_percent": 20,
               "effort_hours": 32
             },
             {
               "task_id": "C6P2T6",
-              "task_name": "取得业务书面验收",
-              "owner": "模拟角色6-6",
-              "start_date": "2026-08-07",
-              "due_date": "2026-08-12",
+              "task_name": "形成安全验收报告",
+              "owner": "模拟岗位6-6",
+              "start_date": "2026-09-05",
+              "due_date": "2026-09-10",
               "status": "未开始",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [
+                "C6P2T4",
                 "C6P2T5"
               ],
               "progress_percent": 0,
-              "effort_hours": 36
+              "effort_hours": 37
             }
           ]
         },
         {
           "project_id": "PRJ-C6P3",
-          "project_name": "供应商切换",
-          "project_type": "供应商管理",
+          "project_name": "门诊系统版本上线",
+          "project_type": "版本发布",
           "department": "研发部",
-          "stage": "切换演练",
-          "start_date": "2026-07-15",
-          "end_date": "2026-09-08",
-          "background": "用于比较不同公司画像下的供应商管理风险信号，全部内容均为确定性生成的模拟数据。",
-          "outcome": "当前仍在执行；包含延期依赖、阻塞评审和待确认验收等可核查模拟状态。",
+          "stage": "变更窗口",
+          "start_date": "2026-08-11",
+          "end_date": "2026-10-15",
+          "background": "门诊系统版本上线是该模拟公司特有的版本发布场景，用于验证行业背景和标准如何影响风险判断。",
+          "outcome": "模拟执行中；状态分布用于覆盖健康、阻塞、延期、临期和信息不足场景，不代表真实业务结果。",
           "tasks": [
             {
               "task_id": "C6P3T1",
-              "task_name": "确认范围与验收口径",
-              "owner": "模拟角色6-1",
-              "start_date": "2026-07-15",
-              "due_date": "2026-07-20",
+              "task_name": "冻结上线功能范围",
+              "owner": "模拟岗位6-1",
+              "start_date": "2026-08-11",
+              "due_date": "2026-08-16",
               "status": "已完成",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [],
               "progress_percent": 100,
-              "effort_hours": 16
+              "effort_hours": 12
             },
             {
               "task_id": "C6P3T2",
-              "task_name": "冻结数据和接口清单",
-              "owner": "模拟角色6-2",
-              "start_date": "2026-07-21",
-              "due_date": "2026-07-26",
-              "status": "进行中",
+              "task_name": "关闭安全与阻断缺陷",
+              "owner": "模拟岗位6-2",
+              "start_date": "2026-08-17",
+              "due_date": "2026-08-22",
+              "status": "已完成",
               "priority": "高",
               "dependency_ids": [
                 "C6P3T1"
               ],
-              "progress_percent": 70,
-              "effort_hours": 20
+              "progress_percent": 100,
+              "effort_hours": 17
             },
             {
               "task_id": "C6P3T3",
-              "task_name": "完成跨部门评审",
-              "owner": "模拟角色6-3",
-              "start_date": "2026-07-27",
-              "due_date": "2026-08-01",
-              "status": "阻塞",
+              "task_name": "备份配置和数据库",
+              "owner": "模拟岗位6-3",
+              "start_date": "2026-08-23",
+              "due_date": "2026-08-28",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C6P3T2"
               ],
               "progress_percent": 45,
-              "effort_hours": 24
+              "effort_hours": 22
             },
             {
               "task_id": "C6P3T4",
-              "task_name": "执行集成验证",
-              "owner": "模拟角色6-4",
-              "start_date": "2026-08-02",
-              "due_date": "2026-08-07",
-              "status": "未开始",
+              "task_name": "执行院内全流程演练",
+              "owner": "模拟岗位6-4",
+              "start_date": "2026-08-29",
+              "due_date": "2026-09-03",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C6P3T3"
               ],
-              "progress_percent": 0,
-              "effort_hours": 28
+              "progress_percent": 25,
+              "effort_hours": 27
             },
             {
               "task_id": "C6P3T5",
-              "task_name": "准备回滚与应急方案",
-              "owner": "模拟角色6-5",
-              "start_date": "2026-08-08",
-              "due_date": "2026-08-13",
+              "task_name": "完成夜间窗口切换",
+              "owner": "模拟岗位6-5",
+              "start_date": "2026-09-04",
+              "due_date": "2026-09-09",
               "status": "未开始",
               "priority": "中",
               "dependency_ids": [
+                "C6P3T3",
                 "C6P3T4"
               ],
               "progress_percent": 0,
@@ -3302,94 +3431,96 @@
             },
             {
               "task_id": "C6P3T6",
-              "task_name": "取得业务书面验收",
-              "owner": "模拟角色6-6",
-              "start_date": "2026-08-14",
-              "due_date": "2026-08-19",
+              "task_name": "验证挂号收费与退费",
+              "owner": "模拟岗位6-6",
+              "start_date": "2026-09-10",
+              "due_date": "2026-09-15",
               "status": "未开始",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [
+                "C6P3T4",
                 "C6P3T5"
               ],
               "progress_percent": 0,
-              "effort_hours": 36
+              "effort_hours": 37
             }
           ]
         },
         {
           "project_id": "PRJ-C6P4",
-          "project_name": "重点客户交付",
-          "project_type": "客户交付",
-          "department": "信息安全部",
-          "stage": "客户验收",
-          "start_date": "2026-07-22",
-          "end_date": "2026-09-15",
-          "background": "用于比较不同公司画像下的客户交付风险信号，全部内容均为确定性生成的模拟数据。",
-          "outcome": "当前仍在执行；包含延期依赖、阻塞评审和待确认验收等可核查模拟状态。",
+          "project_name": "临床规则库复核",
+          "project_type": "知识治理",
+          "department": "产品部",
+          "stage": "专家复核",
+          "start_date": "2026-08-16",
+          "end_date": "2026-10-20",
+          "background": "临床规则库复核是该模拟公司特有的知识治理场景，用于验证行业背景和标准如何影响风险判断。",
+          "outcome": "模拟执行中；状态分布用于覆盖健康、阻塞、延期、临期和信息不足场景，不代表真实业务结果。",
           "tasks": [
             {
               "task_id": "C6P4T1",
-              "task_name": "确认范围与验收口径",
-              "owner": "模拟角色6-1",
-              "start_date": "2026-07-22",
-              "due_date": "2026-07-27",
+              "task_name": "汇总规则变更来源",
+              "owner": "模拟岗位6-1",
+              "start_date": "2026-08-16",
+              "due_date": "2026-08-21",
               "status": "已完成",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [],
               "progress_percent": 100,
-              "effort_hours": 16
+              "effort_hours": 12
             },
             {
               "task_id": "C6P4T2",
-              "task_name": "冻结数据和接口清单",
-              "owner": "模拟角色6-2",
-              "start_date": "2026-07-28",
-              "due_date": "2026-08-02",
+              "task_name": "标记冲突与过期规则",
+              "owner": "模拟岗位6-2",
+              "start_date": "2026-08-22",
+              "due_date": "2026-08-27",
               "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C6P4T1"
               ],
-              "progress_percent": 70,
-              "effort_hours": 20
+              "progress_percent": 80,
+              "effort_hours": 17
             },
             {
               "task_id": "C6P4T3",
-              "task_name": "完成跨部门评审",
-              "owner": "模拟角色6-3",
-              "start_date": "2026-08-03",
-              "due_date": "2026-08-08",
-              "status": "阻塞",
+              "task_name": "邀请临床专家复核",
+              "owner": "模拟岗位6-3",
+              "start_date": "2026-08-28",
+              "due_date": "2026-09-02",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C6P4T2"
               ],
-              "progress_percent": 45,
-              "effort_hours": 24
+              "progress_percent": 60,
+              "effort_hours": 22
             },
             {
               "task_id": "C6P4T4",
-              "task_name": "执行集成验证",
-              "owner": "模拟角色6-4",
-              "start_date": "2026-08-09",
-              "due_date": "2026-08-14",
-              "status": "未开始",
+              "task_name": "记录适用科室边界",
+              "owner": "模拟岗位6-4",
+              "start_date": "2026-09-03",
+              "due_date": "2026-09-08",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C6P4T3"
               ],
-              "progress_percent": 0,
-              "effort_hours": 28
+              "progress_percent": 50,
+              "effort_hours": 27
             },
             {
               "task_id": "C6P4T5",
-              "task_name": "准备回滚与应急方案",
-              "owner": "模拟角色6-5",
-              "start_date": "2026-08-15",
-              "due_date": "2026-08-20",
+              "task_name": "执行历史病例回放",
+              "owner": "模拟岗位6-5",
+              "start_date": "2026-09-09",
+              "due_date": "2026-09-14",
               "status": "未开始",
               "priority": "中",
               "dependency_ids": [
+                "C6P4T3",
                 "C6P4T4"
               ],
               "progress_percent": 0,
@@ -3397,220 +3528,215 @@
             },
             {
               "task_id": "C6P4T6",
-              "task_name": "取得业务书面验收",
-              "owner": "模拟角色6-6",
-              "start_date": "2026-08-21",
-              "due_date": "2026-08-26",
+              "task_name": "发布审批后规则版本",
+              "owner": "模拟岗位6-6",
+              "start_date": "2026-09-15",
+              "due_date": "2026-09-20",
               "status": "未开始",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [
+                "C6P4T4",
                 "C6P4T5"
               ],
               "progress_percent": 0,
-              "effort_hours": 36
+              "effort_hours": 37
             }
           ]
         },
         {
           "project_id": "PRJ-C6P5",
-          "project_name": "运营流程优化",
-          "project_type": "流程优化",
+          "project_name": "等保整改证据归档",
+          "project_type": "合规审计",
           "department": "质量保证部",
-          "stage": "试运行",
-          "start_date": "2026-07-29",
-          "end_date": "2026-09-22",
-          "background": "用于比较不同公司画像下的流程优化风险信号，全部内容均为确定性生成的模拟数据。",
-          "outcome": "当前仍在执行；包含延期依赖、阻塞评审和待确认验收等可核查模拟状态。",
+          "stage": "材料归档",
+          "start_date": "2026-08-21",
+          "end_date": "2026-10-25",
+          "background": "等保整改证据归档是该模拟公司特有的合规审计场景，用于验证行业背景和标准如何影响风险判断。",
+          "outcome": "模拟执行中；状态分布用于覆盖健康、阻塞、延期、临期和信息不足场景，不代表真实业务结果。",
           "tasks": [
             {
               "task_id": "C6P5T1",
-              "task_name": "确认范围与验收口径",
-              "owner": "模拟角色6-1",
-              "start_date": "2026-07-29",
-              "due_date": "2026-08-03",
+              "task_name": "整理资产与网络边界",
+              "owner": "模拟岗位6-1",
+              "start_date": "2026-08-21",
+              "due_date": "2026-08-26",
               "status": "已完成",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [],
               "progress_percent": 100,
-              "effort_hours": 16
+              "effort_hours": 12
             },
             {
               "task_id": "C6P5T2",
-              "task_name": "冻结数据和接口清单",
-              "owner": "模拟角色6-2",
-              "start_date": "2026-08-04",
-              "due_date": "2026-08-09",
-              "status": "进行中",
+              "task_name": "核对账号权限复查",
+              "owner": "模拟岗位6-2",
+              "start_date": "2026-08-27",
+              "due_date": "2026-09-01",
+              "status": "已完成",
               "priority": "高",
               "dependency_ids": [
                 "C6P5T1"
               ],
-              "progress_percent": 70,
-              "effort_hours": 20
+              "progress_percent": 100,
+              "effort_hours": 17
             },
             {
               "task_id": "C6P5T3",
-              "task_name": "完成跨部门评审",
-              "owner": "模拟角色6-3",
-              "start_date": "2026-08-10",
-              "due_date": "2026-08-15",
-              "status": "阻塞",
+              "task_name": "汇总漏洞修复证据",
+              "owner": "模拟岗位6-3",
+              "start_date": "2026-09-02",
+              "due_date": "2026-09-07",
+              "status": "已完成",
               "priority": "高",
               "dependency_ids": [
                 "C6P5T2"
               ],
-              "progress_percent": 45,
-              "effort_hours": 24
+              "progress_percent": 100,
+              "effort_hours": 22
             },
             {
               "task_id": "C6P5T4",
-              "task_name": "执行集成验证",
-              "owner": "模拟角色6-4",
-              "start_date": "2026-08-16",
-              "due_date": "2026-08-21",
-              "status": "未开始",
+              "task_name": "更新应急演练记录",
+              "owner": "模拟岗位6-4",
+              "start_date": "2026-09-08",
+              "due_date": "2026-09-13",
+              "status": "进行中",
               "priority": "高",
               "dependency_ids": [
                 "C6P5T3"
               ],
-              "progress_percent": 0,
-              "effort_hours": 28
+              "progress_percent": 75,
+              "effort_hours": 27
             },
             {
               "task_id": "C6P5T5",
-              "task_name": "准备回滚与应急方案",
-              "owner": "模拟角色6-5",
-              "start_date": "2026-08-22",
-              "due_date": "2026-08-27",
-              "status": "未开始",
+              "task_name": "完成第三方测评核对",
+              "owner": "模拟岗位6-5",
+              "start_date": "2026-09-14",
+              "due_date": "2026-09-19",
+              "status": "进行中",
               "priority": "中",
               "dependency_ids": [
+                "C6P5T3",
                 "C6P5T4"
               ],
-              "progress_percent": 0,
+              "progress_percent": 60,
               "effort_hours": 32
             },
             {
               "task_id": "C6P5T6",
-              "task_name": "取得业务书面验收",
-              "owner": "模拟角色6-6",
-              "start_date": "2026-08-28",
-              "due_date": "2026-09-02",
+              "task_name": "归档问题闭环清单",
+              "owner": "模拟岗位6-6",
+              "start_date": "2026-09-20",
+              "due_date": "2026-09-25",
               "status": "未开始",
-              "priority": "高",
+              "priority": "中",
               "dependency_ids": [
+                "C6P5T4",
                 "C6P5T5"
               ],
               "progress_percent": 0,
-              "effort_hours": 36
+              "effort_hours": 37
             }
           ]
         }
       ],
       "policies": [
         {
-          "document_id": "care-healthtech-risk-level",
-          "title": "项目风险分级与升级标准",
+          "document_id": "care-healthtech-privacy",
+          "title": "医疗数据最小化规范",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "风险",
-            "升级",
-            "医疗信息化"
+            "医疗信息化",
+            "privacy"
           ],
-          "content": "适用画像：医疗信息化、200–499人、B2B 项目交付。高风险应在一个工作日内由项目负责人核对证据、影响和责任角色；中风险每三个工作日复核。"
+          "content": "测试和日志不得保留可直接识别患者的信息，脱敏证明是上线必备证据。"
         },
         {
-          "document_id": "care-healthtech-change-control",
-          "title": "需求变更控制办法",
+          "document_id": "care-healthtech-interface",
+          "title": "医院接口变更标准",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "变更",
-            "范围",
-            "医疗信息化"
+            "医疗信息化",
+            "interface"
           ],
-          "content": "适用画像：医疗信息化、200–499人、B2B 项目交付。变更进入执行前应记录提出方、业务理由、范围、验收条件、测试影响和排期影响。"
+          "content": "HIS、LIS 等核心接口变更需完成脱敏环境回归、性能验证和院方批准。"
         },
         {
-          "document_id": "care-healthtech-data-security",
-          "title": "数据最小化处理规范",
+          "document_id": "care-healthtech-release",
+          "title": "院内变更窗口规范",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "数据",
-            "安全",
-            "医疗信息化"
+            "医疗信息化",
+            "release"
           ],
-          "content": "适用画像：医疗信息化、200–499人、B2B 项目交付。导入资料前应移除无关个人信息与凭证；模拟数据不得冒充真实客户资料。"
+          "content": "上线前应完成备份、回退、全流程演练和值守安排，阻断缺陷不得豁免。"
         },
         {
-          "document_id": "care-healthtech-release-approval",
-          "title": "发布与切换审批清单",
+          "document_id": "care-healthtech-clinical",
+          "title": "临床规则审批规范",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "发布",
-            "回滚",
-            "医疗信息化"
+            "医疗信息化",
+            "clinical"
           ],
-          "content": "适用画像：医疗信息化、200–499人、B2B 项目交付。切换前必须核对测试结论、未关闭高优问题、监控指标、回滚方案和值班角色。"
+          "content": "规则变更必须记录来源、适用科室、专家复核和生效版本，AI 不得自动发布。"
         },
         {
-          "document_id": "care-healthtech-supplier-management",
-          "title": "关键供应商管理规范",
+          "document_id": "care-healthtech-security",
+          "title": "安全问题升级标准",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "供应商",
-            "SLA",
-            "医疗信息化"
+            "医疗信息化",
+            "security"
           ],
-          "content": "适用画像：医疗信息化、200–499人、B2B 项目交付。关键供应商交付前应取得容量证据、故障联系人、服务承诺和替代路径。"
+          "content": "高危漏洞或越权迹象在两小时内升级质量与安全负责人。"
         },
         {
-          "document_id": "care-healthtech-customer-acceptance",
-          "title": "客户验收证据要求",
+          "document_id": "care-healthtech-evidence",
+          "title": "项目验收证据要求",
           "version": "1.0",
           "effective_date": "2026-06-01",
           "status": "effective",
           "tags": [
-            "客户",
-            "验收",
-            "医疗信息化"
+            "医疗信息化",
+            "evidence"
           ],
-          "content": "适用画像：医疗信息化、200–499人、B2B 项目交付。验收应对应确认范围，保存测试记录、问题清单和书面结论；未确认不得标记完成。"
+          "content": "验收材料应包含需求基线、测试报告、安全结论、培训和院方书面确认。"
         },
         {
-          "document_id": "care-healthtech-ai-usage",
+          "document_id": "care-healthtech-ai-boundary",
           "title": "AI 助手使用边界",
           "version": "1.0",
-          "effective_date": "2026-06-01",
+          "effective_date": "2026-08-25",
           "status": "effective",
           "tags": [
             "AI",
-            "人工确认",
-            "医疗信息化"
+            "人工确认"
           ],
-          "content": "适用画像：医疗信息化、200–499人、B2B 项目交付。AI 输出只作为草稿，不得自动改变负责人、期限、风险状态或创建正式行动。"
+          "content": "AI 输出仅作草稿；引用必须来自当前公司知识版本，不得自动改变负责人、日期、风险状态或正式行动。"
         },
         {
-          "document_id": "care-healthtech-case-review",
-          "title": "历史案例：依赖未闭环",
+          "document_id": "care-healthtech-record-evidence",
+          "title": "事实与证据记录规范",
           "version": "1.0",
-          "effective_date": "2026-06-01",
+          "effective_date": "2026-05-01",
           "status": "effective",
           "tags": [
-            "案例",
-            "依赖",
-            "医疗信息化"
+            "证据",
+            "审计"
           ],
-          "content": "适用画像：医疗信息化、200–499人、B2B 项目交付。模拟案例中上游评审阻塞导致验证推迟；团队核对缺口、拆分可并行任务并记录复核日期。"
+          "content": "记录必须区分事实、推测和待验证事项，保留来源、时间、责任角色和下一次检查日期。"
         }
       ]
     }

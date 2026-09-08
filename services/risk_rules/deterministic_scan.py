@@ -127,6 +127,12 @@ def scan_project(document: dict[str, Any], as_of: str | date | None = None) -> d
         source = {}
 
     scan_date = _parse_date(as_of or document.get("as_of") or date.today(), "扫描日期")
+    company = document.get("company") if isinstance(document.get("company"), dict) else {}
+    standard = company.get("risk_standard") if isinstance(company.get("risk_standard"), dict) else {}
+    high_overdue_days = standard.get("high_overdue_days", 1)
+    due_soon_days = standard.get("due_soon_days", 3)
+    if type(high_overdue_days) is not int or not 0 <= high_overdue_days <= 365: high_overdue_days = 1
+    if type(due_soon_days) is not int or not 0 <= due_soon_days <= 365: due_soon_days = 3
     project_id = str(project["project_id"])
     project_name = str(project["project_name"])
     source_id = str(source.get("source_id") or source.get("sha256") or "source-unknown")
@@ -163,7 +169,7 @@ def scan_project(document: dict[str, Any], as_of: str | date | None = None) -> d
                 task=task,
                 risk_type="schedule_delay",
                 title=f"{task.get('task_name', task['task_id'])} 已逾期",
-                severity="high",
+                severity="high" if abs(days_to_due) >= high_overdue_days else "medium",
                 rule_id="overdue_incomplete",
                 evidence=common_evidence,
             )
@@ -176,7 +182,7 @@ def scan_project(document: dict[str, Any], as_of: str | date | None = None) -> d
                     task=task,
                     risk_type="schedule_delay",
                     title=f"{task.get('task_name', task['task_id'])} 已逾期",
-                    severity="high",
+                    severity="high" if abs(days_to_due) >= high_overdue_days else "medium",
                     rule_id="overdue_low_progress",
                     evidence=[_evidence("progress_percent", "完成百分比", progress, task)],
                 )
@@ -195,7 +201,7 @@ def scan_project(document: dict[str, Any], as_of: str | date | None = None) -> d
                 evidence=[_evidence("status", "状态", status, task)],
             )
 
-        if 0 <= days_to_due <= 3 and progress < 50:
+        if 0 <= days_to_due <= due_soon_days and progress < 50:
             _upsert_candidate(
                 candidates,
                 source_id=source_id,

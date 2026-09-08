@@ -42,6 +42,7 @@ tbody tr:hover { background: #fafbfe; }
 .success-card dd { margin: 3px 0 0; overflow-wrap: anywhere; color: #214f40; font-size: 12px; font-weight: 700; }
 .company-workspace { border-top: 3px solid var(--brand) !important; }
 .company-workspace select { min-width:240px; padding:9px 11px; }
+.company-profile { margin-top:16px; padding:12px 14px; border:1px solid #ddd8ff; border-radius:11px; background:var(--brand-soft); color:var(--ink-soft); font-size:12px; line-height:1.7; }
 .workspace-actions { margin-top:18px; padding-top:16px; border-top:1px solid var(--line); }
 .coverage-grid { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:10px; margin-top:18px; }
 .coverage-grid > div { display:grid; gap:3px; padding:13px; border:1px solid var(--line); border-radius:11px; background:var(--surface-subtle); }

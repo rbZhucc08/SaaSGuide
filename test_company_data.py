@@ -5,6 +5,7 @@ from pathlib import Path
 
 from server import create_app
 from services.company_data.store import CompanyDataError, clear, create_company, create_policy, create_project, delete_company, delete_policy, delete_project, project_document, read, reset, set_active_company, update_policy, update_project
+from services.risk_rules.deterministic_scan import scan_project
 
 
 ROOT = Path(__file__).resolve().parent
@@ -40,6 +41,18 @@ class CompanyDataStoreTests(unittest.TestCase):
         legacy_seed=Path(self.temporary.name)/"legacy.json"; legacy_seed.write_text(json.dumps(legacy,ensure_ascii=False),encoding="utf-8")
         migrated=read(Path(self.temporary.name)/"legacy-runtime.json",legacy_seed)
         self.assertEqual("2.0-multi-company",migrated["schema_version"]); self.assertEqual("legacy",migrated["active_company_id"])
+
+    def test_seed_has_unique_scenarios_and_company_specific_standards(self):
+        data=reset(self.runtime,SEED); raw=json.loads(SEED.read_text(encoding="utf-8"))
+        projects=[p for c in raw["companies"] for p in c["projects"]]; tasks=[t for p in projects for t in p["tasks"]]
+        self.assertEqual(30,len({p["project_name"] for p in projects})); self.assertEqual(180,len({t["task_name"] for t in tasks}))
+        self.assertGreater(len({c["risk_standard"]["high_overdue_days"] for c in raw["companies"]}),1)
+        self.assertIn("mandatory_evidence",data["company"]["risk_standard"])
+
+    def test_same_overdue_signal_uses_company_threshold(self):
+        base={"as_of":"2026-09-08","source":{"source_id":"threshold-source"},"project":{"project_id":"P","project_name":"阈值测试"},"tasks":[{"task_id":"T","task_name":"相同逾期任务","owner":"测试","start_date":"2026-09-01","due_date":"2026-09-06","status":"进行中","priority":"高","dependency_ids":[],"progress_percent":50,"effort_hours":1}]}
+        saas=scan_project({**base,"company":{"risk_standard":{"high_overdue_days":3}}}); factory=scan_project({**base,"company":{"risk_standard":{"high_overdue_days":1}}})
+        self.assertEqual("medium",saas["candidates"][0]["severity"]); self.assertEqual("high",factory["candidates"][0]["severity"])
 
     def test_project_crud_and_scan_document(self):
         base = read(self.runtime, SEED)["projects"][0]; value = {**base, "project_id": "PRJ-NEW", "project_name": "新增项目"}
@@ -95,6 +108,10 @@ class CompanyDataApiTests(unittest.TestCase):
         data=self.client.get("/api/company-data").get_json(); target=data["companies"][1]["company_id"]
         switched=self.client.put("/api/company-data/active-company",json={"company_id":target})
         self.assertEqual(200,switched.status_code); self.assertEqual(target,switched.get_json()["company"]["company_id"])
+
+    def test_home_dashboard_does_not_surface_simulated_company_dataset(self):
+        payload=self.client.get("/api/dashboard").get_json()
+        self.assertNotIn("company_workspace",payload)
 
 
 if __name__ == "__main__": unittest.main(verbosity=2)
