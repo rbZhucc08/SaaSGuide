@@ -49,7 +49,9 @@
 - `V2_PHASE1_SPEC.md` 至 `V2_PHASE8_SPEC.md`：分阶段规格；
 - `test_records/`：自动测试、浏览器检查和阶段验收记录；
 - `CHANGE_RECORD_2026-09-05_PRODUCTIZATION.md`：产品入口与展示内容调整；
-- 根目录的 `PHASE*_TEST_RECORD.md`：V1 历史记录；
-- `SAASGUIDE_V2_HANDOFF.md`、`SAASGUIDE_UI_OPTIMIZATION_HANDOFF.md`：不同阶段的对话交接材料。
+- `history/v1/`：V1 阶段记录、早期 Brief、决策和问题日志；
+- `history/handoffs/`：V2、简历和 UI 优化交接材料；
+- `specs/`：当前 V3 阶段规格；
+- `test_records/`：各阶段实际测试和浏览器验收记录。
 
 历史记录描述当时发生的事，可能包含已经退出当前产品入口的页面或旧测试数量。判断现在能做什么时，应优先查看仓库首页、当前状态和最新验收记录。

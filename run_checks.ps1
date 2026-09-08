@@ -18,6 +18,9 @@ try {
     & $pythonPath .\validate_data.py
     if ($LASTEXITCODE -ne 0) { throw "JSON 与页面校验失败。" }
 
+    & $pythonPath .\scripts\check_markdown_links.py
+    if ($LASTEXITCODE -ne 0) { throw "Markdown 相对链接检查失败。" }
+
     node --check app.js
     if ($LASTEXITCODE -ne 0) { throw "app.js 语法检查失败。" }
 
@@ -48,7 +51,7 @@ try {
     node --check input-lab.js
     if ($LASTEXITCODE -ne 0) { throw "input-lab.js 语法检查失败。" }
 
-    Write-Host "全部检查通过：V1 回归、V2-P1 至 P8、AI 编排、数据校验和 JavaScript 语法检查。" -ForegroundColor Green
+    Write-Host "全部检查通过：自动测试、数据校验、Markdown 链接和 JavaScript 语法检查。" -ForegroundColor Green
 }
 finally {
     Pop-Location

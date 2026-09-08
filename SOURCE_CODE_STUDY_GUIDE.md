@@ -46,7 +46,7 @@ SaaSGuide 当前用于演示一套本地项目风险处理流程。DeepSeek 通�
 
 历史阶段记录仍保留在仓库中，但它们描述的是当时状态。判断当前能力时，以 README、`docs/PROJECT_STATUS.md` 和最新验收记录为准。
 
-根目录中的 `PHASE*_TEST_RECORD.md`、`DEMO_SCRIPT.md`、`PROJECT_BRIEF.md` 和 `SAASGUIDE_*_HANDOFF.md` 属于历史记录或交接材料。它们用于追溯项目变化，不是当前版本的首选说明。
+`docs/history/v1/` 和 `docs/history/handoffs/` 中的材料用于追溯项目变化，不是当前版本的首选说明。
 
 ## 3. 项目文件夹的分区
 

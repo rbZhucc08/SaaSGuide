@@ -26,6 +26,6 @@ V2-P0 至 P8、本地模拟数据、AI 编排、跨公司规则基准和私有�
 
 1. 当前阶段规格，例如 `V2_PHASE2_SPEC.md`。
 2. 本路线图。
-3. `SAASGUIDE_V2_HANDOFF.md` 总交接说明。
+3. `docs/history/handoffs/SAASGUIDE_V2_HANDOFF.md` 总交接说明。
 
-测试记录说明“实际发生了什么”，不用于偷偷改变产品目标。方向变化必须写入根目录 `DECISION_LOG.md`。
+测试记录说明“实际发生了什么”，不用于偷偷改变产品目标。V2 方向变化记录保存在 `docs/history/v1/DECISION_LOG.md`；V3 变化写入对应阶段规格和测试记录。

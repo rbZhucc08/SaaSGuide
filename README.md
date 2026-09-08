@@ -1,10 +1,19 @@
-# SaaSGuide
+# SaaSGuide V3
 
-SaaSGuide 是一个本地运行的项目风险管理 Demo。它把项目数据接入、规则扫描、制度引用、DeepSeek 建议、人工确认和行动记录放在同一条流程里。
+SaaSGuide 是一个本地运行的项目风险助手。它把项目数据校验、确定性风险扫描、制度引用、DeepSeek 建议和人工确认放进同一条可追溯流程，最后从已确认记录生成行动与报告。
 
-这个项目使用虚构公司和模拟数据。它用于展示 AI 应用设计与工程实现，不是已经上线的企业产品，也没有真实客户或业务效果数据。
+当前版本使用 6 家虚构公司和模拟项目数据，用于展示 AI 应用设计与工程实现。它没有真实客户、企业采用记录或业务效果数据，也没有公开部署。
 
 ![SaaSGuide 工作台](docs/assets/overview.png)
+
+## 三分钟体验
+
+1. 按[本地运行](#本地运行)启动服务，打开 `http://127.0.0.1:4173/`；
+2. 在“数据源”查看模拟公司与项目，在“风险雷达”运行规则扫描；
+3. 打开候选风险，核对任务事实和制度依据；如已配置密钥，可请求 DeepSeek 返回 ASK 或 PLAN 草稿；
+4. 人工确认风险和行动后，在“行动跟踪”和“报告”查看审计记录与汇总。
+
+AI 只生成草稿。没有人工确认时，系统不会创建正式行动。
 
 ## 先看什么
 
@@ -16,6 +25,25 @@ SaaSGuide 是一个本地运行的项目风险管理 Demo。它把项目数据�
 - 想核对完成情况：查看[证据索引](docs/portfolio/EVIDENCE_INDEX.md)。
 
 完整文档入口见 [docs/README.md](docs/README.md)。
+
+## 从 V1 到 V3
+
+| 版本 | 重点 | 当前定位 |
+|---|---|---|
+| V1 | 静态风险看板和基础 DeepSeek 演示 | 历史原型，材料保存在 `docs/history/v1/` |
+| V2 | 数据接入、规则、知识、行动审计、报告和单 Orchestrator | 已完成并保留完整阶段证据记录 |
+| V3 | 信息架构、演示体验、业务闭环、独立评测框架和模型可靠性 | 当前开发线；首轮只实施阶段 1–5 |
+
+## 当前文件地图
+
+| 要找的内容 | 入口 |
+|---|---|
+| 产品现状与边界 | [当前状态](docs/PROJECT_STATUS.md)、[已知限制](docs/quality/KNOWN_LIMITATIONS.md) |
+| 产品与操作 | [PRD](docs/product/PRD.md)、[用户手册](docs/product/USER_GUIDE.md) |
+| 架构与 AI 流程 | [系统架构](docs/architecture/SYSTEM_ARCHITECTURE.md)、[AI 工作流](docs/architecture/AI_AGENT_WORKFLOW.md) |
+| 测试与证据 | [测试策略](docs/quality/TEST_STRATEGY.md)、[证据索引](docs/portfolio/EVIDENCE_INDEX.md) |
+| V3 规格和验收 | `docs/specs/`、`docs/test_records/` |
+| 历史材料 | `docs/history/v1/`、`docs/history/handoffs/` |
 
 ## 它解决什么问题
 
