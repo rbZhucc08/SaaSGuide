@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 
 from server import create_app
-from services.company_data.store import CompanyDataError, clear, create_policy, create_project, delete_policy, delete_project, project_document, read, reset, update_policy, update_project
+from services.company_data.store import CompanyDataError, clear, create_company, create_policy, create_project, delete_company, delete_policy, delete_project, project_document, read, reset, set_active_company, update_policy, update_project
 
 
 ROOT = Path(__file__).resolve().parent
@@ -23,8 +23,23 @@ class CompanyDataStoreTests(unittest.TestCase):
 
     def test_reset_is_explicit_and_restores_rich_seed(self):
         clear(self.runtime, SEED); data = reset(self.runtime, SEED)
-        self.assertEqual(5, len(data["projects"])); self.assertGreaterEqual(len(data["policies"]), 15)
-        self.assertEqual(25, sum(len(item["tasks"]) for item in data["projects"]))
+        self.assertEqual(5, len(data["projects"])); self.assertEqual(8, len(data["policies"]))
+        self.assertEqual(6, data["dataset_summary"]["companies"])
+        self.assertEqual(180, data["dataset_summary"]["tasks"])
+
+    def test_company_switch_isolates_projects_and_policies(self):
+        first=read(self.runtime,SEED); first_id=first["active_company_id"]
+        second_id=first["companies"][1]["company_id"]; second=set_active_company(self.runtime,SEED,second_id)
+        self.assertNotEqual(first_id,second["active_company_id"]); self.assertEqual(5,len(second["projects"]))
+        clear(self.runtime,SEED); cleared=read(self.runtime,SEED)
+        self.assertEqual([],cleared["projects"]); self.assertEqual(30,cleared["dataset_summary"]["projects"]+5)
+        restored=set_active_company(self.runtime,SEED,first_id); self.assertEqual(5,len(restored["projects"]))
+
+    def test_legacy_single_company_is_migrated_without_losing_records(self):
+        legacy={"schema_version":"1.0","company":{"company_id":"legacy","name":"旧数据","industry":"软件"},"departments":["研发"],"projects":[],"policies":[]}
+        legacy_seed=Path(self.temporary.name)/"legacy.json"; legacy_seed.write_text(json.dumps(legacy,ensure_ascii=False),encoding="utf-8")
+        migrated=read(Path(self.temporary.name)/"legacy-runtime.json",legacy_seed)
+        self.assertEqual("2.0-multi-company",migrated["schema_version"]); self.assertEqual("legacy",migrated["active_company_id"])
 
     def test_project_crud_and_scan_document(self):
         base = read(self.runtime, SEED)["projects"][0]; value = {**base, "project_id": "PRJ-NEW", "project_name": "新增项目"}
@@ -58,7 +73,7 @@ class CompanyDataApiTests(unittest.TestCase):
         self.assertEqual([],self.client.get("/api/company-data").get_json()["projects"])
 
     def test_selected_project_scan_uses_editable_store(self):
-        response=self.client.post("/api/company-data/projects/PRJ-CRM-026/scan",json={"as_of":"2026-09-07"})
+        response=self.client.post("/api/company-data/projects/PRJ-C1P1/scan",json={"as_of":"2026-09-07"})
         self.assertEqual(200,response.status_code); data=response.get_json(); self.assertEqual("editable_company_project",data["source_mode"]); self.assertFalse(data["sample_mode"])
 
     def test_knowledge_answer_uses_runtime_policies(self):
@@ -75,6 +90,11 @@ class CompanyDataApiTests(unittest.TestCase):
         response=self.client.post("/api/actions",json={"candidate_id":"candidate-no-confirm","title":"不应保存","owner_role":"项目负责人","due_date":"2026-09-10","completion_signal":"完成","actor":"测试","human_confirmed":False})
         self.assertEqual(400,response.status_code)
         self.assertEqual(0,self.client.get("/api/actions").get_json()["summary"]["total"])
+
+    def test_company_api_switches_active_context(self):
+        data=self.client.get("/api/company-data").get_json(); target=data["companies"][1]["company_id"]
+        switched=self.client.put("/api/company-data/active-company",json={"company_id":target})
+        self.assertEqual(200,switched.status_code); self.assertEqual(target,switched.get_json()["company"]["company_id"])
 
 
 if __name__ == "__main__": unittest.main(verbosity=2)

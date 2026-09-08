@@ -1,6 +1,7 @@
 let importPreview = null;
 let companyData = null;
 let editingProjectId = null;
+let editingCompanyId = null;
 
 async function companyApi(url, options = {}) {
   const response = await fetch(url, options);
@@ -51,7 +52,7 @@ function openProjectEditor(project = null) {
   editingProjectId = project?.project_id || null;
   document.querySelector("#project-editor-title").textContent = project ? "编辑项目" : "新增项目";
   const values = project || {};
-  [["project-id","project_id"],["project-name","project_name"],["project-department","department"],["project-stage","stage"],["project-start","start_date"],["project-end","end_date"],["project-background","background"],["project-outcome","outcome"]].forEach(([id,key]) => { projectInput(id).value = values[key] || ""; });
+  [["project-id","project_id"],["project-name","project_name"],["project-type","project_type"],["project-department","department"],["project-stage","stage"],["project-start","start_date"],["project-end","end_date"],["project-background","background"],["project-outcome","outcome"]].forEach(([id,key]) => { projectInput(id).value = values[key] || (key === "project_type" ? "其他" : ""); });
   projectInput("project-id").readOnly = Boolean(project);
   const rows = document.querySelector("#task-rows"); rows.replaceChildren(...(values.tasks || []).map(createTaskRow));
   if (!values.tasks?.length) rows.append(createTaskRow());
@@ -61,7 +62,11 @@ function openProjectEditor(project = null) {
 
 function renderCompany(data) {
   companyData = data;
-  document.querySelector("#company-summary").textContent = `${data.company.name} · ${data.projects.length} 个项目 · ${data.projects.reduce((sum, item) => sum + item.tasks.length, 0)} 条任务 · 本地可编辑`;
+  document.querySelector("#company-summary").textContent = `${data.company.name} · ${data.company.industry} · ${data.company.size_band} · ${data.company.business_model}`;
+  const select = document.querySelector("#company-select");
+  select.replaceChildren(...data.companies.map((company) => { const option=document.createElement("option"); option.value=company.company_id; option.textContent=`${company.name} · ${company.projects} 项目`; option.selected=company.company_id===data.active_company_id; return option; }));
+  const coverage=document.querySelector("#dataset-coverage"); coverage.replaceChildren();
+  [["公司",data.dataset_summary.companies],["行业",data.dataset_summary.industries],["业务模式",data.dataset_summary.business_models],["项目",data.dataset_summary.projects],["任务",data.dataset_summary.tasks],["制度版本",data.dataset_summary.policy_versions]].forEach(([label,value])=>{const item=document.createElement("div");const strong=document.createElement("strong");strong.textContent=value;const small=document.createElement("small");small.textContent=label;item.append(strong,small);coverage.append(item)});
   const list = document.querySelector("#project-list"); list.replaceChildren();
   if (!data.projects.length) {
     const empty = document.createElement("div"); empty.className = "record-empty"; empty.textContent = "当前没有项目。可新增项目，或显式恢复模拟公司数据。"; list.append(empty); return;
@@ -80,6 +85,14 @@ function renderCompany(data) {
 }
 
 async function loadCompany() { try { renderCompany(await companyApi("/api/company-data")); } catch (error) { setMessage(error.message); } }
+
+function openCompanyEditor(company = null) {
+  editingCompanyId=company?.company_id||null; const value=company||{};
+  document.querySelector("#company-editor-title").textContent=company?"编辑公司画像":"新增公司画像";
+  [["company-id","company_id"],["company-name","name"],["company-industry","industry"],["company-size","size_band"],["company-region","region"],["company-model","business_model"],["company-lifecycle","lifecycle_stage"],["company-appetite","risk_appetite"],["company-description","description"]].forEach(([id,key])=>{document.querySelector(`#${id}`).value=value[key]||""});
+  document.querySelector("#company-departments").value=(companyData?.departments||[]).join(","); document.querySelector("#company-id").readOnly=Boolean(company);
+  document.querySelector("#company-editor").classList.remove("is-hidden"); document.querySelector("#company-editor").scrollIntoView({behavior:"smooth",block:"start"});
+}
 
 const uploadForm = document.querySelector("#upload-form");
 const fileInput = document.querySelector("#xlsx-file");
@@ -343,10 +356,16 @@ document.querySelector("#cancel-project").addEventListener("click", () => docume
 document.querySelector("#add-task").addEventListener("click", () => document.querySelector("#task-rows").append(createTaskRow()));
 document.querySelector("#project-form").addEventListener("submit", async (event) => {
   event.preventDefault();
-  const payload = {project_id:projectInput("project-id").value.trim(),project_name:projectInput("project-name").value.trim(),department:projectInput("project-department").value.trim(),stage:projectInput("project-stage").value.trim(),start_date:projectInput("project-start").value,end_date:projectInput("project-end").value,background:projectInput("project-background").value.trim(),outcome:projectInput("project-outcome").value.trim(),tasks:readTaskRows()};
+  const payload = {project_id:projectInput("project-id").value.trim(),project_name:projectInput("project-name").value.trim(),project_type:projectInput("project-type").value.trim(),department:projectInput("project-department").value.trim(),stage:projectInput("project-stage").value.trim(),start_date:projectInput("project-start").value,end_date:projectInput("project-end").value,background:projectInput("project-background").value.trim(),outcome:projectInput("project-outcome").value.trim(),tasks:readTaskRows()};
   const endpoint = editingProjectId ? `/api/company-data/projects/${encodeURIComponent(editingProjectId)}` : "/api/company-data/projects";
   try { await companyApi(endpoint,{method:editingProjectId?"PUT":"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)}); document.querySelector("#project-editor").classList.add("is-hidden"); await loadCompany(); setMessage("项目档案已保存，风险雷达将读取最新内容。", "info"); } catch(error) { setMessage(error.message); }
 });
-document.querySelector("#reset-company").addEventListener("click", async () => { if (!confirm("恢复会覆盖当前项目和制度，确定继续？")) return; try { renderCompany(await companyApi("/api/company-data/reset",{method:"POST"})); setMessage("已恢复丰富模拟公司数据。", "info"); } catch(error) { setMessage(error.message); } });
-document.querySelector("#clear-company").addEventListener("click", async () => { if (!confirm("清空当前模拟公司项目和制度？清空后重启不会自动恢复。")) return; try { renderCompany(await companyApi("/api/company-data/clear",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({confirmed:true})})); setMessage("当前项目和制度已清空；需要时可显式恢复。", "info"); } catch(error) { setMessage(error.message); } });
+document.querySelector("#company-select").addEventListener("change",async(event)=>{try{renderCompany(await companyApi("/api/company-data/active-company",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({company_id:event.target.value})}));setMessage("已切换公司；风险扫描和知识检索将使用该公司的数据。","info")}catch(error){setMessage(error.message)}});
+document.querySelector("#new-company").addEventListener("click",()=>openCompanyEditor());
+document.querySelector("#edit-company").addEventListener("click",()=>openCompanyEditor(companyData.company));
+document.querySelector("#cancel-company").addEventListener("click",()=>document.querySelector("#company-editor").classList.add("is-hidden"));
+document.querySelector("#company-form").addEventListener("submit",async(event)=>{event.preventDefault();const payload={company_id:document.querySelector("#company-id").value.trim(),name:document.querySelector("#company-name").value.trim(),industry:document.querySelector("#company-industry").value.trim(),size_band:document.querySelector("#company-size").value.trim(),region:document.querySelector("#company-region").value.trim(),business_model:document.querySelector("#company-model").value.trim(),lifecycle_stage:document.querySelector("#company-lifecycle").value.trim(),risk_appetite:document.querySelector("#company-appetite").value.trim(),description:document.querySelector("#company-description").value.trim(),departments:document.querySelector("#company-departments").value.split(",").map(x=>x.trim()).filter(Boolean),projects:editingCompanyId?companyData.projects:[],policies:editingCompanyId?companyData.policies:[]};try{await companyApi(editingCompanyId?`/api/company-data/companies/${encodeURIComponent(editingCompanyId)}`:"/api/company-data/companies",{method:editingCompanyId?"PUT":"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});document.querySelector("#company-editor").classList.add("is-hidden");await loadCompany();setMessage("公司画像已保存。","info")}catch(error){setMessage(error.message)}});
+document.querySelector("#delete-company").addEventListener("click",async()=>{if(!confirm(`删除“${companyData.company.name}”及其项目和制度？`))return;try{await companyApi(`/api/company-data/companies/${encodeURIComponent(companyData.active_company_id)}`,{method:"DELETE"});await loadCompany();setMessage("公司数据已删除。","info")}catch(error){setMessage(error.message)}});
+document.querySelector("#reset-company").addEventListener("click", async () => { if (!confirm("恢复会覆盖整个多公司数据集，确定继续？")) return; try { renderCompany(await companyApi("/api/company-data/reset",{method:"POST"})); setMessage("已恢复多公司模拟数据集。", "info"); } catch(error) { setMessage(error.message); } });
+document.querySelector("#clear-company").addEventListener("click", async () => { if (!confirm("清空当前公司的项目和制度？其他公司不受影响。")) return; try { renderCompany(await companyApi("/api/company-data/clear",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({confirmed:true})})); setMessage("当前公司项目和制度已清空；其他公司数据仍保留。", "info"); } catch(error) { setMessage(error.message); } });
 loadCompany();

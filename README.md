@@ -21,9 +21,10 @@ V2 本地工作台：`http://127.0.0.1:4173/`
 
 ## 可编辑模拟公司数据
 
-- 版本化 Seed：`data/demo/nebula_company_seed.json`，包含 1 家虚构公司、6 个部门、5 个项目、25 条任务、16 个制度/历史案例版本。
-- 本地运行副本：`generated/company-data.json`，首次访问复制一次，此后保留用户修改。
-- 清空后重启不会自动恢复；只有点击“恢复模拟公司数据”才会覆盖为 Seed。
+- 版本化 Seed：`data/demo/nebula_company_seed.json`，包含 6 家虚构公司、6 个行业、30 个项目、180 条任务和 48 个制度版本。
+- 本地运行副本：`generated/company-data.json`；旧单公司文件会保留原公司数据，并无覆盖地补入缺失公司。
+- `/data-sources` 支持公司画像、切换、增删改和全局覆盖度；项目、任务、制度、风险扫描与知识上下文按当前 `company_id` 隔离。
+- 可运行 `scripts/build_multi_company_seed.py` 确定性重建模拟 Seed；清空只影响当前公司，显式恢复才会覆盖整个数据集。
 - 这属于数据驱动检索与受控 Agent 上下文，不是训练或微调 DeepSeek。
 - 由 Python 计算周报指标，并导出 UTF-8 BOM CSV 与三表 XLSX。
 - 检测需要 OCR 的 PDF、检查 WAV 元数据和模拟适配器；真实 OCR、语音识别和外部连接器尚未验证。

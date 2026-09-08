@@ -41,6 +41,11 @@ tbody tr:hover { background: #fafbfe; }
 .success-card dt { color: #5d756d; font-size: 10px; }
 .success-card dd { margin: 3px 0 0; overflow-wrap: anywhere; color: #214f40; font-size: 12px; font-weight: 700; }
 .company-workspace { border-top: 3px solid var(--brand) !important; }
+.company-workspace select { min-width:240px; padding:9px 11px; }
+.workspace-actions { margin-top:18px; padding-top:16px; border-top:1px solid var(--line); }
+.coverage-grid { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:10px; margin-top:18px; }
+.coverage-grid > div { display:grid; gap:3px; padding:13px; border:1px solid var(--line); border-radius:11px; background:var(--surface-subtle); }
+.coverage-grid strong { color:var(--brand-dark); font-size:20px; }.coverage-grid small { color:var(--muted); font-size:10px; }
 .record-actions, .record-card > div:last-child { display:flex; gap:8px; flex-wrap:wrap; }
 .danger-button, .icon-danger { border:1px solid #efc7ce; border-radius:10px; background:#fff; color:var(--danger); font-weight:700; cursor:pointer; }
 .danger-button { min-height:40px; padding:9px 13px; }
@@ -61,6 +66,7 @@ tbody tr:hover { background: #fafbfe; }
   .upload-card > div:first-child, .upload-card form { padding-top: 0; }
   .upload-card form, .sample-loader { width: 100%; }
   .mapping-grid { grid-template-columns: 1fr; }
+  .coverage-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
 }
 @media (max-width: 700px) {
   .upload-card { padding-top: 58px !important; }
@@ -72,4 +78,5 @@ tbody tr:hover { background: #fafbfe; }
   .success-card dl { grid-template-columns: 1fr; }
   .record-card { align-items:stretch; flex-direction:column; }.record-card > div:last-child { width:100%; }.record-card > div:last-child > * { flex:1; }
   .project-fields { grid-template-columns:1fr; }.project-fields .wide { grid-column:auto; }
+  .coverage-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }.company-workspace select { min-width:0; width:100%; }
 }

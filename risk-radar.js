@@ -261,6 +261,7 @@ async function saveDecision(card, candidate, decision, note) {
         candidate_id: candidate.candidate_id,
         candidate_key: candidate.candidate_key,
         source_id: currentScan.source.source_id,
+        company_id: currentScan.company?.company_id || "",
         decision,
         note,
         project_id: currentScan.project.project_id,

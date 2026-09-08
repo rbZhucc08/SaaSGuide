@@ -53,13 +53,17 @@ from services.reporting.metrics import xlsx_bytes as report_xlsx_bytes
 from services.company_data.store import (
     CompanyDataError,
     clear as clear_company_data,
+    create_company,
     create_policy,
     create_project,
+    delete_company,
     delete_policy,
     delete_project,
     project_document,
     read as read_company_data,
     reset as reset_company_data,
+    set_active_company,
+    update_company,
     update_policy,
     update_project,
 )
@@ -495,6 +499,7 @@ def create_app(
             company = read_company_data(company_data_path, company_seed_file)
             payload["company_workspace"] = {
                 "name": company["company"]["name"],
+                "companies": company["dataset_summary"]["companies"],
                 "projects": len(company["projects"]),
                 "tasks": sum(len(item["tasks"]) for item in company["projects"]),
                 "policy_versions": len(company["policies"]),
@@ -518,6 +523,35 @@ def create_app(
             return jsonify(reset_company_data(company_data_path, company_seed_file))
         except (CompanyDataError, OSError, json.JSONDecodeError) as error:
             return jsonify({"error": str(error), "code": "company_data_reset_failed"}), 500
+
+    @app.post("/api/company-data/companies")
+    def add_company_record():
+        try:
+            return jsonify(create_company(company_data_path, company_seed_file, request.get_json(silent=True))), 201
+        except CompanyDataError as error:
+            return jsonify({"error": str(error), "code": error.code}), error.status
+
+    @app.put("/api/company-data/companies/<company_id>")
+    def edit_company_record(company_id: str):
+        try:
+            return jsonify(update_company(company_data_path, company_seed_file, company_id, request.get_json(silent=True)))
+        except CompanyDataError as error:
+            return jsonify({"error": str(error), "code": error.code}), error.status
+
+    @app.delete("/api/company-data/companies/<company_id>")
+    def remove_company_record(company_id: str):
+        try:
+            return jsonify(delete_company(company_data_path, company_seed_file, company_id))
+        except CompanyDataError as error:
+            return jsonify({"error": str(error), "code": error.code}), error.status
+
+    @app.put("/api/company-data/active-company")
+    def choose_active_company():
+        payload = request.get_json(silent=True) or {}
+        try:
+            return jsonify(set_active_company(company_data_path, company_seed_file, str(payload.get("company_id", ""))))
+        except CompanyDataError as error:
+            return jsonify({"error": str(error), "code": error.code}), error.status
 
     @app.post("/api/company-data/clear")
     def clear_company_records():
@@ -558,6 +592,7 @@ def create_app(
         try:
             data = read_company_data(company_data_path, company_seed_file)
             result = scan_project(project_document(data, project_id, payload.get("as_of")), payload.get("as_of"))
+            result["company"] = data["company"]
             result["evaluation"] = None
             result["sample_mode"] = False
             result["source_mode"] = "editable_company_project"
@@ -886,6 +921,7 @@ def create_app(
                 "model_status": result.get("model_status", "unknown"),
                 "model": result.get("model"),
                 "candidate_id": str(payload.get("candidate", {}).get("candidate_id", "")) if isinstance(payload.get("candidate"), dict) else "",
+                "company_id": read_company_data(company_data_path, company_seed_file)["active_company_id"],
                 "trace": result.get("trace", []),
                 "created_at": result.get("created_at", now_iso()),
             }

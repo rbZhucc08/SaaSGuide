@@ -321,6 +321,7 @@ def save_human_decision(
         "recorded_at": recorded_at or datetime.now().astimezone().isoformat(timespec="seconds"),
     }
     optional_text = {
+        "company_id": 80,
         "project_id": 80,
         "project_name": 120,
         "title": 200,
