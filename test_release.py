@@ -170,6 +170,39 @@ class ReleaseTests(unittest.TestCase):
             self.assertEqual(3, data["summary"]["tasks"])
             self.assertEqual("user.xlsx", data["recent_activity"][0]["title"].removeprefix("已确认导入 "))
 
+    def test_portfolio_release_has_external_reader_documents(self):
+        root = Path(__file__).resolve().parent
+        required = (
+            "LICENSE", "SECURITY.md", "CHANGELOG.md", ".github/workflows/checks.yml",
+            "docs/README.md", "docs/product/PRD.md", "docs/product/FEATURE_GUIDE.md",
+            "docs/product/USER_GUIDE.md", "docs/architecture/SYSTEM_ARCHITECTURE.md",
+            "docs/architecture/AI_AGENT_WORKFLOW.md", "docs/architecture/DATA_AND_TRUST_BOUNDARIES.md",
+            "docs/portfolio/CASE_STUDY.md", "docs/portfolio/DEMO_GUIDE.md",
+            "docs/portfolio/EVIDENCE_INDEX.md", "docs/portfolio/RELEASE_CHECKLIST.md",
+            "docs/quality/TEST_STRATEGY.md", "docs/quality/EVALUATION_REPORT.md",
+            "docs/quality/KNOWN_LIMITATIONS.md",
+        )
+        for relative in required:
+            with self.subTest(relative=relative):
+                self.assertTrue((root / relative).is_file(), relative)
+
+    def test_readme_reports_current_fixed_benchmark_without_claiming_business_accuracy(self):
+        root = Path(__file__).resolve().parent
+        readme = (root / "README.md").read_text(encoding="utf-8")
+        benchmark = json.loads((root / "data/evaluation/company_scenario_expected.json").read_text(encoding="utf-8"))
+        self.assertEqual(30, len(benchmark["cases"]))
+        for text in ("TP=119", "FP=4", "FN=18", "Precision=96.75%", "Recall=86.86%"):
+            self.assertIn(text, readme)
+        self.assertIn("不是企业准确率", readme)
+        self.assertIn("不是多 Agent 系统", readme)
+
+    def test_github_workflow_reuses_local_release_command(self):
+        root = Path(__file__).resolve().parent
+        workflow = (root / ".github/workflows/checks.yml").read_text(encoding="utf-8")
+        self.assertIn("windows-latest", workflow)
+        self.assertIn(".\\run_checks.ps1", workflow)
+        self.assertNotIn("DEEPSEEK_API_KEY", workflow)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

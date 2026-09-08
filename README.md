@@ -1,196 +1,156 @@
 # SaaSGuide
 
-一个面向 AI 应用岗位求职的个人学习 Demo：在虚构的 B2B 项目管理场景中，将用户确认导入的项目数据、风险审计、文本证据、知识引用、行动与报告串成可追溯的本地闭环。V1 的固定风险看板保留在 Git 历史中，不再作为当前产品入口。
+SaaSGuide 是一个本地运行的项目风险管理 Demo。它把项目数据接入、规则扫描、制度引用、DeepSeek 建议、人工确认和行动记录放在同一条流程里。
 
-> 真实性声明：本项目使用虚构 SaaS 和模拟数据，没有真实客户、真实产品接入、生产部署或业务效果数据。
+这个项目使用虚构公司和模拟数据。它用于展示 AI 应用设计与工程实现，不是已经上线的企业产品，也没有真实客户或业务效果数据。
 
-## 能做什么
+![SaaSGuide 工作台](docs/assets/overview.png)
 
-V2 本地工作台：`http://127.0.0.1:4173/`
+## 先看什么
 
-- 根工作台只汇总用户确认导入、人工审计、证据核对和 SQLite 行动；模拟公司数据集不计入首页指标。
-- 保留一个后台 ASK / BUILD 引导生成实验，入口为 `/builder`。
-- 在 `/data-sources` 导入项目任务 XLSX；原始列名可自由输入，并提供原表头建议，服务端会拦截不存在的列。
-- 在 `/data-sources` 页面新增、编辑、删除项目与任务，也可继续导入 XLSX；固定样本只收纳在折叠的开发评测入口。
-- 在独立的 `/risk-radar` 页面选择当前可编辑项目运行确定性规则，查看原始证据，并记录确认、观察、驳回或误报选择。
-- 在风险雷达折叠的“开发评测”中运行 30 项跨公司固定基准，按公司对照 TP/FP/FN、Precision、Recall 和严重度；不进入首页。
-- 在候选卡中按需调用一个受控 Orchestrator：检索当前生效知识后由 DeepSeek 返回 ASK 或带引用 PLAN，再由 Python 校验；AI 不自动确认或保存行动。
-- 解析 TXT、Markdown、DOCX 与普通 PDF，保留文件哈希、原文位置和人工核对记录。
-- 用可新增、编辑、删除的版本化自建知识库回答并引用当前生效文档；无依据时拒答。
-- 用 SQLite 保存行动、状态事件和人工决策审计；产品运行时不再自动写入固定行动。
-- 报告与 CSV/XLSX 均从当前人工决策和行动实时计算，不再回退到固定报告样板。
+- 想快速了解项目：继续阅读本页，然后看[案例说明](docs/portfolio/CASE_STUDY.md)。
+- 想看产品设计：阅读[产品需求文档](docs/product/PRD.md)和[功能说明](docs/product/FEATURE_GUIDE.md)。
+- 想看 AI 怎么运行：阅读[Agent 工作流](docs/architecture/AI_AGENT_WORKFLOW.md)。
+- 想验证代码：按“本地运行”启动，再执行 `run_checks.ps1`。
+- 想核对完成情况：查看[证据索引](docs/portfolio/EVIDENCE_INDEX.md)。
 
-## 可编辑模拟公司数据
+完整文档入口见 [docs/README.md](docs/README.md)。
 
-- 版本化 Seed：`data/demo/nebula_company_seed.json`，包含 6 家虚构公司、6 个行业、30 个项目、180 条任务和 48 个制度版本。
-- 30 个项目名称和 180 个任务名称均不重复；SaaS、跨境电商、制造、物流、营销服务和医疗信息化分别使用行业场景与制度，不再共用项目模板。
-- 公司画像包含经营特征及独立风险标准；逾期阈值和临期窗口进入确定性扫描，完整画像和标准进入 DeepSeek 上下文。
-- 本地运行副本：`generated/company-data.json`；旧单公司文件会保留原公司数据，并无覆盖地补入缺失公司。
-- `/data-sources` 支持公司画像、切换、增删改和全局覆盖度；项目、任务、制度、风险扫描与知识上下文按当前 `company_id` 隔离。
-- 可运行 `scripts/build_multi_company_seed.py` 确定性重建模拟 Seed；清空只影响当前公司，显式恢复才会覆盖整个数据集。
-- 同一脚本生成 `data/evaluation/company_scenario_expected.json`；标准答案由模拟场景作者规则生成，不是企业专家标注。
-- 这属于数据驱动检索与受控 Agent 上下文，不是训练或微调 DeepSeek。
-- 由 Python 计算周报指标，并导出 UTF-8 BOM CSV 与三表 XLSX。
-- 检测需要 OCR 的 PDF、检查 WAV 元数据和模拟适配器；真实 OCR、语音识别和外部连接器尚未验证。
+## 它解决什么问题
 
-## 核心流程
+项目数据常常散落在表格、周报和制度文档里。直接把这些内容交给大模型，会遇到三个问题：
 
-V1 的主动风险分析：
+1. 模型不知道哪些信息是事实、哪些只是待确认描述；
+2. 模型可能引用不存在或已经失效的制度；
+3. 建议如果直接写入正式任务，会越过人的判断。
 
-```text
-用户填写风险事实
-        ↓
-本地服务检查必填信息
-        ↓
-DeepSeek 返回 ASK 或 PLAN
-        ↓
-程序检查返回结构是否合格
-        ↓
-用户确认（AI 不能替用户确认）
-        ↓
-备份旧数据并写入 risk-data.json
-        ↓
-页面重新统计并展示新风险
+SaaSGuide 的处理方式是：先用程序整理数据和发现候选风险，再让模型在受控上下文中给出 ASK 或 PLAN，最后由人决定是否记录行动。
+
+```mermaid
+flowchart LR
+    A[项目与证据数据] --> B[结构校验]
+    B --> C[确定性风险扫描]
+    C --> D[当前生效制度检索]
+    D --> E[DeepSeek ASK / PLAN]
+    E --> F[Python 结构与引用校验]
+    F --> G{人工确认}
+    G -->|确认| H[行动与审计记录]
+    G -->|观察或驳回| I[保留人工结论]
+    H --> J[CSV / XLSX 报告]
 ```
 
-V2 本地闭环：
+## 当前功能
 
-```text
-项目任务 XLSX
-        ↓
-列映射、校验与人工确认
-        ↓
-统一项目 JSON（保留来源与行号）
-        ↓
-Python 确定性规则与去重
-        ↓
-带原始证据的候选风险
-        ↓
-当前生效知识检索与引用白名单
-        ↓
-DeepSeek ASK / PLAN 草稿
-        ↓
-Python 结构与引用校验
-        ↓
-人工确认 / 观察 / 驳回 / 标记误报
-        ↓
-SQLite 行动与事件审计
-        ↓
-Python 指标、CSV 和 XLSX 周报
-```
+| 模块 | 当前实现 |
+|---|---|
+| 公司与项目 | 6 家差异化模拟公司；项目、任务、制度和风险标准按当前公司切换 |
+| 数据接入 | XLSX 字段映射、校验、预览和确认保存；TXT、Markdown、DOCX、普通 PDF 解析 |
+| 风险扫描 | 逾期、临期低进度、阻塞和直接依赖规则；候选去重并保留来源证据 |
+| AI 研判 | 单 Orchestrator 调用当前知识上下文，DeepSeek 返回 ASK 或带引用 PLAN |
+| 输出校验 | Python 检查 JSON 结构、引用白名单、行动数量、步骤顺序、负责人角色和完成信号 |
+| 人工决策 | 确认、观察、驳回或标记误报；AI 不自动修改正式状态和期限 |
+| 行动与报告 | SQLite 行动状态和事件审计；Python 计算指标并导出 CSV/XLSX |
+| 固定评测 | 30 个跨公司合成项目，按公司、行业、项目类型和风险类型查看 TP/FP/FN |
+
+![多公司项目数据](docs/assets/data-sources.png)
+
+## AI 和 Agent 在哪里
+
+当前只有一个自管 Orchestrator，不是多 Agent 系统，也没有使用 OpenAI Agents SDK。
+
+项目中定义了五个领域 Skill 合约：
+
+- `project-data-intake`：接收并校验项目数据；
+- `risk-signal-scan`：生成可解释的候选风险；
+- `evidence-grounded-assessment`：检索当前生效制度并限制可引用范围；
+- `risk-action-planner`：让 DeepSeek 返回 ASK 或 PLAN；
+- `weekly-risk-report`：从确认后的本地记录生成报告。
+
+一次风险卡 AI 调用实际运行中间三个 Skill。数据接入发生在上游，周报仍由确定性 Python 生成。详情见 [AI Agent 工作流](docs/architecture/AI_AGENT_WORKFLOW.md)。
+
+![候选风险扫描](docs/assets/risk-radar.png)
 
 ## 本地运行
 
-环境要求：Windows、Python 3.11+、可选的 Node.js（仅用于 JavaScript 语法检查）。
+当前验证环境为 Windows、Python 3.11+ 和 Node.js。
 
 ```powershell
 python -m venv .venv
 & '.\.venv\Scripts\python.exe' -m pip install -r requirements.txt
-```
-
-需要真实 AI 分析时，把 DeepSeek 密钥设置为环境变量。密钥不要写进本项目：
-
-```powershell
-$env:DEEPSEEK_API_KEY = '你的密钥'
-& '.\.venv\Scripts\python.exe' .\server.py
-```
-
-浏览器打开：`http://127.0.0.1:4173/`
-
-- V2 工作台：`http://127.0.0.1:4173/`
-- V2-P1 数据源：`http://127.0.0.1:4173/data-sources`
-- V2-P2 风险雷达：`http://127.0.0.1:4173/risk-radar`
-- 文本证据：`http://127.0.0.1:4173/evidence-intake`
-- 知识库：`http://127.0.0.1:4173/knowledge-base`
-- 行动跟踪：`http://127.0.0.1:4173/action-tracker`
-- 报告与导出：`http://127.0.0.1:4173/reports`
-- 输入实验室：`http://127.0.0.1:4173/input-lab`
-- 健康检查：`http://127.0.0.1:4173/health`
-
-也可以直接运行：
-
-```powershell
 & '.\start_v2.ps1'
 ```
 
-## 检查方式
+浏览器打开 `http://127.0.0.1:4173/`。
 
-一键检查：
+不配置模型密钥时，数据管理、确定性扫描、知识检索、人工记录、报告和固定评测仍可运行。需要调用 DeepSeek 时：
+
+```powershell
+$env:DEEPSEEK_API_KEY = '你的密钥'
+& '.\start_v2.ps1'
+```
+
+密钥不要写入 `.env.example`、源码或 Git 提交。
+
+主要页面：
+
+- `/`：本地确认记录概览；
+- `/data-sources`：公司、项目和 XLSX 数据；
+- `/risk-radar`：规则扫描、DeepSeek 研判和开发评测；
+- `/evidence-intake`：文本证据接入；
+- `/knowledge-base`：版本化制度检索；
+- `/action-tracker`：人工确认后的行动；
+- `/reports`：本地指标和导出；
+- `/input-lab`：PDF、WAV 与适配器边界实验。
+
+具体操作见 [用户手册](docs/product/USER_GUIDE.md)。
+
+## 验证
 
 ```powershell
 & '.\run_checks.ps1'
 ```
 
-等价的分项命令：
+截至 2026-09-08：
 
-```powershell
-& '.\.venv\Scripts\python.exe' -m unittest test_validator.py test_deepseek_ask_build.py test_risk_assistant.py test_server.py test_xlsx_import.py test_risk_rules.py test_text_evidence.py test_knowledge_base.py test_sqlite_store.py test_reporting.py test_multimodal_adapters.py test_ai_orchestrator.py test_company_data.py test_company_benchmark.py test_release.py
-& '.\.venv\Scripts\python.exe' .\validate_data.py
-node --check app.js
-node --check builder.js
-node --check data-sources.js
-node --check risk-radar.js
-node --check evidence-intake.js
-node --check knowledge-base.js
-node --check action-tracker.js
-node --check reports.js
-node --check input-lab.js
-```
+- 135 项自动测试通过；
+- JSON 数据校验和前端 JavaScript 语法检查通过；
+- 主要页面完成桌面和 390 × 844 响应式验收；
+- 真实 DeepSeek 浏览器验收取得两次 ASK 和一次合法 PLAN；
+- 跨公司固定规则基准：TP=119、FP=4、FN=18、Precision=96.75%、Recall=86.86%。
 
-截至 2026-09-08：累计 132 项自动测试通过；30 项跨公司固定规则基准得到 TP=119、FP=4、FN=18、Precision=96.75%、Recall=86.86%、严重度一致率=100%。这些数字只描述作者标注的合成场景，不是企业准确率；本轮 DeepSeek 实际运行 0 次。此前真实 DeepSeek 对当前项目的 ASK/PLAN 验收记录仍保留。
+最后一组数字只适用于作者构造并标注的合成场景，不是企业准确率，也不能证明 DeepSeek 的泛化能力。评测方法见 [评测说明](docs/quality/EVALUATION_REPORT.md)。
 
-## 当前状态与文档入口
+## 技术组成
 
-- `docs/PROJECT_STATUS.md`：当前真正完成、验证和未验证的内容。
-- `docs/V2_ROADMAP.md`：V2 阶段路线与当前闸门。
-- `docs/EVIDENCE_RULES.md`：实现、自动测试、浏览器验收等证据等级。
-- `docs/RISKS_AND_ASSUMPTIONS.md`：已知风险、假设与成本。
-- `docs/V2_PHASE1_SPEC.md`：V2-P1 的范围和验收条件。
-- `docs/test_records/V2_PHASE1_TEST_RECORD_2026-09-04.md`：V2-P1 实际验收记录。
-- `docs/V2_PHASE2_SPEC.md`：V2-P2 的规则、指标和人工决策边界。
-- `docs/test_records/V2_PHASE2_TEST_RECORD_2026-09-04.md`：V2-P2 实际验收记录。
-- `docs/V2_PHASE3_SPEC.md` 至 `docs/V2_PHASE8_SPEC.md`：后续阶段规格。
-- `docs/test_records/V2_PHASE3_TEST_RECORD_2026-09-04.md` 至 `V2_PHASE8_TEST_RECORD_2026-09-05.md`：实际验收记录。
-- `docs/test_records/V2_CROSS_COMPANY_BENCHMARK_TEST_RECORD_2026-09-08.md`：跨公司规则基准、浏览器验收与真实性边界。
-- `docs/V2_ARCHITECTURE.md`、`docs/V2_SECURITY_AND_LIMITS.md`：架构与安全边界。
-- `docs/V2_AI_ORCHESTRATION_SPEC.md` 与对应测试记录：V2 Orchestrator、五个领域 Skill 和真实 DeepSeek 验收。
-- `docs/SaaSGuide_V2_HR_演示引导.docx`：脱离产品页面的 HR 演示讲解稿。
+- 前端：HTML、CSS、原生 JavaScript；
+- 服务端：Python、Flask；
+- 本地数据：JSON、SQLite；
+- 文档与表格：python-docx、pypdf、openpyxl；
+- 模型：DeepSeek API；
+- 测试：Python unittest、数据校验、Node.js 语法检查、浏览器验收。
 
-阶段简称统一为 `V1-Pn` 和 `V2-Pn`。根目录旧有的 `PHASE1_TEST_RECORD.md` 至 `PHASE6_TEST_RECORD.md` 是 V1 历史记录，不重命名，以免破坏旧引用。
+系统结构见 [SYSTEM_ARCHITECTURE.md](docs/architecture/SYSTEM_ARCHITECTURE.md)。
 
-## 文件说明
+## 明确没有做的事
 
-- `index.html`、`styles.css`、`app.js`：V2 工作台页面、外观与本地状态汇总交互。
-- `data-sources.html`、`data-sources.css`、`data-sources.js`：V2-P1 数据源导入页面。
-- `services/ingestion/xlsx_import.py`：XLSX 解析、映射、校验和确认保存。
-- `data/demo/`：可恢复的丰富模拟公司 Seed；`services/company_data/`：运行数据校验、持久化与 CRUD。
-- `data/samples/`、`data/evaluation/`：仅供隔离测试的模拟 XLSX 与固定标准答案。
-- `risk-radar.html`、`risk-radar.css`、`risk-radar.js`：V2-P2 候选风险页面。
-- `services/risk_rules/deterministic_scan.py`：确定性规则、去重、评测与人工决策记录。
-- `services/evaluation/company_benchmark.py`：版本化跨公司标准答案的规则评测、分组指标和错误案例。
-- `services/ingestion/text_evidence.py`、`pdf_audio.py`：文本、DOCX、普通 PDF 和 WAV 元数据。
-- `services/retrieval/knowledge_base.py`：版本检索、引用、冲突和拒答。
-- `services/ai/skills.py`、`services/ai/orchestrator.py`：五个产品领域 Skill 合约与受控 DeepSeek 风险编排。
-- `database/store.py`：SQLite 迁移、行动状态机和审计事件。
-- `services/reporting/metrics.py`：确定性报告指标和 CSV。
-- `risk-data.json`、`guide-data.json`：V1 历史模拟数据与后台学习实验兼容数据，不供 V2 工作台统计。
-- `server.py`：本地页面、分析接口、确认保存与备份。
-- `deepseek_risk_assistant.py`：风险 ASK / PLAN 规则和模型输出校验。
-- `deepseek_ask_build.py`：后台引导生成学习实验。
-- `validate_data.py`：数据字段、日期、等级、步骤和页面目标校验。
-- `test_*.py`：不消耗模型费用的自动测试。
-- `*_TEST_RECORD.md`：真实运行与阶段验收记录。
-- `DECISION_LOG.md`、`BUG_LOG.md`：关键取舍与真实问题记录。
-- `SOURCE_CODE_STUDY_GUIDE.md`：源码关系、形成原因和跨境运营能力迁移说明。
-- `DEMO_SCRIPT.md`、`RESUME_EVIDENCE.md`：演示和求职表述边界。
+- 没有账号、权限、多人协作或生产级租户隔离；
+- 没有公开部署、TLS、生产 WSGI、限流或负载测试；
+- 没有真实企业数据、真实客户采用或业务收益；
+- 没有训练或微调 DeepSeek；
+- 没有向量 RAG、多 Agent、真实 OCR、语音识别或外部 SaaS 连接器；
+- AI 输出是草稿，不能自动创建正式风险或替人确认行动。
 
-## 已知限制
+完整边界见 [KNOWN_LIMITATIONS.md](docs/quality/KNOWN_LIMITATIONS.md) 和 [SECURITY.md](SECURITY.md)。
 
-- Flask 只作为本机开发服务，不是生产服务器。
-- SQLite 仍是单机 Demo，不支持多人同时编辑、账号或企业权限。
-- 确定性规则和检索不理解复杂语义或完整间接依赖链，存在误报、漏报和同源评测过拟合。
-- 新建风险会保存；详情页临时修改的状态和临时采纳计划刷新后会恢复。
-- DeepSeek 输出经过结构检查，但建议是否合理仍需人工判断。
-- 当前 DeepSeek 只用于风险行动规划；P3 模型文本抽取、向量 RAG 和 P6 模型周报叙述仍未实现。
-- 没有真实业务数据，不能宣称降低了真实公司的风险或产生业务指标。
-- 没有公开部署、生产 WSGI/TLS、真实 OCR、语音识别或外部系统授权。
+## 项目状态
+
+当前版本按“本地单用户 AI 应用作品集”范围完成。仓库暂未配置 GitHub 远程，也没有公开部署。
+
+- 当前实现：[docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md)
+- 产品路线：[docs/V2_ROADMAP.md](docs/V2_ROADMAP.md)
+- 发布检查：[docs/portfolio/RELEASE_CHECKLIST.md](docs/portfolio/RELEASE_CHECKLIST.md)
+- 变更记录：[CHANGELOG.md](CHANGELOG.md)
+
+## License
+
+[MIT License](LICENSE)
