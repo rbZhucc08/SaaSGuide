@@ -4,7 +4,7 @@ import json
 from datetime import date, timedelta
 from pathlib import Path
 
-ROOT=Path(__file__).resolve().parents[1]; OUTPUT=ROOT/"data"/"demo"/"nebula_company_seed.json"
+ROOT=Path(__file__).resolve().parents[1]; OUTPUT=ROOT/"data"/"demo"/"nebula_company_seed.json"; BENCHMARK=ROOT/"data"/"evaluation"/"company_scenario_expected.json"
 
 COMPANIES=[
  {"id":"nebula-digital","name":"星云数科（模拟）","industry":"企业软件与数字化服务","size":"200–499人","region":"华东","model":"订阅制 B2B SaaS","stage":"成长期","appetite":"稳健","departments":["产品中心","平台研发部","客户成功部","交付中心","数据安全部"],"traits":["续费收入敏感","多租户架构","季度版本发布","大客户定制需求"],"standard":(3,5,24,"每周两次","交付平台主管",["客户影响范围","错误率曲线","回滚验证"]),"background":"提供订阅制项目协作软件，收入同时受产品稳定性、续费和大客户实施进度影响。"},
@@ -81,7 +81,14 @@ def build_project(ci,pi,row):
     for i,(step,(status,progress)) in enumerate(zip(steps,states)):
         task_start=start+timedelta(days=i*6); due=task_start+timedelta(days=5)
         deps=[] if i==0 else ([f"{prefix}T{i}"] if i<4 else [f"{prefix}T{i-1}",f"{prefix}T{i}"])
-        tasks.append({"task_id":f"{prefix}T{i+1}","task_name":step,"owner":f"模拟岗位{ci+1}-{i+1}","start_date":task_start.isoformat(),"due_date":due.isoformat(),"status":status,"priority":"高" if i in {1,2,3} else "中","dependency_ids":deps,"progress_percent":progress,"effort_hours":12+i*5})
+        effort_hours=12+i*5
+        # 四个行业的第 5 个项目都保留一条“小工时、临期、低进度”边界任务。
+        # 当前确定性规则会提示进度压力，而场景标准答案认为剩余工作量可控，
+        # 因而它们是有业务解释的已知负例，可用于观察规则误报。
+        if pi==4 and i==3 and ci in {0,1,4,5}:
+            progress=40
+            effort_hours=18
+        tasks.append({"task_id":f"{prefix}T{i+1}","task_name":step,"owner":f"模拟岗位{ci+1}-{i+1}","start_date":task_start.isoformat(),"due_date":due.isoformat(),"status":status,"priority":"高" if i in {1,2,3} else "中","dependency_ids":deps,"progress_percent":progress,"effort_hours":effort_hours})
     return {"project_id":f"PRJ-{prefix}","project_name":name,"project_type":ptype,"department":department,"stage":stage,"start_date":start.isoformat(),"end_date":(start+timedelta(days=65)).isoformat(),"background":f"{name}是该模拟公司特有的{ptype}场景，用于验证行业背景和标准如何影响风险判断。","outcome":"模拟执行中；状态分布用于覆盖健康、阻塞、延期、临期和信息不足场景，不代表真实业务结果。","tasks":tasks}
 
 def main():
@@ -94,5 +101,32 @@ def main():
         companies.append({"company_id":spec["id"],"name":spec["name"],"industry":spec["industry"],"size_band":spec["size"],"region":spec["region"],"business_model":spec["model"],"lifecycle_stage":spec["stage"],"risk_appetite":spec["appetite"],"operating_characteristics":spec["traits"],"risk_standard":{"high_overdue_days":high,"due_soon_days":due,"blocked_hours_high":blocked,"review_cadence":cadence,"escalation_role":role,"mandatory_evidence":evidence},"description":spec["background"]+" 全部数据均为虚构。","simulated":True,"departments":spec["departments"],"projects":projects,"policies":policies})
     data={"schema_version":"2.0-multi-company","dataset_revision":"2026-09-08-differentiated-v1","active_company_id":companies[0]["company_id"],"companies":companies}
     OUTPUT.write_text(json.dumps(data,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+    as_of=date(2026,9,8); cases=[]
+    for company,spec in zip(companies,COMPANIES):
+        high=company["risk_standard"]["high_overdue_days"]; due_soon=company["risk_standard"]["due_soon_days"]
+        for project,scenario in zip(company["projects"],SCENARIOS[company["company_id"]]):
+            pattern=scenario[4]; positives=[]; negatives=[]; severities={}; task_by_id={t["task_id"]:t for t in project["tasks"]}
+            for task in project["tasks"]:
+                if task["status"] in {"已完成","已取消","完成","取消","done","completed","cancelled","canceled"}: continue
+                days=(date.fromisoformat(task["due_date"])-as_of).days; base=f"{project['project_id']}:{task['task_id']}"
+                if days<0:
+                    key=f"{base}:schedule_delay"; positives.append(key); severities[key]="high" if abs(days)>=high else "medium"
+                if task["status"]=="阻塞":
+                    key=f"{base}:delivery_blocked"; positives.append(key); severities[key]="high"
+                if 0<=days<=due_soon and task["progress_percent"]<50:
+                    key=f"{base}:schedule_pressure"
+                    if task["effort_hours"]<=20: negatives.append(key)
+                    else: positives.append(key); severities[key]="medium"
+                blocked_direct=[d for d in task["dependency_ids"] if task_by_id[d]["status"]=="阻塞"]
+                if blocked_direct:
+                    key=f"{base}:dependency_risk"; positives.append(key); severities[key]="high"
+                blocked_indirect=[]
+                for dependency in task["dependency_ids"]:
+                    blocked_indirect.extend(d for d in task_by_id[dependency]["dependency_ids"] if task_by_id[d]["status"]=="阻塞")
+                if blocked_indirect:
+                    key=f"{base}:dependency_risk"
+                    if key not in positives: positives.append(key); severities[key]="medium"
+            cases.append({"company_id":company["company_id"],"company_name":company["name"],"industry":company["industry"],"project_id":project["project_id"],"project_name":project["project_name"],"project_type":project["project_type"],"scenario_pattern":pattern,"expected_ai_decision":"ASK" if pattern=="ambiguous" else "PLAN","positive_candidate_keys":positives,"negative_candidate_keys":negatives,"expected_severity_by_key":severities,"scope_note":"由模拟场景作者依据任务状态、公司阈值和直接/间接依赖编写；不是企业专家标注。"})
+    BENCHMARK.write_text(json.dumps({"schema_version":"company-benchmark-v1","as_of":as_of.isoformat(),"dataset_revision":data["dataset_revision"],"cases":cases,"boundaries":{"schedule_pressure_small_effort":"临期但剩余工时不超过20小时标为边界误报","indirect_dependency":"间接依赖阻塞也应提示，但当前规则只检查直接依赖","ambiguous_scenario":"预期 DeepSeek 返回 ASK，规则候选仍单独评测"}},ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
     print(json.dumps({"companies":len(companies),"projects":sum(len(c["projects"]) for c in companies),"tasks":sum(len(p["tasks"]) for c in companies for p in c["projects"]),"policies":sum(len(c["policies"]) for c in companies),"unique_project_names":len({p["project_name"] for c in companies for p in c["projects"]}),"unique_task_names":len({t["task_name"] for c in companies for p in c["projects"] for t in p["tasks"]})},ensure_ascii=False))
 if __name__=="__main__": main()

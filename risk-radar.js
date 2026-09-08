@@ -7,6 +7,7 @@ const candidateSection = document.querySelector("#candidate-section");
 const summaryGrid = document.querySelector("#summary-grid");
 const candidateList = document.querySelector("#candidate-list");
 const evaluationPanel = document.querySelector("#evaluation-panel");
+const companyBenchmarkPanel = document.querySelector("#company-benchmark-panel");
 
 function setMessage(text = "", type = "error") {
   pageMessage.textContent = text;
@@ -44,6 +45,75 @@ function renderEvaluation(evaluation) {
   const note = document.createElement("small");
   note.textContent = evaluation.scope_note;
   evaluationPanel.append(grid, note);
+}
+
+function appendBenchmarkTable(parent, rows) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "benchmark-table-wrap";
+  const table = document.createElement("table");
+  const head = document.createElement("thead");
+  const headRow = document.createElement("tr");
+  ["公司", "TP", "FP", "FN", "Precision", "Recall", "严重度一致率"].forEach((label) => {
+    const cell = document.createElement("th"); cell.scope = "col"; cell.textContent = label; headRow.append(cell);
+  });
+  head.append(headRow); table.append(head);
+  const body = document.createElement("tbody");
+  rows.forEach((row) => {
+    const tr = document.createElement("tr");
+    [row.company_name, row.true_positive, row.false_positive, row.false_negative, `${row.precision_percent}%`, `${row.recall_percent}%`, `${row.severity_match_percent}%`].forEach((value) => {
+      const cell = document.createElement("td"); cell.textContent = value; tr.append(cell);
+    });
+    body.append(tr);
+  });
+  table.append(body); wrapper.append(table); parent.append(wrapper);
+}
+
+function renderCompanyBenchmark(data) {
+  companyBenchmarkPanel.replaceChildren();
+  const heading = document.createElement("div"); heading.className = "section-heading";
+  const titleWrap = document.createElement("div");
+  const eyebrow = document.createElement("p"); eyebrow.className = "eyebrow"; eyebrow.textContent = "FIXED BENCHMARK";
+  const title = document.createElement("h2"); title.id = "benchmark-title"; title.textContent = "跨公司规则基准";
+  const subtitle = document.createElement("p"); subtitle.textContent = `${data.case_count} 个差异化项目 · 固定扫描日 ${data.as_of}`;
+  titleWrap.append(eyebrow, title, subtitle);
+  const status = document.createElement("span"); status.className = "source-badge"; status.textContent = "DeepSeek 未运行";
+  heading.append(titleWrap, status);
+
+  const metrics = document.createElement("div"); metrics.className = "summary-grid benchmark-summary";
+  metrics.append(
+    metric("TP / FP / FN", `${data.overall.true_positive} / ${data.overall.false_positive} / ${data.overall.false_negative}`),
+    metric("Precision", `${data.overall.precision_percent}%`),
+    metric("Recall", `${data.overall.recall_percent}%`),
+    metric("严重度一致率", `${data.overall.severity_match_percent}%`),
+    metric("预期 ASK / PLAN", `${data.expected_ask_cases} / ${data.expected_plan_cases}`),
+    metric("DeepSeek 实际运行", data.deepseek_runs)
+  );
+  const note = document.createElement("p"); note.className = "benchmark-note"; note.textContent = data.scope_note;
+  companyBenchmarkPanel.append(heading, metrics, note);
+  appendBenchmarkTable(companyBenchmarkPanel, data.by_company);
+
+  const gaps = document.createElement("div"); gaps.className = "benchmark-gaps";
+  const gapTitle = document.createElement("h3"); gapTitle.textContent = "已暴露的规则缺口";
+  const gapText = document.createElement("p");
+  gapText.textContent = `边界误报 ${data.false_positive_cases.length} 条；间接依赖等漏报 ${data.false_negative_cases.length} 条；严重度不一致 ${data.severity_mismatches.length} 条。`;
+  gaps.append(gapTitle, gapText); companyBenchmarkPanel.append(gaps);
+  companyBenchmarkPanel.classList.remove("is-hidden");
+}
+
+async function runCompanyBenchmark(button) {
+  const normalText = button.textContent; button.disabled = true; button.textContent = "评测中…";
+  setMessage("正在运行固定合成场景规则基准；不会调用 DeepSeek。", "info");
+  try {
+    const response = await fetch("/api/evaluation/company-benchmark");
+    const data = await readJson(response);
+    if (!response.ok) throw new Error(data.error || `评测失败（HTTP ${response.status}）`);
+    renderCompanyBenchmark(data);
+    setMessage(`跨公司规则基准完成：${data.case_count} 个项目，DeepSeek 实际运行 ${data.deepseek_runs} 次。`, "info");
+  } catch (error) {
+    setMessage(error.message || "跨公司规则基准失败。");
+  } finally {
+    button.disabled = false; button.textContent = normalText;
+  }
 }
 
 function appendTextList(parent, title, items, ordered = false) {
@@ -283,6 +353,7 @@ async function saveDecision(card, candidate, decision, note) {
 }
 
 document.querySelector("#scan-sample").addEventListener("click", (event) => runScan("/api/risk-scans/sample", event.currentTarget));
+document.querySelector("#run-company-benchmark").addEventListener("click", (event) => runCompanyBenchmark(event.currentTarget));
 document.querySelector("#scan-company").addEventListener("click", (event) => {
   const projectId = document.querySelector("#company-project").value;
   if (!projectId) { setMessage("当前没有可扫描项目，请先在数据源页面新增或恢复模拟公司数据。"); return; }

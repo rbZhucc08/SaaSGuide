@@ -67,6 +67,7 @@ from services.company_data.store import (
     update_policy,
     update_project,
 )
+from services.evaluation.company_benchmark import CompanyBenchmarkError, run_company_benchmark
 from validate_data import RISK_FILE, validate_risk_data
 
 
@@ -86,6 +87,7 @@ KNOWLEDGE_FILE = PROJECT_DIR / "knowledge" / "documents" / "policies.json"
 PHASE4_EVALUATION_FILE = PROJECT_DIR / "data" / "evaluation" / "phase4_questions.json"
 DEMO_DATABASE = GENERATED_DIR / "saasguide-demo.db"
 COMPANY_SEED_FILE = PROJECT_DIR / "data" / "demo" / "nebula_company_seed.json"
+COMPANY_BENCHMARK_FILE = PROJECT_DIR / "data" / "evaluation" / "company_scenario_expected.json"
 COMPANY_DATA_FILE = GENERATED_DIR / "company-data.json"
 ALLOWED_SAMPLE_FILES = {
     "valid_project_tasks_cn.xlsx",
@@ -460,6 +462,7 @@ def create_app(
     knowledge_file: Path = KNOWLEDGE_FILE,
     company_data_file: Path | None = None,
     company_seed_file: Path = COMPANY_SEED_FILE,
+    company_benchmark_file: Path = COMPANY_BENCHMARK_FILE,
 ) -> Flask:
     app = Flask(__name__, static_folder=None)
     app.config["MAX_CONTENT_LENGTH"] = 3 * 1024 * 1024
@@ -596,6 +599,13 @@ def create_app(
         try:
             return jsonify(create_policy(company_data_path, company_seed_file, request.get_json(silent=True))), 201
         except CompanyDataError as error:
+            return jsonify({"error": str(error), "code": error.code}), error.status
+
+    @app.get("/api/evaluation/company-benchmark")
+    def company_benchmark():
+        try:
+            return jsonify(run_company_benchmark(company_seed_file, company_benchmark_file))
+        except CompanyBenchmarkError as error:
             return jsonify({"error": str(error), "code": error.code}), error.status
 
     @app.put("/api/company-data/policies/<document_id>/<version>")

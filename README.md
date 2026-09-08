@@ -13,6 +13,7 @@ V2 本地工作台：`http://127.0.0.1:4173/`
 - 在 `/data-sources` 导入项目任务 XLSX；原始列名可自由输入，并提供原表头建议，服务端会拦截不存在的列。
 - 在 `/data-sources` 页面新增、编辑、删除项目与任务，也可继续导入 XLSX；固定样本只收纳在折叠的开发评测入口。
 - 在独立的 `/risk-radar` 页面选择当前可编辑项目运行确定性规则，查看原始证据，并记录确认、观察、驳回或误报选择。
+- 在风险雷达折叠的“开发评测”中运行 30 项跨公司固定基准，按公司对照 TP/FP/FN、Precision、Recall 和严重度；不进入首页。
 - 在候选卡中按需调用一个受控 Orchestrator：检索当前生效知识后由 DeepSeek 返回 ASK 或带引用 PLAN，再由 Python 校验；AI 不自动确认或保存行动。
 - 解析 TXT、Markdown、DOCX 与普通 PDF，保留文件哈希、原文位置和人工核对记录。
 - 用可新增、编辑、删除的版本化自建知识库回答并引用当前生效文档；无依据时拒答。
@@ -27,6 +28,7 @@ V2 本地工作台：`http://127.0.0.1:4173/`
 - 本地运行副本：`generated/company-data.json`；旧单公司文件会保留原公司数据，并无覆盖地补入缺失公司。
 - `/data-sources` 支持公司画像、切换、增删改和全局覆盖度；项目、任务、制度、风险扫描与知识上下文按当前 `company_id` 隔离。
 - 可运行 `scripts/build_multi_company_seed.py` 确定性重建模拟 Seed；清空只影响当前公司，显式恢复才会覆盖整个数据集。
+- 同一脚本生成 `data/evaluation/company_scenario_expected.json`；标准答案由模拟场景作者规则生成，不是企业专家标注。
 - 这属于数据驱动检索与受控 Agent 上下文，不是训练或微调 DeepSeek。
 - 由 Python 计算周报指标，并导出 UTF-8 BOM CSV 与三表 XLSX。
 - 检测需要 OCR 的 PDF、检查 WAV 元数据和模拟适配器；真实 OCR、语音识别和外部连接器尚未验证。
@@ -122,7 +124,7 @@ $env:DEEPSEEK_API_KEY = '你的密钥'
 等价的分项命令：
 
 ```powershell
-& '.\.venv\Scripts\python.exe' -m unittest test_validator.py test_deepseek_ask_build.py test_risk_assistant.py test_server.py test_xlsx_import.py test_risk_rules.py test_text_evidence.py test_knowledge_base.py test_sqlite_store.py test_reporting.py test_multimodal_adapters.py test_ai_orchestrator.py test_release.py
+& '.\.venv\Scripts\python.exe' -m unittest test_validator.py test_deepseek_ask_build.py test_risk_assistant.py test_server.py test_xlsx_import.py test_risk_rules.py test_text_evidence.py test_knowledge_base.py test_sqlite_store.py test_reporting.py test_multimodal_adapters.py test_ai_orchestrator.py test_company_data.py test_company_benchmark.py test_release.py
 & '.\.venv\Scripts\python.exe' .\validate_data.py
 node --check app.js
 node --check builder.js
@@ -135,7 +137,7 @@ node --check reports.js
 node --check input-lab.js
 ```
 
-截至 2026-09-07：累计 120 项自动测试通过；可编辑项目已在浏览器完成编辑、跨刷新保存和风险扫描，真实 DeepSeek 对当前项目返回带 3 条当前制度引用、3 条行动草稿的 PLAN。固定评测夹具继续保留，但已与产品运行数据隔离。所有指标只能描述自建模拟样本。
+截至 2026-09-08：累计 132 项自动测试通过；30 项跨公司固定规则基准得到 TP=119、FP=4、FN=18、Precision=96.75%、Recall=86.86%、严重度一致率=100%。这些数字只描述作者标注的合成场景，不是企业准确率；本轮 DeepSeek 实际运行 0 次。此前真实 DeepSeek 对当前项目的 ASK/PLAN 验收记录仍保留。
 
 ## 当前状态与文档入口
 
@@ -149,6 +151,7 @@ node --check input-lab.js
 - `docs/test_records/V2_PHASE2_TEST_RECORD_2026-09-04.md`：V2-P2 实际验收记录。
 - `docs/V2_PHASE3_SPEC.md` 至 `docs/V2_PHASE8_SPEC.md`：后续阶段规格。
 - `docs/test_records/V2_PHASE3_TEST_RECORD_2026-09-04.md` 至 `V2_PHASE8_TEST_RECORD_2026-09-05.md`：实际验收记录。
+- `docs/test_records/V2_CROSS_COMPANY_BENCHMARK_TEST_RECORD_2026-09-08.md`：跨公司规则基准、浏览器验收与真实性边界。
 - `docs/V2_ARCHITECTURE.md`、`docs/V2_SECURITY_AND_LIMITS.md`：架构与安全边界。
 - `docs/V2_AI_ORCHESTRATION_SPEC.md` 与对应测试记录：V2 Orchestrator、五个领域 Skill 和真实 DeepSeek 验收。
 - `docs/SaaSGuide_V2_HR_演示引导.docx`：脱离产品页面的 HR 演示讲解稿。
@@ -164,6 +167,7 @@ node --check input-lab.js
 - `data/samples/`、`data/evaluation/`：仅供隔离测试的模拟 XLSX 与固定标准答案。
 - `risk-radar.html`、`risk-radar.css`、`risk-radar.js`：V2-P2 候选风险页面。
 - `services/risk_rules/deterministic_scan.py`：确定性规则、去重、评测与人工决策记录。
+- `services/evaluation/company_benchmark.py`：版本化跨公司标准答案的规则评测、分组指标和错误案例。
 - `services/ingestion/text_evidence.py`、`pdf_audio.py`：文本、DOCX、普通 PDF 和 WAV 元数据。
 - `services/retrieval/knowledge_base.py`：版本检索、引用、冲突和拒答。
 - `services/ai/skills.py`、`services/ai/orchestrator.py`：五个产品领域 Skill 合约与受控 DeepSeek 风险编排。

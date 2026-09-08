@@ -490,8 +490,8 @@
               "dependency_ids": [
                 "C1P5T3"
               ],
-              "progress_percent": 50,
-              "effort_hours": 27
+              "progress_percent": 40,
+              "effort_hours": 18
             },
             {
               "task_id": "C1P5T5",
@@ -1113,8 +1113,8 @@
               "dependency_ids": [
                 "C2P5T3"
               ],
-              "progress_percent": 50,
-              "effort_hours": 27
+              "progress_percent": 40,
+              "effort_hours": 18
             },
             {
               "task_id": "C2P5T5",
@@ -2982,8 +2982,8 @@
               "dependency_ids": [
                 "C5P5T3"
               ],
-              "progress_percent": 0,
-              "effort_hours": 27
+              "progress_percent": 40,
+              "effort_hours": 18
             },
             {
               "task_id": "C5P5T5",
@@ -3605,8 +3605,8 @@
               "dependency_ids": [
                 "C6P5T3"
               ],
-              "progress_percent": 75,
-              "effort_hours": 27
+              "progress_percent": 40,
+              "effort_hours": 18
             },
             {
               "task_id": "C6P5T5",

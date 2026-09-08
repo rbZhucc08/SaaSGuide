@@ -1,0 +1,766 @@
+{
+  "schema_version": "company-benchmark-v1",
+  "as_of": "2026-09-08",
+  "dataset_revision": "2026-09-08-differentiated-v1",
+  "cases": [
+    {
+      "company_id": "nebula-digital",
+      "company_name": "星云数科（模拟）",
+      "industry": "企业软件与数字化服务",
+      "project_id": "PRJ-C1P1",
+      "project_name": "企业客户单点登录上线",
+      "project_type": "客户实施",
+      "scenario_pattern": "blocked",
+      "expected_ai_decision": "PLAN",
+      "positive_candidate_keys": [
+        "PRJ-C1P1:C1P1T3:schedule_delay",
+        "PRJ-C1P1:C1P1T3:delivery_blocked",
+        "PRJ-C1P1:C1P1T4:schedule_delay",
+        "PRJ-C1P1:C1P1T4:dependency_risk",
+        "PRJ-C1P1:C1P1T5:schedule_delay",
+        "PRJ-C1P1:C1P1T5:dependency_risk",
+        "PRJ-C1P1:C1P1T6:schedule_delay",
+        "PRJ-C1P1:C1P1T6:dependency_risk"
+      ],
+      "negative_candidate_keys": [],
+      "expected_severity_by_key": {
+        "PRJ-C1P1:C1P1T3:schedule_delay": "high",
+        "PRJ-C1P1:C1P1T3:delivery_blocked": "high",
+        "PRJ-C1P1:C1P1T4:schedule_delay": "high",
+        "PRJ-C1P1:C1P1T4:dependency_risk": "high",
+        "PRJ-C1P1:C1P1T5:schedule_delay": "high",
+        "PRJ-C1P1:C1P1T5:dependency_risk": "high",
+        "PRJ-C1P1:C1P1T6:schedule_delay": "high",
+        "PRJ-C1P1:C1P1T6:dependency_risk": "medium"
+      },
+      "scope_note": "由模拟场景作者依据任务状态、公司阈值和直接/间接依赖编写；不是企业专家标注。"
+    },
+    {
+      "company_id": "nebula-digital",
+      "company_name": "星云数科（模拟）",
+      "industry": "企业软件与数字化服务",
+      "project_id": "PRJ-C1P2",
+      "project_name": "季度版本灰度发布",
+      "project_type": "版本发布",
+      "scenario_pattern": "due",
+      "expected_ai_decision": "PLAN",
+      "positive_candidate_keys": [
+        "PRJ-C1P2:C1P2T3:schedule_delay",
+        "PRJ-C1P2:C1P2T4:schedule_delay",
+        "PRJ-C1P2:C1P2T5:schedule_delay",
+        "PRJ-C1P2:C1P2T6:schedule_pressure"
+      ],
+      "negative_candidate_keys": [],
+      "expected_severity_by_key": {
+        "PRJ-C1P2:C1P2T3:schedule_delay": "high",
+        "PRJ-C1P2:C1P2T4:schedule_delay": "high",
+        "PRJ-C1P2:C1P2T5:schedule_delay": "high",
+        "PRJ-C1P2:C1P2T6:schedule_pressure": "medium"
+      },
+      "scope_note": "由模拟场景作者依据任务状态、公司阈值和直接/间接依赖编写；不是企业专家标注。"
+    },
+    {
+      "company_id": "nebula-digital",
+      "company_name": "星云数科（模拟）",
+      "industry": "企业软件与数字化服务",
+      "project_id": "PRJ-C1P3",
+      "project_name": "续费流失预警看板",
+      "project_type": "数据产品",
+      "scenario_pattern": "healthy",
+      "expected_ai_decision": "PLAN",
+      "positive_candidate_keys": [
+        "PRJ-C1P3:C1P3T4:schedule_delay"
+      ],
+      "negative_candidate_keys": [],
+      "expected_severity_by_key": {
+        "PRJ-C1P3:C1P3T4:schedule_delay": "high"
+      },
+      "scope_note": "由模拟场景作者依据任务状态、公司阈值和直接/间接依赖编写；不是企业专家标注。"
+    },
+    {
+      "company_id": "nebula-digital",
+      "company_name": "星云数科（模拟）",
+      "industry": "企业软件与数字化服务",
+      "project_id": "PRJ-C1P4",
+      "project_name": "开放 API 限流升级",
+      "project_type": "平台治理",
+      "scenario_pattern": "mixed",
+      "expected_ai_decision": "PLAN",
+      "positive_candidate_keys": [
+        "PRJ-C1P4:C1P4T2:schedule_delay",
+        "PRJ-C1P4:C1P4T2:delivery_blocked",
+        "PRJ-C1P4:C1P4T3:schedule_delay",
+        "PRJ-C1P4:C1P4T3:dependency_risk",
+        "PRJ-C1P4:C1P4T4:schedule_pressure",
+        "PRJ-C1P4:C1P4T4:dependency_risk",
+        "PRJ-C1P4:C1P4T5:dependency_risk"
+      ],
+      "negative_candidate_keys": [],
+      "expected_severity_by_key": {
+        "PRJ-C1P4:C1P4T2:schedule_delay": "high",
+        "PRJ-C1P4:C1P4T2:delivery_blocked": "high",
+        "PRJ-C1P4:C1P4T3:schedule_delay": "high",
+        "PRJ-C1P4:C1P4T3:dependency_risk": "high",
+        "PRJ-C1P4:C1P4T4:schedule_pressure": "medium",
+        "PRJ-C1P4:C1P4T4:dependency_risk": "medium",
+        "PRJ-C1P4:C1P4T5:dependency_risk": "medium"
+      },
+      "scope_note": "由模拟场景作者依据任务状态、公司阈值和直接/间接依赖编写；不是企业专家标注。"
+    },
+    {
+      "company_id": "nebula-digital",
+      "company_name": "星云数科（模拟）",
+      "industry": "企业软件与数字化服务",
+      "project_id": "PRJ-C1P5",
+      "project_name": "客户数据删除能力",
+      "project_type": "隐私合规",
+      "scenario_pattern": "ambiguous",
+      "expected_ai_decision": "ASK",
+      "positive_candidate_keys": [
+        "PRJ-C1P5:C1P5T2:schedule_delay",
+        "PRJ-C1P5:C1P5T3:schedule_delay"
+      ],
+      "negative_candidate_keys": [
+        "PRJ-C1P5:C1P5T4:schedule_pressure"
+      ],
+      "expected_severity_by_key": {
+        "PRJ-C1P5:C1P5T2:schedule_delay": "high",
+        "PRJ-C1P5:C1P5T3:schedule_delay": "medium"
+      },
+      "scope_note": "由模拟场景作者依据任务状态、公司阈值和直接/间接依赖编写；不是企业专家标注。"
+    },
+    {
+      "company_id": "seaway-commerce",
+      "company_name": "海路跨境（模拟）",
+      "industry": "跨境电商",
+      "project_id": "PRJ-C2P1",
+      "project_name": "旺季海外仓补货",
+      "project_type": "库存运营",
+      "scenario_pattern": "mixed",
+      "expected_ai_decision": "PLAN",
+      "positive_candidate_keys": [
+        "PRJ-C2P1:C2P1T2:schedule_delay",
+        "PRJ-C2P1:C2P1T2:delivery_blocked",
+        "PRJ-C2P1:C2P1T3:schedule_delay",
+        "PRJ-C2P1:C2P1T3:dependency_risk",
+        "PRJ-C2P1:C2P1T4:schedule_delay",
+        "PRJ-C2P1:C2P1T4:dependency_risk",
+        "PRJ-C2P1:C2P1T5:schedule_delay",
+        "PRJ-C2P1:C2P1T5:dependency_risk",
+        "PRJ-C2P1:C2P1T6:schedule_delay"
+      ],
+      "negative_candidate_keys": [],
+      "expected_severity_by_key": {
+        "PRJ-C2P1:C2P1T2:schedule_delay": "high",
+        "PRJ-C2P1:C2P1T2:delivery_blocked": "high",
+        "PRJ-C2P1:C2P1T3:schedule_delay": "high",
+        "PRJ-C2P1:C2P1T3:dependency_risk": "high",
+        "PRJ-C2P1:C2P1T4:schedule_delay": "high",
+        "PRJ-C2P1:C2P1T4:dependency_risk": "medium",
+        "PRJ-C2P1:C2P1T5:schedule_delay": "high",
+        "PRJ-C2P1:C2P1T5:dependency_risk": "medium",
+        "PRJ-C2P1:C2P1T6:schedule_delay": "high"
+      },
+      "scope_note": "由模拟场景作者依据任务状态、公司阈值和直接/间接依赖编写；不是企业专家标注。"
+    },
+    {
+      "company_id": "seaway-commerce",
+      "company_name": "海路跨境（模拟）",
+      "industry": "跨境电商",
+      "project_id": "PRJ-C2P2",
+      "project_name": "Ozon 商品卡合规整改",
+      "project_type": "平台合规",
+      "scenario_pattern": "blocked",
+      "expected_ai_decision": "PLAN",
+      "positive_candidate_keys": [
+        "PRJ-C2P2:C2P2T3:schedule_delay",
+        "PRJ-C2P2:C2P2T3:delivery_blocked",
+        "PRJ-C2P2:C2P2T4:schedule_delay",
+        "PRJ-C2P2:C2P2T4:dependency_risk",
+        "PRJ-C2P2:C2P2T5:schedule_delay",
+        "PRJ-C2P2:C2P2T5:dependency_risk",
+        "PRJ-C2P2:C2P2T6:schedule_pressure",
+        "PRJ-C2P2:C2P2T6:dependency_risk"
+      ],
+      "negative_candidate_keys": [],
+      "expected_severity_by_key": {
+        "PRJ-C2P2:C2P2T3:schedule_delay": "high",
+        "PRJ-C2P2:C2P2T3:delivery_blocked": "high",
+        "PRJ-C2P2:C2P2T4:schedule_delay": "high",
+        "PRJ-C2P2:C2P2T4:dependency_risk": "high",
+        "PRJ-C2P2:C2P2T5:schedule_delay": "high",
+        "PRJ-C2P2:C2P2T5:dependency_risk": "high",
+        "PRJ-C2P2:C2P2T6:schedule_pressure": "medium",
+        "PRJ-C2P2:C2P2T6:dependency_risk": "medium"
+      },
+      "scope_note": "由模拟场景作者依据任务状态、公司阈值和直接/间接依赖编写；不是企业专家标注。"
+    },
+    {
+      "company_id": "seaway-commerce",
+      "company_name": "海路跨境（模拟）",
+      "industry": "跨境电商",
+      "project_id": "PRJ-C2P3",
+      "project_name": "Amazon 广告预算重分配",
+      "project_type": "广告优化",
+      "scenario_pattern": "healthy",
+      "expected_ai_decision": "PLAN",
+      "positive_candidate_keys": [
+        "PRJ-C2P3:C2P3T4:schedule_delay",
+        "PRJ-C2P3:C2P3T6:schedule_pressure"
+      ],
+      "negative_candidate_keys": [],
+      "expected_severity_by_key": {
+        "PRJ-C2P3:C2P3T4:schedule_delay": "high",
+        "PRJ-C2P3:C2P3T6:schedule_pressure": "medium"
+      },
+      "scope_note": "由模拟场景作者依据任务状态、公司阈值和直接/间接依赖编写；不是企业专家标注。"
+    },
+    {
+      "company_id": "seaway-commerce",
+      "company_name": "海路跨境（模拟）",
+      "industry": "跨境电商",
+      "project_id": "PRJ-C2P4",
+      "project_name": "高退货 SKU 治理",
+      "project_type": "商品运营",
+      "scenario_pattern": "due",
+      "expected_ai_decision": "PLAN",
+      "positive_candidate_keys": [
+        "PRJ-C2P4:C2P4T3:schedule_delay",
+        "PRJ-C2P4:C2P4T4:schedule_pressure",
+        "PRJ-C2P4:C2P4T5:schedule_pressure"
+      ],
+      "negative_candidate_keys": [],
+      "expected_severity_by_key": {
+        "PRJ-C2P4:C2P4T3:schedule_delay": "high",
+        "PRJ-C2P4:C2P4T4:schedule_pressure": "medium",
+        "PRJ-C2P4:C2P4T5:schedule_pressure": "medium"
+      },
+      "scope_note": "由模拟场景作者依据任务状态、公司阈值和直接/间接依赖编写；不是企业专家标注。"
+    },
+    {
+      "company_id": "seaway-commerce",
+      "company_name": "海路跨境（模拟）",
+      "industry": "跨境电商",
+      "project_id": "PRJ-C2P5",
+      "project_name": "多平台库存同步",
+      "project_type": "系统集成",
+      "scenario_pattern": "ambiguous",
+      "expected_ai_decision": "ASK",
+      "positive_candidate_keys": [
+        "PRJ-C2P5:C2P5T2:schedule_delay",
+        "PRJ-C2P5:C2P5T3:schedule_delay"
+      ],
+      "negative_candidate_keys": [
+        "PRJ-C2P5:C2P5T4:schedule_pressure"
+      ],
+      "expected_severity_by_key": {
+        "PRJ-C2P5:C2P5T2:schedule_delay": "high",
+        "PRJ-C2P5:C2P5T3:schedule_delay": "medium"
+      },
+      "scope_note": "由模拟场景作者依据任务状态、公司阈值和直接/间接依赖编写；不是企业专家标注。"
+    },
+    {
+      "company_id": "forge-manufacturing",
+      "company_name": "铸新制造（模拟）",
+      "industry": "智能制造",
+      "project_id": "PRJ-C3P1",
+      "project_name": "关键机床预测性维护",
+      "project_type": "设备维护",
+      "scenario_pattern": "blocked",
+      "expected_ai_decision": "PLAN",
+      "positive_candidate_keys": [
+        "PRJ-C3P1:C3P1T3:schedule_delay",
+        "PRJ-C3P1:C3P1T3:delivery_blocked",
+        "PRJ-C3P1:C3P1T4:schedule_delay",
+        "PRJ-C3P1:C3P1T4:dependency_risk",
+        "PRJ-C3P1:C3P1T5:schedule_delay",
+        "PRJ-C3P1:C3P1T5:dependency_risk",
+        "PRJ-C3P1:C3P1T6:schedule_delay",
+        "PRJ-C3P1:C3P1T6:dependency_risk"
+      ],
+      "negative_candidate_keys": [],
+      "expected_severity_by_key": {
+        "PRJ-C3P1:C3P1T3:schedule_delay": "high",
+        "PRJ-C3P1:C3P1T3:delivery_blocked": "high",
+        "PRJ-C3P1:C3P1T4:schedule_delay": "high",
+        "PRJ-C3P1:C3P1T4:dependency_risk": "high",
+        "PRJ-C3P1:C3P1T5:schedule_delay": "high",
+        "PRJ-C3P1:C3P1T5:dependency_risk": "high",
+        "PRJ-C3P1:C3P1T6:schedule_delay": "high",
+        "PRJ-C3P1:C3P1T6:dependency_risk": "medium"
+      },
+      "scope_note": "由模拟场景作者依据任务状态、公司阈值和直接/间接依赖编写；不是企业专家标注。"
+    },
+    {
+      "company_id": "forge-manufacturing",
+      "company_name": "铸新制造（模拟）",
+      "industry": "智能制造",
+      "project_id": "PRJ-C3P2",
+      "project_name": "原料短缺替代认证",
+      "project_type": "供应保障",
+      "scenario_pattern": "mixed",
+      "expected_ai_decision": "PLAN",
+      "positive_candidate_keys": [
+        "PRJ-C3P2:C3P2T2:schedule_delay",
+        "PRJ-C3P2:C3P2T2:delivery_blocked",
+        "PRJ-C3P2:C3P2T3:schedule_delay",
+        "PRJ-C3P2:C3P2T3:dependency_risk",
+        "PRJ-C3P2:C3P2T4:schedule_delay",
+        "PRJ-C3P2:C3P2T4:dependency_risk",
+        "PRJ-C3P2:C3P2T5:schedule_delay",
+        "PRJ-C3P2:C3P2T5:dependency_risk",
+        "PRJ-C3P2:C3P2T6:schedule_pressure"
+      ],
+      "negative_candidate_keys": [],
+      "expected_severity_by_key": {
+        "PRJ-C3P2:C3P2T2:schedule_delay": "high",
+        "PRJ-C3P2:C3P2T2:delivery_blocked": "high",
+        "PRJ-C3P2:C3P2T3:schedule_delay": "high",
+        "PRJ-C3P2:C3P2T3:dependency_risk": "high",
+        "PRJ-C3P2:C3P2T4:schedule_delay": "high",
+        "PRJ-C3P2:C3P2T4:dependency_risk": "medium",
+        "PRJ-C3P2:C3P2T5:schedule_delay": "high",
+        "PRJ-C3P2:C3P2T5:dependency_risk": "medium",
+        "PRJ-C3P2:C3P2T6:schedule_pressure": "medium"
+      },
+      "scope_note": "由模拟场景作者依据任务状态、公司阈值和直接/间接依赖编写；不是企业专家标注。"
+    },
+    {
+      "company_id": "forge-manufacturing",
+      "company_name": "铸新制造（模拟）",
+      "industry": "智能制造",
+      "project_id": "PRJ-C3P3",
+      "project_name": "批次质量追溯整改",
+      "project_type": "质量治理",
+      "scenario_pattern": "due",
+      "expected_ai_decision": "PLAN",
+      "positive_candidate_keys": [
+        "PRJ-C3P3:C3P3T3:schedule_delay",
+        "PRJ-C3P3:C3P3T4:schedule_delay",
+        "PRJ-C3P3:C3P3T5:schedule_pressure",
+        "PRJ-C3P3:C3P3T6:schedule_pressure"
+      ],
+      "negative_candidate_keys": [],
+      "expected_severity_by_key": {
+        "PRJ-C3P3:C3P3T3:schedule_delay": "high",
+        "PRJ-C3P3:C3P3T4:schedule_delay": "high",
+        "PRJ-C3P3:C3P3T5:schedule_pressure": "medium",
+        "PRJ-C3P3:C3P3T6:schedule_pressure": "medium"
+      },
+      "scope_note": "由模拟场景作者依据任务状态、公司阈值和直接/间接依赖编写；不是企业专家标注。"
+    },
+    {
+      "company_id": "forge-manufacturing",
+      "company_name": "铸新制造（模拟）",
+      "industry": "智能制造",
+      "project_id": "PRJ-C3P4",
+      "project_name": "MES 工单接口改造",
+      "project_type": "系统升级",
+      "scenario_pattern": "healthy",
+      "expected_ai_decision": "PLAN",
+      "positive_candidate_keys": [],
+      "negative_candidate_keys": [],
+      "expected_severity_by_key": {},
+      "scope_note": "由模拟场景作者依据任务状态、公司阈值和直接/间接依赖编写；不是企业专家标注。"
+    },
+    {
+      "company_id": "forge-manufacturing",
+      "company_name": "铸新制造（模拟）",
+      "industry": "智能制造",
+      "project_id": "PRJ-C3P5",
+      "project_name": "旺季产能平衡",
+      "project_type": "生产计划",
+      "scenario_pattern": "ambiguous",
+      "expected_ai_decision": "ASK",
+      "positive_candidate_keys": [
+        "PRJ-C3P5:C3P5T2:schedule_delay",
+        "PRJ-C3P5:C3P5T3:schedule_delay"
+      ],
+      "negative_candidate_keys": [],
+      "expected_severity_by_key": {
+        "PRJ-C3P5:C3P5T2:schedule_delay": "high",
+        "PRJ-C3P5:C3P5T3:schedule_delay": "high"
+      },
+      "scope_note": "由模拟场景作者依据任务状态、公司阈值和直接/间接依赖编写；不是企业专家标注。"
+    },
+    {
+      "company_id": "swift-logistics",
+      "company_name": "迅达物流（模拟）",
+      "industry": "物流与仓储",
+      "project_id": "PRJ-C4P1",
+      "project_name": "华东暴雨线路改道",
+      "project_type": "运输应急",
+      "scenario_pattern": "blocked",
+      "expected_ai_decision": "PLAN",
+      "positive_candidate_keys": [
+        "PRJ-C4P1:C4P1T3:schedule_delay",
+        "PRJ-C4P1:C4P1T3:delivery_blocked",
+        "PRJ-C4P1:C4P1T4:schedule_delay",
+        "PRJ-C4P1:C4P1T4:dependency_risk",
+        "PRJ-C4P1:C4P1T5:schedule_delay",
+        "PRJ-C4P1:C4P1T5:dependency_risk",
+        "PRJ-C4P1:C4P1T6:schedule_delay",
+        "PRJ-C4P1:C4P1T6:dependency_risk"
+      ],
+      "negative_candidate_keys": [],
+      "expected_severity_by_key": {
+        "PRJ-C4P1:C4P1T3:schedule_delay": "high",
+        "PRJ-C4P1:C4P1T3:delivery_blocked": "high",
+        "PRJ-C4P1:C4P1T4:schedule_delay": "high",
+        "PRJ-C4P1:C4P1T4:dependency_risk": "high",
+        "PRJ-C4P1:C4P1T5:schedule_delay": "high",
+        "PRJ-C4P1:C4P1T5:dependency_risk": "high",
+        "PRJ-C4P1:C4P1T6:schedule_delay": "high",
+        "PRJ-C4P1:C4P1T6:dependency_risk": "medium"
+      },
+      "scope_note": "由模拟场景作者依据任务状态、公司阈值和直接/间接依赖编写；不是企业专家标注。"
+    },
+    {
+      "company_id": "swift-logistics",
+      "company_name": "迅达物流（模拟）",
+      "industry": "物流与仓储",
+      "project_id": "PRJ-C4P2",
+      "project_name": "双十一仓容扩展",
+      "project_type": "仓储能力",
+      "scenario_pattern": "mixed",
+      "expected_ai_decision": "PLAN",
+      "positive_candidate_keys": [
+        "PRJ-C4P2:C4P2T2:schedule_delay",
+        "PRJ-C4P2:C4P2T2:delivery_blocked",
+        "PRJ-C4P2:C4P2T3:schedule_delay",
+        "PRJ-C4P2:C4P2T3:dependency_risk",
+        "PRJ-C4P2:C4P2T4:schedule_delay",
+        "PRJ-C4P2:C4P2T4:dependency_risk",
+        "PRJ-C4P2:C4P2T5:schedule_delay",
+        "PRJ-C4P2:C4P2T5:dependency_risk",
+        "PRJ-C4P2:C4P2T6:schedule_pressure"
+      ],
+      "negative_candidate_keys": [],
+      "expected_severity_by_key": {
+        "PRJ-C4P2:C4P2T2:schedule_delay": "high",
+        "PRJ-C4P2:C4P2T2:delivery_blocked": "high",
+        "PRJ-C4P2:C4P2T3:schedule_delay": "high",
+        "PRJ-C4P2:C4P2T3:dependency_risk": "high",
+        "PRJ-C4P2:C4P2T4:schedule_delay": "high",
+        "PRJ-C4P2:C4P2T4:dependency_risk": "medium",
+        "PRJ-C4P2:C4P2T5:schedule_delay": "high",
+        "PRJ-C4P2:C4P2T5:dependency_risk": "medium",
+        "PRJ-C4P2:C4P2T6:schedule_pressure": "medium"
+      },
+      "scope_note": "由模拟场景作者依据任务状态、公司阈值和直接/间接依赖编写；不是企业专家标注。"
+    },
+    {
+      "company_id": "swift-logistics",
+      "company_name": "迅达物流（模拟）",
+      "industry": "物流与仓储",
+      "project_id": "PRJ-C4P3",
+      "project_name": "冷链承运商准入",
+      "project_type": "供应商准入",
+      "scenario_pattern": "due",
+      "expected_ai_decision": "PLAN",
+      "positive_candidate_keys": [
+        "PRJ-C4P3:C4P3T3:schedule_delay",
+        "PRJ-C4P3:C4P3T4:schedule_delay",
+        "PRJ-C4P3:C4P3T5:schedule_pressure"
+      ],
+      "negative_candidate_keys": [],
+      "expected_severity_by_key": {
+        "PRJ-C4P3:C4P3T3:schedule_delay": "high",
+        "PRJ-C4P3:C4P3T4:schedule_delay": "high",
+        "PRJ-C4P3:C4P3T5:schedule_pressure": "medium"
+      },
+      "scope_note": "由模拟场景作者依据任务状态、公司阈值和直接/间接依赖编写；不是企业专家标注。"
+    },
+    {
+      "company_id": "swift-logistics",
+      "company_name": "迅达物流（模拟）",
+      "industry": "物流与仓储",
+      "project_id": "PRJ-C4P4",
+      "project_name": "重点客户 SLA 看板",
+      "project_type": "客户运营",
+      "scenario_pattern": "healthy",
+      "expected_ai_decision": "PLAN",
+      "positive_candidate_keys": [],
+      "negative_candidate_keys": [],
+      "expected_severity_by_key": {},
+      "scope_note": "由模拟场景作者依据任务状态、公司阈值和直接/间接依赖编写；不是企业专家标注。"
+    },
+    {
+      "company_id": "swift-logistics",
+      "company_name": "迅达物流（模拟）",
+      "industry": "物流与仓储",
+      "project_id": "PRJ-C4P5",
+      "project_name": "区域分拨中心选址",
+      "project_type": "网络规划",
+      "scenario_pattern": "ambiguous",
+      "expected_ai_decision": "ASK",
+      "positive_candidate_keys": [
+        "PRJ-C4P5:C4P5T2:schedule_delay",
+        "PRJ-C4P5:C4P5T3:schedule_delay"
+      ],
+      "negative_candidate_keys": [],
+      "expected_severity_by_key": {
+        "PRJ-C4P5:C4P5T2:schedule_delay": "high",
+        "PRJ-C4P5:C4P5T3:schedule_delay": "high"
+      },
+      "scope_note": "由模拟场景作者依据任务状态、公司阈值和直接/间接依赖编写；不是企业专家标注。"
+    },
+    {
+      "company_id": "bright-marketing",
+      "company_name": "明途营销（模拟）",
+      "industry": "营销服务",
+      "project_id": "PRJ-C5P1",
+      "project_name": "新品整合传播战役",
+      "project_type": "品牌营销",
+      "scenario_pattern": "blocked",
+      "expected_ai_decision": "PLAN",
+      "positive_candidate_keys": [
+        "PRJ-C5P1:C5P1T3:schedule_delay",
+        "PRJ-C5P1:C5P1T3:delivery_blocked",
+        "PRJ-C5P1:C5P1T4:schedule_delay",
+        "PRJ-C5P1:C5P1T4:dependency_risk",
+        "PRJ-C5P1:C5P1T5:schedule_delay",
+        "PRJ-C5P1:C5P1T5:dependency_risk",
+        "PRJ-C5P1:C5P1T6:schedule_delay",
+        "PRJ-C5P1:C5P1T6:dependency_risk"
+      ],
+      "negative_candidate_keys": [],
+      "expected_severity_by_key": {
+        "PRJ-C5P1:C5P1T3:schedule_delay": "high",
+        "PRJ-C5P1:C5P1T3:delivery_blocked": "high",
+        "PRJ-C5P1:C5P1T4:schedule_delay": "high",
+        "PRJ-C5P1:C5P1T4:dependency_risk": "high",
+        "PRJ-C5P1:C5P1T5:schedule_delay": "high",
+        "PRJ-C5P1:C5P1T5:dependency_risk": "high",
+        "PRJ-C5P1:C5P1T6:schedule_delay": "medium",
+        "PRJ-C5P1:C5P1T6:dependency_risk": "medium"
+      },
+      "scope_note": "由模拟场景作者依据任务状态、公司阈值和直接/间接依赖编写；不是企业专家标注。"
+    },
+    {
+      "company_id": "bright-marketing",
+      "company_name": "明途营销（模拟）",
+      "industry": "营销服务",
+      "project_id": "PRJ-C5P2",
+      "project_name": "效果广告归因校准",
+      "project_type": "数据分析",
+      "scenario_pattern": "ambiguous",
+      "expected_ai_decision": "ASK",
+      "positive_candidate_keys": [
+        "PRJ-C5P2:C5P2T2:schedule_delay",
+        "PRJ-C5P2:C5P2T3:schedule_delay",
+        "PRJ-C5P2:C5P2T4:schedule_delay",
+        "PRJ-C5P2:C5P2T5:schedule_delay",
+        "PRJ-C5P2:C5P2T6:schedule_pressure"
+      ],
+      "negative_candidate_keys": [],
+      "expected_severity_by_key": {
+        "PRJ-C5P2:C5P2T2:schedule_delay": "high",
+        "PRJ-C5P2:C5P2T3:schedule_delay": "high",
+        "PRJ-C5P2:C5P2T4:schedule_delay": "high",
+        "PRJ-C5P2:C5P2T5:schedule_delay": "high",
+        "PRJ-C5P2:C5P2T6:schedule_pressure": "medium"
+      },
+      "scope_note": "由模拟场景作者依据任务状态、公司阈值和直接/间接依赖编写；不是企业专家标注。"
+    },
+    {
+      "company_id": "bright-marketing",
+      "company_name": "明途营销（模拟）",
+      "industry": "营销服务",
+      "project_id": "PRJ-C5P3",
+      "project_name": "直播发布会执行",
+      "project_type": "活动运营",
+      "scenario_pattern": "due",
+      "expected_ai_decision": "PLAN",
+      "positive_candidate_keys": [
+        "PRJ-C5P3:C5P3T3:schedule_delay",
+        "PRJ-C5P3:C5P3T4:schedule_delay",
+        "PRJ-C5P3:C5P3T5:schedule_pressure"
+      ],
+      "negative_candidate_keys": [],
+      "expected_severity_by_key": {
+        "PRJ-C5P3:C5P3T3:schedule_delay": "high",
+        "PRJ-C5P3:C5P3T4:schedule_delay": "high",
+        "PRJ-C5P3:C5P3T5:schedule_pressure": "medium"
+      },
+      "scope_note": "由模拟场景作者依据任务状态、公司阈值和直接/间接依赖编写；不是企业专家标注。"
+    },
+    {
+      "company_id": "bright-marketing",
+      "company_name": "明途营销（模拟）",
+      "industry": "营销服务",
+      "project_id": "PRJ-C5P4",
+      "project_name": "年度媒介框架采购",
+      "project_type": "媒介采购",
+      "scenario_pattern": "healthy",
+      "expected_ai_decision": "PLAN",
+      "positive_candidate_keys": [],
+      "negative_candidate_keys": [],
+      "expected_severity_by_key": {},
+      "scope_note": "由模拟场景作者依据任务状态、公司阈值和直接/间接依赖编写；不是企业专家标注。"
+    },
+    {
+      "company_id": "bright-marketing",
+      "company_name": "明途营销（模拟）",
+      "industry": "营销服务",
+      "project_id": "PRJ-C5P5",
+      "project_name": "客户临时范围变更",
+      "project_type": "项目管理",
+      "scenario_pattern": "mixed",
+      "expected_ai_decision": "PLAN",
+      "positive_candidate_keys": [
+        "PRJ-C5P5:C5P5T2:schedule_delay",
+        "PRJ-C5P5:C5P5T2:delivery_blocked",
+        "PRJ-C5P5:C5P5T3:schedule_delay",
+        "PRJ-C5P5:C5P5T3:dependency_risk",
+        "PRJ-C5P5:C5P5T4:dependency_risk",
+        "PRJ-C5P5:C5P5T5:dependency_risk"
+      ],
+      "negative_candidate_keys": [
+        "PRJ-C5P5:C5P5T4:schedule_pressure"
+      ],
+      "expected_severity_by_key": {
+        "PRJ-C5P5:C5P5T2:schedule_delay": "high",
+        "PRJ-C5P5:C5P5T2:delivery_blocked": "high",
+        "PRJ-C5P5:C5P5T3:schedule_delay": "medium",
+        "PRJ-C5P5:C5P5T3:dependency_risk": "high",
+        "PRJ-C5P5:C5P5T4:dependency_risk": "medium",
+        "PRJ-C5P5:C5P5T5:dependency_risk": "medium"
+      },
+      "scope_note": "由模拟场景作者依据任务状态、公司阈值和直接/间接依赖编写；不是企业专家标注。"
+    },
+    {
+      "company_id": "care-healthtech",
+      "company_name": "康桥科技（模拟）",
+      "industry": "医疗信息化",
+      "project_id": "PRJ-C6P1",
+      "project_name": "医院核心接口升级",
+      "project_type": "系统集成",
+      "scenario_pattern": "blocked",
+      "expected_ai_decision": "PLAN",
+      "positive_candidate_keys": [
+        "PRJ-C6P1:C6P1T3:schedule_delay",
+        "PRJ-C6P1:C6P1T3:delivery_blocked",
+        "PRJ-C6P1:C6P1T4:schedule_delay",
+        "PRJ-C6P1:C6P1T4:dependency_risk",
+        "PRJ-C6P1:C6P1T5:schedule_delay",
+        "PRJ-C6P1:C6P1T5:dependency_risk",
+        "PRJ-C6P1:C6P1T6:schedule_delay",
+        "PRJ-C6P1:C6P1T6:dependency_risk"
+      ],
+      "negative_candidate_keys": [],
+      "expected_severity_by_key": {
+        "PRJ-C6P1:C6P1T3:schedule_delay": "high",
+        "PRJ-C6P1:C6P1T3:delivery_blocked": "high",
+        "PRJ-C6P1:C6P1T4:schedule_delay": "high",
+        "PRJ-C6P1:C6P1T4:dependency_risk": "high",
+        "PRJ-C6P1:C6P1T5:schedule_delay": "high",
+        "PRJ-C6P1:C6P1T5:dependency_risk": "high",
+        "PRJ-C6P1:C6P1T6:schedule_delay": "high",
+        "PRJ-C6P1:C6P1T6:dependency_risk": "medium"
+      },
+      "scope_note": "由模拟场景作者依据任务状态、公司阈值和直接/间接依赖编写；不是企业专家标注。"
+    },
+    {
+      "company_id": "care-healthtech",
+      "company_name": "康桥科技（模拟）",
+      "industry": "医疗信息化",
+      "project_id": "PRJ-C6P2",
+      "project_name": "患者数据脱敏整改",
+      "project_type": "数据安全",
+      "scenario_pattern": "mixed",
+      "expected_ai_decision": "PLAN",
+      "positive_candidate_keys": [
+        "PRJ-C6P2:C6P2T2:schedule_delay",
+        "PRJ-C6P2:C6P2T2:delivery_blocked",
+        "PRJ-C6P2:C6P2T3:schedule_delay",
+        "PRJ-C6P2:C6P2T3:dependency_risk",
+        "PRJ-C6P2:C6P2T4:schedule_delay",
+        "PRJ-C6P2:C6P2T4:dependency_risk",
+        "PRJ-C6P2:C6P2T5:schedule_delay",
+        "PRJ-C6P2:C6P2T5:dependency_risk",
+        "PRJ-C6P2:C6P2T6:schedule_pressure"
+      ],
+      "negative_candidate_keys": [],
+      "expected_severity_by_key": {
+        "PRJ-C6P2:C6P2T2:schedule_delay": "high",
+        "PRJ-C6P2:C6P2T2:delivery_blocked": "high",
+        "PRJ-C6P2:C6P2T3:schedule_delay": "high",
+        "PRJ-C6P2:C6P2T3:dependency_risk": "high",
+        "PRJ-C6P2:C6P2T4:schedule_delay": "high",
+        "PRJ-C6P2:C6P2T4:dependency_risk": "medium",
+        "PRJ-C6P2:C6P2T5:schedule_delay": "high",
+        "PRJ-C6P2:C6P2T5:dependency_risk": "medium",
+        "PRJ-C6P2:C6P2T6:schedule_pressure": "medium"
+      },
+      "scope_note": "由模拟场景作者依据任务状态、公司阈值和直接/间接依赖编写；不是企业专家标注。"
+    },
+    {
+      "company_id": "care-healthtech",
+      "company_name": "康桥科技（模拟）",
+      "industry": "医疗信息化",
+      "project_id": "PRJ-C6P3",
+      "project_name": "门诊系统版本上线",
+      "project_type": "版本发布",
+      "scenario_pattern": "due",
+      "expected_ai_decision": "PLAN",
+      "positive_candidate_keys": [
+        "PRJ-C6P3:C6P3T3:schedule_delay",
+        "PRJ-C6P3:C6P3T4:schedule_delay",
+        "PRJ-C6P3:C6P3T5:schedule_pressure",
+        "PRJ-C6P3:C6P3T6:schedule_pressure"
+      ],
+      "negative_candidate_keys": [],
+      "expected_severity_by_key": {
+        "PRJ-C6P3:C6P3T3:schedule_delay": "high",
+        "PRJ-C6P3:C6P3T4:schedule_delay": "high",
+        "PRJ-C6P3:C6P3T5:schedule_pressure": "medium",
+        "PRJ-C6P3:C6P3T6:schedule_pressure": "medium"
+      },
+      "scope_note": "由模拟场景作者依据任务状态、公司阈值和直接/间接依赖编写；不是企业专家标注。"
+    },
+    {
+      "company_id": "care-healthtech",
+      "company_name": "康桥科技（模拟）",
+      "industry": "医疗信息化",
+      "project_id": "PRJ-C6P4",
+      "project_name": "临床规则库复核",
+      "project_type": "知识治理",
+      "scenario_pattern": "ambiguous",
+      "expected_ai_decision": "ASK",
+      "positive_candidate_keys": [
+        "PRJ-C6P4:C6P4T2:schedule_delay",
+        "PRJ-C6P4:C6P4T3:schedule_delay",
+        "PRJ-C6P4:C6P4T5:schedule_pressure"
+      ],
+      "negative_candidate_keys": [],
+      "expected_severity_by_key": {
+        "PRJ-C6P4:C6P4T2:schedule_delay": "high",
+        "PRJ-C6P4:C6P4T3:schedule_delay": "high",
+        "PRJ-C6P4:C6P4T5:schedule_pressure": "medium"
+      },
+      "scope_note": "由模拟场景作者依据任务状态、公司阈值和直接/间接依赖编写；不是企业专家标注。"
+    },
+    {
+      "company_id": "care-healthtech",
+      "company_name": "康桥科技（模拟）",
+      "industry": "医疗信息化",
+      "project_id": "PRJ-C6P5",
+      "project_name": "等保整改证据归档",
+      "project_type": "合规审计",
+      "scenario_pattern": "healthy",
+      "expected_ai_decision": "PLAN",
+      "positive_candidate_keys": [],
+      "negative_candidate_keys": [
+        "PRJ-C6P5:C6P5T4:schedule_pressure"
+      ],
+      "expected_severity_by_key": {},
+      "scope_note": "由模拟场景作者依据任务状态、公司阈值和直接/间接依赖编写；不是企业专家标注。"
+    }
+  ],
+  "boundaries": {
+    "schedule_pressure_small_effort": "临期但剩余工时不超过20小时标为边界误报",
+    "indirect_dependency": "间接依赖阻塞也应提示，但当前规则只检查直接依赖",
+    "ambiguous_scenario": "预期 DeepSeek 返回 ASK，规则候选仍单独评测"
+  }
+}
