@@ -1,0 +1,17 @@
+{
+  "annotator_id": "请填写互不相同的匿名编号",
+  "package_version": "v3-eval-1",
+  "labels": [
+    {
+      "case_id": "复制盲标包中的 case_id",
+      "risk_label": "positive | negative | insufficient",
+      "severity": "low | medium | high | not_applicable | insufficient",
+      "desired_decision": "ASK | PLAN | insufficient",
+      "required_doc_ids": [],
+      "citation_supported": "yes | no | insufficient | not_reviewed",
+      "action_executable": "yes | no | insufficient | not_reviewed",
+      "error_tags": ["none"],
+      "rationale": "必须填写可复核依据"
+    }
+  ]
+}

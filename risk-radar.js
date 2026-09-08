@@ -8,6 +8,7 @@ const summaryGrid = document.querySelector("#summary-grid");
 const candidateList = document.querySelector("#candidate-list");
 const evaluationPanel = document.querySelector("#evaluation-panel");
 const companyBenchmarkPanel = document.querySelector("#company-benchmark-panel");
+const independentEvaluationPanel = document.querySelector("#independent-evaluation-panel");
 
 function setMessage(text = "", type = "error") {
   pageMessage.textContent = text;
@@ -111,6 +112,42 @@ async function runCompanyBenchmark(button) {
     setMessage(`跨公司规则基准完成：${data.case_count} 个项目，DeepSeek 实际运行 ${data.deepseek_runs} 次。`, "info");
   } catch (error) {
     setMessage(error.message || "跨公司规则基准失败。");
+  } finally {
+    button.disabled = false; button.textContent = normalText;
+  }
+}
+
+function renderIndependentEvaluation(data) {
+  independentEvaluationPanel.replaceChildren();
+  independentEvaluationPanel.classList.remove("is-hidden");
+  const heading = document.createElement("div"); heading.className = "section-heading";
+  const copy = document.createElement("div");
+  const title = document.createElement("h2"); title.id = "independent-evaluation-title"; title.textContent = "独立评测框架";
+  const status = document.createElement("p"); status.className = "evaluation-status"; status.textContent = data.status;
+  copy.append(title, status);
+  const badge = document.createElement("span"); badge.className = "source-badge"; badge.textContent = `标注者 ${data.annotator_count}/${data.required_annotators}`;
+  heading.append(copy, badge);
+  const grid = document.createElement("div"); grid.className = "summary-grid benchmark-summary";
+  grid.append(
+    metric("开发集", `${data.development_cases} 个案例`),
+    metric("留出集", `${data.holdout_cases} 个案例`),
+    metric("系统预测字段", data.prediction_fields_removed ? "已移除" : "检查失败")
+  );
+  const metrics = document.createElement("p"); metrics.className = "benchmark-note"; metrics.textContent = `分开计算：${data.metrics.join("、")}。`;
+  const note = document.createElement("p"); note.className = "framework-scope-note"; note.textContent = data.scope_note;
+  independentEvaluationPanel.append(heading, grid, metrics, note);
+}
+
+async function checkEvaluationFramework(button) {
+  const normalText = button.textContent; button.disabled = true; button.textContent = "检查中…";
+  try {
+    const response = await fetch("/api/evaluation/framework");
+    const data = await readJson(response);
+    if (!response.ok) throw new Error(data.error || "独立评测框架无法读取");
+    renderIndependentEvaluation(data);
+    setMessage("已检查独立评测框架；外部人工标注状态单独显示。", "success");
+  } catch (error) {
+    setMessage(error.message || "独立评测框架无法读取。", "error");
   } finally {
     button.disabled = false; button.textContent = normalText;
   }
@@ -391,6 +428,7 @@ async function saveDecision(card, candidate, decision, note) {
 
 document.querySelector("#scan-sample").addEventListener("click", (event) => runScan("/api/risk-scans/sample", event.currentTarget));
 document.querySelector("#run-company-benchmark").addEventListener("click", (event) => runCompanyBenchmark(event.currentTarget));
+document.querySelector("#check-evaluation-framework").addEventListener("click", (event) => checkEvaluationFramework(event.currentTarget));
 document.querySelector("#scan-company").addEventListener("click", (event) => {
   const projectId = document.querySelector("#company-project").value;
   if (!projectId) { setMessage("当前没有可扫描项目，请先在数据源页面新增或恢复模拟公司数据。"); return; }

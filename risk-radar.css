@@ -105,6 +105,9 @@
 .benchmark-gaps { margin-top:14px; padding:14px 16px; border:1px solid var(--line); border-radius:12px; background:var(--surface-subtle); }
 .benchmark-gaps h3 { margin:0 px 0 5px; font-size:13px; }
 .benchmark-gaps p { margin:0; color:var(--muted); font-size:12px; line-height:1.6; }
+.independent-evaluation-panel { border-top-color:var(--warning) !important; }
+.evaluation-status { margin:5px 0 0; color:var(--ink-soft); font-weight:700; }
+.framework-scope-note { margin:14px 0 0; color:var(--muted); font-size:12px; line-height:1.65; }
 @media (max-width:700px) { .scan-actions select { width:100%; min-width:0; } .evaluation-tools { align-self:stretch; } }
 @media (max-width:820px) { .benchmark-summary { grid-template-columns:1fr 1fr; } }
 @media (max-width:520px) { .benchmark-summary { grid-template-columns:1fr; } .evaluation-actions { display:grid; } }

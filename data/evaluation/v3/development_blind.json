@@ -1,0 +1,10 @@
+{
+  "package_version": "v3-eval-1",
+  "split": "development",
+  "cases": [
+    {"case_id": "DEV-001", "split": "development", "project_type": "交付", "facts": ["任务已超过截止日期 5 天", "当前完成度 35%"], "available_policy_ids": ["POL-C1-RISK-01"]},
+    {"case_id": "DEV-002", "split": "development", "project_type": "发布", "facts": ["任务状态为已完成", "完成度 100%"], "available_policy_ids": ["POL-C1-RISK-01"]},
+    {"case_id": "DEV-003", "split": "development", "project_type": "交付", "facts": ["直接前置任务处于阻塞状态", "本任务尚未开始"], "available_policy_ids": ["POL-C1-DELIVERY-01"]},
+    {"case_id": "DEV-004", "split": "development", "project_type": "数据治理", "facts": ["描述提到进度偏慢", "没有截止日期和负责人"], "available_policy_ids": []}
+  ]
+}

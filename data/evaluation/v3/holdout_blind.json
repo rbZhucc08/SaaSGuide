@@ -1,0 +1,10 @@
+{
+  "package_version": "v3-eval-1",
+  "split": "holdout",
+  "cases": [
+    {"case_id": "HOLD-001", "split": "holdout", "project_type": "客户成功", "facts": ["距离截止日期 2 天", "当前完成度 20%"], "available_policy_ids": ["POL-C1-RISK-01"]},
+    {"case_id": "HOLD-002", "split": "holdout", "project_type": "集成", "facts": ["间接前置任务阻塞", "直接前置任务正常"], "available_policy_ids": ["POL-C1-DELIVERY-01"]},
+    {"case_id": "HOLD-003", "split": "holdout", "project_type": "发布", "facts": ["任务已取消", "截止日期早于今天"], "available_policy_ids": ["POL-C1-RISK-01"]},
+    {"case_id": "HOLD-004", "split": "holdout", "project_type": "安全评审", "facts": ["评审状态为阻塞", "未记录阻塞开始时间"], "available_policy_ids": ["POL-C1-SEC-01"]}
+  ]
+}

@@ -68,6 +68,7 @@ from services.company_data.store import (
     update_project,
 )
 from services.evaluation.company_benchmark import CompanyBenchmarkError, run_company_benchmark
+from services.evaluation.independent import EvaluationError, framework_status
 from validate_data import RISK_FILE, validate_risk_data
 
 
@@ -88,6 +89,8 @@ PHASE4_EVALUATION_FILE = PROJECT_DIR / "data" / "evaluation" / "phase4_questions
 DEMO_DATABASE = GENERATED_DIR / "saasguide-demo.db"
 COMPANY_SEED_FILE = PROJECT_DIR / "data" / "demo" / "nebula_company_seed.json"
 COMPANY_BENCHMARK_FILE = PROJECT_DIR / "data" / "evaluation" / "company_scenario_expected.json"
+V3_DEVELOPMENT_BLIND_FILE = PROJECT_DIR / "data" / "evaluation" / "v3" / "development_blind.json"
+V3_HOLDOUT_BLIND_FILE = PROJECT_DIR / "data" / "evaluation" / "v3" / "holdout_blind.json"
 COMPANY_DATA_FILE = GENERATED_DIR / "company-data.json"
 ALLOWED_SAMPLE_FILES = {
     "valid_project_tasks_cn.xlsx",
@@ -618,6 +621,19 @@ def create_app(
             return jsonify(run_company_benchmark(company_seed_file, company_benchmark_file))
         except CompanyBenchmarkError as error:
             return jsonify({"error": str(error), "code": error.code}), error.status
+
+    @app.get("/api/evaluation/framework")
+    def independent_evaluation_framework():
+        try:
+            return jsonify(
+                framework_status(
+                    V3_DEVELOPMENT_BLIND_FILE,
+                    V3_HOLDOUT_BLIND_FILE,
+                    output_dir / "evaluation" / "annotations",
+                )
+            )
+        except EvaluationError as error:
+            return jsonify({"error": str(error), "code": "evaluation_framework_invalid"}), 500
 
     @app.put("/api/company-data/policies/<document_id>/<version>")
     def edit_company_policy(document_id: str, version: str):
