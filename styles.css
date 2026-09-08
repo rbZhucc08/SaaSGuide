@@ -1,11 +1,15 @@
-.topbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 28px; margin-bottom: 26px; }
+.topbar { position: relative; overflow: hidden; display: flex; align-items: flex-end; justify-content: space-between; gap: 28px; margin-bottom: 20px; padding: 34px; border-radius: 22px; background: radial-gradient(circle at 88% 5%,rgba(56,189,168,.32),transparent 31%),linear-gradient(135deg,#10233f,#173d64); color:#fff; box-shadow:var(--shadow-raised); }
+.topbar::after { content:""; position:absolute; right:-55px; bottom:-90px; width:210px; height:210px; border:1px solid rgba(255,255,255,.12); border-radius:50%; }
 .topbar h1 { margin: 0; font-size: clamp(27px, 3vw, 34px); line-height: 1.18; letter-spacing: -.035em; }
-.topbar__actions { display: flex; align-items: center; gap: 10px; }
-.last-updated { margin-right: 4px; color: var(--muted-light); font-size: 12px; white-space: nowrap; }
+.topbar .eyebrow { color:#66d7c7; }
+.topbar .subtitle { color:#c6d5e5; }
+.topbar__actions { position:relative; z-index:1; display: flex; align-items: center; gap: 10px; }
+.topbar .secondary-button { border-color:rgba(255,255,255,.28); background:rgba(255,255,255,.1); color:#fff; }
+.last-updated { margin-right: 4px; color: #b9c9da; font-size: 12px; white-space: nowrap; }
 .primary-button--full { width: 100%; margin: 20px 0; }
 
 .metrics-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 16px; margin-bottom: 20px; }
-.metric-card { min-width: 0; padding: 19px; border: 1px solid var(--line); border-radius: 16px; background: linear-gradient(160deg,#fff 55%,var(--surface-subtle)); box-shadow: var(--shadow-card); }
+.metric-card { min-width: 0; padding: 19px; border: 1px solid var(--line); border-radius: 18px; background: linear-gradient(160deg,#fff 55%,var(--surface-subtle)); box-shadow: var(--shadow-card); }
 .metric-card__top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .metric-icon { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 10px; font-weight: 800; }
 .metric-icon--violet { background: var(--brand-soft); color: var(--brand); }

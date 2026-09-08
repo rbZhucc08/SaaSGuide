@@ -3,6 +3,10 @@
 .agent-status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 4px rgba(100,112,137,.10); }
 .agent-status.is-ready { background: var(--success-soft); color: var(--success); }
 .agent-status.is-offline { background: var(--warning-soft); color: var(--warning); }
+.page-header .agent-status { background:rgba(255,255,255,.12); color:#dbe8f5; }
+.page-header .agent-status.is-ready { background:rgba(102,215,199,.16); color:#87eadc; }
+.page-header .agent-status.is-offline { background:rgba(255,211,122,.16); color:#ffd889; }
+.risk-workflow { grid-template-columns:repeat(6,minmax(0,1fr)); }
 
 .scan-panel { display: flex; justify-content: space-between; align-items: center; gap: 28px; border-top: 3px solid var(--brand) !important; }
 .scan-panel > div:first-child { max-width: 470px; }
@@ -75,6 +79,7 @@
   .candidate-top { display: grid; }
 }
 @media (max-width: 700px) {
+  .risk-workflow { grid-template-columns:1fr 1fr; }
   .header-actions { width: 100%; }
   .header-actions .secondary-button { width: 100%; }
   .candidate-top { padding: 18px 18px 15px 21px; }
