@@ -249,10 +249,28 @@ async function runAgent(button, container, candidate, contextNote) {
       body: JSON.stringify({ candidate, project: currentScan.project, source: currentScan.source, context_note: contextNote }),
     });
     const data = await readJson(response);
-    if (!response.ok) throw new Error(data.error || `AI 研判失败（HTTP ${response.status}）`);
+    if (!response.ok) {
+      const failure = new Error(data.error || `AI 研判失败（HTTP ${response.status}）`);
+      failure.details = data;
+      throw failure;
+    }
     renderAgentResult(container, data, candidate, button.closest(".candidate-card"));
   } catch (error) {
-    container.textContent = error.message || "AI 研判失败；确定性扫描结果仍可使用。";
+    container.replaceChildren();
+    const reason = document.createElement("p");
+    reason.textContent = error.message || "AI 研判失败。";
+    const fallback = document.createElement("p");
+    fallback.className = "ai-fallback";
+    fallback.textContent = error.details?.fallback || "确定性扫描结果和人工处理仍可使用。";
+    container.append(reason, fallback);
+    if (error.details?.telemetry?.run_id) {
+      const details = document.createElement("details");
+      const summary = document.createElement("summary"); summary.textContent = "查看失败运行信息";
+      const telemetry = error.details.telemetry;
+      const line = document.createElement("p");
+      line.textContent = `${telemetry.run_id} · ${error.details.error_category} · ${telemetry.latency_ms} ms · 重试 ${telemetry.retry_count} 次`;
+      details.append(summary, line); container.append(details);
+    }
   } finally {
     button.disabled = !agentConfigured;
     button.textContent = normalText;
@@ -442,17 +460,20 @@ document.querySelector("#scan-latest").addEventListener("click", (event) => {
 
 async function loadAgentCapabilities() {
   const status = document.querySelector("#agent-status");
+  const note = document.querySelector("#model-runtime-note");
   try {
     const response = await fetch("/api/agent/capabilities");
     const data = await readJson(response);
     if (!response.ok) throw new Error(data.error || "AI 状态不可用");
     agentConfigured = data.provider_configured === true;
     status.textContent = agentConfigured ? `DeepSeek 已配置 · ${data.skills.length} Skills` : "DeepSeek 未配置";
+    note.textContent = `${data.model_status_reason}；超时 ${data.timeout_seconds} 秒，最多重试 ${data.max_retries} 次，单次上限 ${data.budget.max_total_tokens} Token。`;
     status.classList.toggle("is-ready", agentConfigured);
     status.classList.toggle("is-offline", !agentConfigured);
   } catch (_error) {
     agentConfigured = false;
     status.textContent = "AI 状态不可用";
+    note.textContent = "模型状态读取失败；规则扫描和人工处理仍可使用。";
     status.classList.add("is-offline");
   }
 }

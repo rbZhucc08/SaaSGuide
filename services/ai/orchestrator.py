@@ -14,8 +14,10 @@ from services.ai.skills import retrieve_candidate_evidence
 
 ALLOWED_LEVELS = {"高风险", "中风险", "低风险"}
 ALLOWED_PRIORITIES = {"立即处理", "本周处理", "持续观察"}
+RISK_PROMPT_VERSION = "risk-planner-prompt-v3.1"
+RISK_OUTPUT_PROTOCOL_VERSION = "risk-ask-plan-v1"
 
-SYSTEM_PROMPT = """你是 SaaSGuide V2 的受控协调智能体。只输出一个合法 JSON 对象，不要输出 Markdown。
+SYSTEM_PROMPT = """你是 SaaSGuide V3 的受控协调智能体。只输出一个合法 JSON 对象，不要输出 Markdown，也不要增加协议外字段。
 
 你收到的是确定性规则生成的候选风险、原始字段证据和程序检索出的知识引用。你不能编造事实、引用、真实客户或业务结果，也不能修改任务、风险状态、负责人和截止日期。
 
@@ -56,6 +58,9 @@ def _local_ask(missing: list[str], run_id: str) -> dict[str, Any]:
         "questions": [{"field": field, "question": f"请补充或重新生成 {field}。"} for field in missing],
         "source": "local-precheck",
         "model_status": "not_called",
+        "provider": "deepseek",
+        "prompt_version": RISK_PROMPT_VERSION,
+        "protocol_version": RISK_OUTPUT_PROTOCOL_VERSION,
         "trace": [{"skill": "risk-signal-scan", "status": "blocked", "detail": "candidate input incomplete"}],
     }
 
@@ -80,15 +85,31 @@ def validate_agent_result(result: dict[str, Any], citations: list[dict[str, str]
     if decision not in {"ASK", "PLAN"}:
         return ["decision 必须是 ASK 或 PLAN"]
     if decision == "ASK":
+        extra = set(result) - {"decision", "reason", "questions"}
+        missing = {"decision", "reason", "questions"} - set(result)
+        if extra:
+            errors.append(f"ASK 包含协议外字段：{', '.join(sorted(extra))}")
+        if missing:
+            errors.append(f"ASK 缺少字段：{', '.join(sorted(missing))}")
         if not _text(result.get("reason")):
             errors.append("ASK.reason 必须是非空文字")
         questions = result.get("questions")
         if not isinstance(questions, list) or not questions:
             errors.append("ASK.questions 必须是非空列表")
-        elif any(not isinstance(item, dict) or not _text(item.get("field")) or not _text(item.get("question")) for item in questions):
-            errors.append("每个 ASK 问题必须包含 field 和 question")
+        else:
+            for item in questions:
+                if not isinstance(item, dict) or set(item) != {"field", "question"} or not _text(item.get("field")) or not _text(item.get("question")):
+                    errors.append("每个 ASK 问题必须且只能包含 field 和 question")
+                    break
         return errors
 
+    plan_fields = {"decision", "summary", "suggestedLevel", "priority", "rationale", "citationIds", "actions", "cautions"}
+    extra = set(result) - plan_fields
+    missing = plan_fields - set(result)
+    if extra:
+        errors.append(f"PLAN 包含协议外字段：{', '.join(sorted(extra))}")
+    if missing:
+        errors.append(f"PLAN 缺少字段：{', '.join(sorted(missing))}")
     if not citations:
         errors.append("没有知识引用时不能返回 PLAN")
     if not _text(result.get("summary")):
@@ -116,6 +137,8 @@ def validate_agent_result(result: dict[str, Any], citations: list[dict[str, str]
             if not isinstance(item, dict):
                 errors.append("PLAN.actions 中的项目必须是对象")
                 continue
+            if set(item) != {"step", "action", "ownerRole", "successSignal"}:
+                errors.append("每条行动必须且只能包含 step、action、ownerRole 和 successSignal")
             if type(item.get("step")) is int:
                 steps.append(item["step"])
             if not all(_text(item.get(field)) for field in ("action", "ownerRole", "successSignal")):
@@ -154,21 +177,34 @@ def orchestrate_risk_candidate(
             "questions": [{"field": "knowledge", "question": "请新增或启用与该风险相关的制度或项目案例后重试。"}],
             "source": "local-precheck",
             "model_status": "not_called",
+            "provider": "deepseek",
+            "prompt_version": RISK_PROMPT_VERSION,
+            "protocol_version": RISK_OUTPUT_PROTOCOL_VERSION,
             "trace": trace,
             "created_at": datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds"),
         }
     active_client = client or DeepSeekClient()
     content = active_client.create_json(build_messages(candidate, project, source, str(context_note or "")[:1000], citations))
-    result = parse_model_json(content)
+    try:
+        result = parse_model_json(content)
+    except ModelOutputError as error:
+        error.run = getattr(active_client, "last_run", {})
+        raise
     errors = validate_agent_result(result, citations)
     if errors:
-        raise ModelOutputError("V2 Agent 输出未通过校验：\n- " + "\n- ".join(errors))
+        raise ModelOutputError(
+            "V3 Agent 输出未通过校验：\n- " + "\n- ".join(errors),
+            run=getattr(active_client, "last_run", {}),
+        )
     result.update(
         {
             "run_id": run_id,
             "source": "deepseek-api",
             "model": active_client.model,
+            "provider": getattr(active_client, "provider_name", "deepseek"),
             "model_status": "called",
+            "prompt_version": RISK_PROMPT_VERSION,
+            "protocol_version": RISK_OUTPUT_PROTOCOL_VERSION,
             "citations": citations,
             "trace": trace + [{"skill": "risk-action-planner", "status": "completed" if result["decision"] == "PLAN" else "needs_information", "detail": f"DeepSeek returned {result['decision']}"}],
             "created_at": datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds"),
@@ -177,4 +213,7 @@ def orchestrate_risk_candidate(
     usage = getattr(active_client, "last_usage", {})
     if usage:
         result["usage"] = usage
+    telemetry = getattr(active_client, "last_run", {})
+    if telemetry:
+        result["telemetry"] = telemetry
     return result

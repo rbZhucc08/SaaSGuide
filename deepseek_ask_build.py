@@ -6,16 +6,21 @@ import argparse
 import json
 import os
 import sys
+import time
 from pathlib import Path
 from typing import Any, Callable
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
+from uuid import uuid4
 
+from services.ai.provider import BatchBudget, BudgetExceededError, BudgetPolicy, estimate_message_tokens
 from validate_data import HTML_FILE, collect_html_ids, validate_guide_data
 
 
 API_URL = "https://api.deepseek.com/chat/completions"
 DEFAULT_MODEL = "deepseek-v4-flash"
+PROVIDER_NAME = "deepseek"
+CLIENT_PROTOCOL_VERSION = "deepseek-json-v1"
 
 REQUIRED_BRIEF_FIELDS: dict[str, tuple[type, str]] = {
     "featureName": (str, "功能名称"),
@@ -67,11 +72,32 @@ BUILD 的 json 示例：
 
 
 class DeepSeekError(RuntimeError):
-    """A safe, user-facing DeepSeek request error."""
+    """A classified, safe error that never contains credentials or raw payloads."""
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        code: str = "provider_unavailable",
+        retryable: bool = False,
+        status_code: int | None = None,
+        run: dict[str, Any] | None = None,
+    ) -> None:
+        super().__init__(message)
+        self.code = code
+        self.retryable = retryable
+        self.status_code = status_code
+        self.run = run or {}
 
 
 class ModelOutputError(ValueError):
     """The model returned data that cannot enter the next project stage."""
+
+    code = "invalid_model_output"
+
+    def __init__(self, message: str, *, run: dict[str, Any] | None = None) -> None:
+        super().__init__(message)
+        self.run = run or {}
 
 
 def find_missing_brief_fields(brief: Any) -> list[tuple[str, str]]:
@@ -121,25 +147,77 @@ class DeepSeekClient:
         api_key: str | None = None,
         model: str | None = None,
         opener: Callable[..., Any] = urlopen,
+        timeout_seconds: float = 20,
+        max_retries: int = 2,
+        backoff_seconds: float = 0.25,
+        sleeper: Callable[[float], None] = time.sleep,
+        budget_policy: BudgetPolicy | None = None,
     ) -> None:
         self.api_key = api_key or os.getenv("DEEPSEEK_API_KEY", "")
         self.model = model or os.getenv("DEEPSEEK_MODEL", DEFAULT_MODEL)
         self.opener = opener
+        self.provider_name = PROVIDER_NAME
+        self.timeout_seconds = timeout_seconds
+        self.max_retries = max(0, min(int(max_retries), 3))
+        self.backoff_seconds = max(0.0, float(backoff_seconds))
+        self.sleeper = sleeper
+        self.budget_policy = budget_policy or BudgetPolicy()
         self.last_usage: dict[str, int] = {}
+        self.last_run: dict[str, Any] = {}
 
     @property
     def is_configured(self) -> bool:
         return bool(self.api_key.strip())
 
-    def create_json(self, messages: list[dict[str, str]]) -> str:
+    def _run_metadata(self, run_id: str, started: float, attempts: int, status: str, error_code: str | None = None) -> dict[str, Any]:
+        usage = dict(self.last_usage)
+        return {
+            "run_id": run_id,
+            "provider": self.provider_name,
+            "model": self.model,
+            "client_protocol_version": CLIENT_PROTOCOL_VERSION,
+            "status": status,
+            "error_code": error_code,
+            "latency_ms": round((time.perf_counter() - started) * 1000),
+            "attempts": attempts,
+            "retry_count": max(0, attempts - 1),
+            "input_tokens": usage.get("prompt_tokens"),
+            "output_tokens": usage.get("completion_tokens"),
+            "total_tokens": usage.get("total_tokens"),
+            "cost": None,
+            "cost_status": "not_provided_by_provider",
+        }
+
+    def create_json(self, messages: list[dict[str, str]], *, batch_budget: BatchBudget | None = None) -> str:
+        run_id = f"model-run-{uuid4().hex[:12]}"
+        started = time.perf_counter()
+        self.last_usage = {}
         if not self.is_configured:
-            raise DeepSeekError("未配置 DEEPSEEK_API_KEY，未进行真实 API 调用")
+            self.last_run = self._run_metadata(run_id, started, 0, "failed", "provider_unavailable")
+            raise DeepSeekError(
+                "未配置 DeepSeek，未进行真实 API 调用；规则结果和人工处理仍可使用",
+                code="provider_unavailable",
+                run=self.last_run,
+            )
+
+        estimated_input = estimate_message_tokens(messages)
+        output_limit = self.budget_policy.max_output_tokens
+        if estimated_input > self.budget_policy.max_input_tokens or estimated_input + output_limit > self.budget_policy.max_total_tokens:
+            self.last_run = self._run_metadata(run_id, started, 0, "blocked", "over_budget")
+            self.last_run["estimated_input_tokens"] = estimated_input
+            raise DeepSeekError("单次模型调用超过 Token 预算，未发送请求", code="over_budget", run=self.last_run)
+        try:
+            if batch_budget is not None:
+                batch_budget.reserve(estimated_input, output_limit)
+        except BudgetExceededError as error:
+            self.last_run = self._run_metadata(run_id, started, 0, "blocked", "over_budget")
+            raise DeepSeekError(str(error) + "，未发送请求", code="over_budget", run=self.last_run) from error
 
         payload = {
             "model": self.model,
             "messages": messages,
             "response_format": {"type": "json_object"},
-            "max_tokens": 4000,
+            "max_tokens": output_limit,
             "stream": False,
         }
         request = Request(
@@ -152,32 +230,57 @@ class DeepSeekClient:
             method="POST",
         )
 
-        try:
-            with self.opener(request, timeout=45) as response:
-                envelope = json.loads(response.read().decode("utf-8"))
-        except HTTPError as error:
-            messages_by_status = {
-                400: "请求格式不正确",
-                401: "API 密钥无效",
-                402: "DeepSeek 账户余额不足",
-                422: "请求参数不正确",
-                429: "请求过快，请稍后重试",
-                500: "DeepSeek 服务暂时出错",
-                503: "DeepSeek 服务繁忙，请稍后重试",
-            }
-            detail = messages_by_status.get(error.code, "DeepSeek 请求失败")
-            raise DeepSeekError(f"{detail}（HTTP {error.code}）") from error
-        except URLError as error:
-            raise DeepSeekError("无法连接 DeepSeek，请检查网络后重试") from error
-        except (UnicodeDecodeError, json.JSONDecodeError) as error:
-            raise DeepSeekError("DeepSeek 返回了无法读取的响应") from error
+        attempts = 0
+        envelope: dict[str, Any] | None = None
+        while attempts <= self.max_retries:
+            attempts += 1
+            try:
+                with self.opener(request, timeout=self.timeout_seconds) as response:
+                    decoded = json.loads(response.read().decode("utf-8"))
+                if not isinstance(decoded, dict):
+                    raise json.JSONDecodeError("top-level response must be an object", "", 0)
+                envelope = decoded
+                break
+            except HTTPError as error:
+                error_map = {
+                    400: ("请求格式不正确", "invalid_request", False),
+                    401: ("API 密钥无效", "invalid_auth", False),
+                    402: ("DeepSeek 账户余额不足", "insufficient_balance", False),
+                    422: ("请求参数不正确", "invalid_request", False),
+                    429: ("请求过快，请稍后重试", "rate_limited", True),
+                    500: ("DeepSeek 服务暂时出错", "provider_unavailable", True),
+                    503: ("DeepSeek 服务繁忙，请稍后重试", "provider_unavailable", True),
+                }
+                detail, code, retryable = error_map.get(error.code, ("DeepSeek 请求失败", "provider_unavailable", False))
+                if retryable and attempts <= self.max_retries:
+                    self.sleeper(self.backoff_seconds * (2 ** (attempts - 1)))
+                    continue
+                self.last_run = self._run_metadata(run_id, started, attempts, "failed", code)
+                raise DeepSeekError(f"{detail}（HTTP {error.code}）", code=code, retryable=retryable, status_code=error.code, run=self.last_run) from error
+            except (TimeoutError, URLError) as error:
+                code = "timeout" if isinstance(error, TimeoutError) else "provider_unavailable"
+                detail = "DeepSeek 请求超时" if code == "timeout" else "无法连接 DeepSeek，请检查网络后重试"
+                if attempts <= self.max_retries:
+                    self.sleeper(self.backoff_seconds * (2 ** (attempts - 1)))
+                    continue
+                self.last_run = self._run_metadata(run_id, started, attempts, "failed", code)
+                raise DeepSeekError(detail, code=code, retryable=True, run=self.last_run) from error
+            except (UnicodeDecodeError, json.JSONDecodeError) as error:
+                self.last_run = self._run_metadata(run_id, started, attempts, "failed", "invalid_response")
+                raise DeepSeekError("DeepSeek 返回了无法读取的响应", code="invalid_response", run=self.last_run) from error
+
+        if envelope is None:
+            self.last_run = self._run_metadata(run_id, started, attempts, "failed", "provider_unavailable")
+            raise DeepSeekError("DeepSeek 请求未完成", code="provider_unavailable", run=self.last_run)
 
         try:
             content = envelope["choices"][0]["message"]["content"]
         except (KeyError, IndexError, TypeError) as error:
-            raise DeepSeekError("DeepSeek 响应缺少模型输出内容") from error
+            self.last_run = self._run_metadata(run_id, started, attempts, "failed", "invalid_response")
+            raise DeepSeekError("DeepSeek 响应缺少模型输出内容", code="invalid_response", run=self.last_run) from error
         if not isinstance(content, str) or not content.strip():
-            raise DeepSeekError("DeepSeek 返回了空内容，请调整提示词后重试")
+            self.last_run = self._run_metadata(run_id, started, attempts, "failed", "invalid_response")
+            raise DeepSeekError("DeepSeek 返回了空内容，请调整提示词后重试", code="invalid_response", run=self.last_run)
         usage = envelope.get("usage", {})
         if isinstance(usage, dict):
             self.last_usage = {
@@ -185,6 +288,12 @@ class DeepSeekClient:
                 for key, value in usage.items()
                 if isinstance(key, str) and type(value) is int
             }
+        actual_total = self.last_usage.get("total_tokens")
+        if actual_total is not None and actual_total > self.budget_policy.max_total_tokens:
+            self.last_run = self._run_metadata(run_id, started, attempts, "failed", "over_budget")
+            raise DeepSeekError("DeepSeek 返回的 Token 用量超过单次预算，结果已拒绝", code="over_budget", run=self.last_run)
+        self.last_run = self._run_metadata(run_id, started, attempts, "succeeded")
+        self.last_run["estimated_input_tokens"] = estimated_input
         return content
 
 

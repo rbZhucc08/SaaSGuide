@@ -18,7 +18,11 @@ from database.store import StoreError, create_action, dashboard as action_dashbo
 from deepseek_ask_build import DeepSeekError, ModelOutputError, evaluate_brief
 from deepseek_ask_build import DeepSeekClient
 from deepseek_risk_assistant import analyze_risk
-from services.ai.orchestrator import orchestrate_risk_candidate
+from services.ai.orchestrator import (
+    RISK_OUTPUT_PROTOCOL_VERSION,
+    RISK_PROMPT_VERSION,
+    orchestrate_risk_candidate,
+)
 from services.ai.skills import catalog as ai_skill_catalog
 from services.ingestion.xlsx_import import (
     IngestionError,
@@ -937,6 +941,21 @@ def create_app(
                 "provider": "deepseek",
                 "provider_configured": client.is_configured,
                 "model": client.model,
+                "model_status": "ready" if client.is_configured else "unconfigured",
+                "model_status_reason": "DeepSeek 密钥已配置；调用失败时规则扫描和人工处理仍可使用" if client.is_configured else "未配置 DeepSeek；规则扫描和人工处理仍可使用",
+                "prompt_version": RISK_PROMPT_VERSION,
+                "protocol_version": RISK_OUTPUT_PROTOCOL_VERSION,
+                "client_protocol_version": "deepseek-json-v1",
+                "timeout_seconds": client.timeout_seconds,
+                "max_retries": client.max_retries,
+                "budget": {
+                    "version": client.budget_policy.version,
+                    "max_input_tokens": client.budget_policy.max_input_tokens,
+                    "max_output_tokens": client.budget_policy.max_output_tokens,
+                    "max_total_tokens": client.budget_policy.max_total_tokens,
+                    "max_batch_calls": client.budget_policy.max_batch_calls,
+                    "max_batch_total_tokens": client.budget_policy.max_batch_total_tokens,
+                },
                 "workflow": "bounded-risk-assessment",
                 "skills": ai_skill_catalog(),
                 "human_confirmation_required": True,
@@ -971,6 +990,10 @@ def create_app(
                 "company_id": company_context["active_company_id"],
                 "trace": result.get("trace", []),
                 "created_at": result.get("created_at", now_iso()),
+                "prompt_version": result.get("prompt_version"),
+                "protocol_version": result.get("protocol_version"),
+                "telemetry": result.get("telemetry", {}),
+                "usage": result.get("usage", {}),
             }
             if not app.config.get("TESTING"):
                 with AI_RUN_LOCK:
@@ -978,8 +1001,52 @@ def create_app(
                     with AI_RUN_LOG.open("a", encoding="utf-8") as handle:
                         handle.write(json.dumps(record, ensure_ascii=False) + "\n")
             return jsonify(result)
-        except (DeepSeekError, ModelOutputError) as error:
-            return jsonify({"error": str(error), "code": "agent_unavailable"}), 502
+        except DeepSeekError as error:
+            if not app.config.get("TESTING"):
+                failure = {
+                    "run_id": error.run.get("run_id"),
+                    "feature": "v3-risk-assessment",
+                    "status": "failed",
+                    "model_status": "failed",
+                    "error_category": error.code,
+                    "telemetry": error.run,
+                    "created_at": now_iso(),
+                }
+                with AI_RUN_LOCK:
+                    AI_RUN_LOG.parent.mkdir(parents=True, exist_ok=True)
+                    with AI_RUN_LOG.open("a", encoding="utf-8") as handle:
+                        handle.write(json.dumps(failure, ensure_ascii=False) + "\n")
+            return jsonify({
+                "error": str(error),
+                "code": "agent_unavailable",
+                "error_category": error.code,
+                "model_status": "failed",
+                "telemetry": error.run,
+                "fallback": "规则候选和人工确认路径仍可使用",
+            }), 502
+        except ModelOutputError as error:
+            if not app.config.get("TESTING"):
+                failure = {
+                    "run_id": error.run.get("run_id"),
+                    "feature": "v3-risk-assessment",
+                    "status": "rejected",
+                    "model_status": "invalid_output",
+                    "error_category": "invalid_model_output",
+                    "telemetry": error.run,
+                    "created_at": now_iso(),
+                }
+                with AI_RUN_LOCK:
+                    AI_RUN_LOG.parent.mkdir(parents=True, exist_ok=True)
+                    with AI_RUN_LOG.open("a", encoding="utf-8") as handle:
+                        handle.write(json.dumps(failure, ensure_ascii=False) + "\n")
+            return jsonify({
+                "error": str(error),
+                "code": "agent_unavailable",
+                "error_category": "invalid_model_output",
+                "model_status": "failed",
+                "telemetry": error.run,
+                "fallback": "规则候选和人工确认路径仍可使用",
+            }), 502
         except (OSError, ValueError, json.JSONDecodeError):
             app.logger.exception("Unable to run V2 orchestrator")
             return jsonify({"error": "AI 协调流程当前无法运行", "code": "agent_failed"}), 500

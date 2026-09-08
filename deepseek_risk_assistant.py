@@ -22,6 +22,8 @@ REQUIRED_RISK_FIELDS = {
 
 ALLOWED_LEVELS = {"高风险", "中风险", "低风险"}
 ALLOWED_PRIORITIES = {"立即处理", "本周处理", "持续观察"}
+RISK_PROMPT_VERSION = "legacy-risk-prompt-v3.1"
+RISK_OUTPUT_PROTOCOL_VERSION = "legacy-risk-ask-plan-v1"
 
 SYSTEM_PROMPT = """你是 SaaSGuide 的项目风险分析助手。只输出一个合法的 json 对象，不要输出 Markdown 或额外文字。
 
@@ -81,6 +83,10 @@ def make_local_ask(missing: list[tuple[str, str]]) -> dict[str, Any]:
             for field, label in missing
         ],
         "source": "local-precheck",
+        "model_status": "not_called",
+        "provider": "deepseek",
+        "prompt_version": RISK_PROMPT_VERSION,
+        "protocol_version": RISK_OUTPUT_PROTOCOL_VERSION,
     }
 
 
@@ -115,6 +121,8 @@ def validate_risk_result(result: dict[str, Any]) -> list[str]:
         return ["decision 必须是 ASK 或 PLAN"]
 
     if decision == "ASK":
+        if set(result) != {"decision", "reason", "questions"}:
+            errors.append("ASK 只能包含 decision、reason 和 questions")
         if not _nonempty_text(result.get("reason")):
             errors.append("ASK.reason 必须是非空文字")
         questions = result.get("questions")
@@ -127,6 +135,8 @@ def validate_risk_result(result: dict[str, Any]) -> list[str]:
                 if not isinstance(question, dict):
                     errors.append(f"{location} 必须是对象")
                     continue
+                if set(question) != {"field", "question"}:
+                    errors.append(f"{location} 只能包含 field 和 question")
                 if not _nonempty_text(question.get("field")):
                     errors.append(f"{location}.field 必须是非空文字")
                 else:
@@ -137,6 +147,9 @@ def validate_risk_result(result: dict[str, Any]) -> list[str]:
                 errors.append("ASK 不应重复询问同一字段")
         return errors
 
+    plan_fields = {"decision", "summary", "suggestedLevel", "priority", "rationale", "actions", "cautions"}
+    if set(result) != plan_fields:
+        errors.append("PLAN 字段必须严格符合输出协议")
     if not _nonempty_text(result.get("summary")):
         errors.append("PLAN.summary 必须是非空文字")
     if result.get("suggestedLevel") not in ALLOWED_LEVELS:
@@ -158,6 +171,8 @@ def validate_risk_result(result: dict[str, Any]) -> list[str]:
             if not isinstance(action, dict):
                 errors.append(f"{location} 必须是对象")
                 continue
+            if set(action) != {"step", "action", "successSignal"}:
+                errors.append(f"{location} 只能包含 step、action 和 successSignal")
             step = action.get("step")
             if type(step) is int:
                 steps.append(step)
@@ -190,7 +205,13 @@ def analyze_risk(
         raise ModelOutputError("风险分析结果未通过校验：\n- " + "\n- ".join(errors))
     result["source"] = "deepseek-api"
     result["model"] = active_client.model
+    result["provider"] = getattr(active_client, "provider_name", "deepseek")
+    result["prompt_version"] = RISK_PROMPT_VERSION
+    result["protocol_version"] = RISK_OUTPUT_PROTOCOL_VERSION
     usage = getattr(active_client, "last_usage", {})
     if usage:
         result["usage"] = usage
+    telemetry = getattr(active_client, "last_run", {})
+    if telemetry:
+        result["telemetry"] = telemetry
     return result
