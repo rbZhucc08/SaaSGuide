@@ -1,0 +1,11 @@
+{
+  "schema_version": "saasguide-pilot-v1",
+  "study_id": "fill-after-real-pilot",
+  "scenario_id": "risk-to-action-review",
+  "authorization": {
+    "authorized": false,
+    "deidentified": false,
+    "confirmed_by_project_owner": false
+  },
+  "participants": []
+}

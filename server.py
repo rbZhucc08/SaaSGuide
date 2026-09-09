@@ -76,6 +76,7 @@ from services.evaluation.company_benchmark import CompanyBenchmarkError, run_com
 from services.security.governance import LocalRateLimiter, assess_sensitive_text, readiness_status
 from routes.v3_operations import create_v3_operations_blueprint
 from routes.v3_connectors import create_connector_blueprint
+from routes.v3_validation import create_validation_blueprint
 from validate_data import RISK_FILE, validate_risk_data
 
 
@@ -143,6 +144,9 @@ PUBLIC_FILES = {
     "input-lab.html",
     "input-lab.css",
     "input-lab.js",
+    "validation.html",
+    "validation.css",
+    "validation.js",
 }
 
 PUBLIC_MIMETYPES = {
@@ -499,6 +503,7 @@ def create_app(
         protocol_version=RISK_OUTPUT_PROTOCOL_VERSION,
     ))
     app.register_blueprint(create_connector_blueprint(output_dir=output_dir))
+    app.register_blueprint(create_validation_blueprint(results_file=output_dir / "validation" / "pilot-results.json"))
 
     @app.before_request
     def begin_request_trace():
@@ -714,6 +719,11 @@ def create_app(
     @app.get("/input-lab.html")
     def input_lab():
         return send_from_directory(PROJECT_DIR, "input-lab.html")
+
+    @app.get("/validation")
+    @app.get("/validation.html")
+    def validation():
+        return send_from_directory(PROJECT_DIR, "validation.html")
 
     @app.get("/assets/<path:filename>")
     def assets(filename: str):

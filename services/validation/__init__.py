@@ -1,0 +1,1 @@
+"""External pilot validation helpers."""

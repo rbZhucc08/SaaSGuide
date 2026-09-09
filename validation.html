@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="SaaSGuide 外部业务验证状态。" />
+    <title>SaaSGuide｜业务验证</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="v2-shell.css" />
+    <link rel="stylesheet" href="validation.css" />
+  </head>
+  <body>
+    <div class="demo-notice" role="note"><span class="demo-notice__badge">EXTERNAL EVIDENCE</span><strong>真实验证边界</strong><span>没有真实参与者和授权数据时，不能声称业务验证完成</span></div>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="主导航">
+        <a class="brand" href="/" aria-label="SaaSGuide 首页"><span class="brand__mark">S</span><span><strong>SaaSGuide</strong><small>项目风险工作台</small></span></a>
+        <nav class="nav-list">
+          <a href="/"><span>⌂</span>概览</a><a href="/data-sources"><span>⇧</span>数据源</a><a href="/risk-radar"><span>◈</span>风险雷达</a>
+          <a href="/evidence-intake"><span>▤</span>文本证据</a><a href="/knowledge-base"><span>◎</span>知识库</a><a href="/action-tracker"><span>✓</span>行动跟踪</a>
+          <a href="/reports"><span>▥</span>报告</a><a href="/input-lab"><span>◇</span>输入实验室</a><a class="is-active" href="/validation" aria-current="page"><span>↗</span>业务验证</a>
+        </nav>
+        <div class="sidebar__footer"><strong>外部证据单独验收</strong><small>模拟数据不能替代真实用户</small></div>
+      </aside>
+      <main class="main-content">
+        <header class="validation-hero">
+          <div><p class="eyebrow">PHASE 11 · PILOT VALIDATION</p><h1>验证真实使用，而不是模拟认可</h1><p>聚焦“项目负责人审查延期风险并决定后续行动”这一项任务，记录基线、证据理解和建议处置。</p></div>
+          <span id="validation-status" class="status-badge status-badge--pending">正在读取</span>
+        </header>
+        <section class="status-panel" aria-labelledby="status-title">
+          <div><p class="section-kicker">CURRENT STATUS</p><h2 id="status-title">外部验证状态</h2><p id="validation-message">正在检查本地试点证据。</p></div>
+          <dl class="status-metrics"><div><dt>真实参与者</dt><dd id="participant-count">0</dd></div><div><dt>建议处置</dt><dd id="decision-count">0</dd></div><div><dt>证据状态</dt><dd id="evidence-state">待检查</dd></div></dl>
+        </section>
+        <section class="validation-grid">
+          <article><p class="step-number">01</p><h2>取得同意</h2><p>邀请真实目标角色，说明个人学习 Demo、AI 草稿和数据用途，允许随时停止。</p></article>
+          <article><p class="step-number">02</p><h2>记录基线</h2><p>先不用系统完成相同范围任务，记录耗时和流程。学习效应必须在解释中保留。</p></article>
+          <article><p class="step-number">03</p><h2>完成试用</h2><p>核对任务事实、规则证据、制度引用和 AI 草稿，再由参与者决定是否建立行动。</p></article>
+          <article><p class="step-number">04</p><h2>保留拒绝</h2><p>逐条记录接受、修改与拒绝。建议接受率不等于建议正确率。</p></article>
+        </section>
+        <section class="evidence-panel">
+          <div><p class="section-kicker">EVIDENCE REQUIRED</p><h2>进入试点观察前必须具备</h2></div>
+          <ul id="requirements-list"><li>真实目标用户</li><li>参与同意</li><li>授权且去标识化的数据</li><li>当前流程基线</li><li>建议接受、修改和拒绝记录</li></ul>
+          <p class="boundary-callout">本页显示“试点证据可用”时，也只代表存在可分析的小样本观察，不证明因果效果、总体适用性、商业价值或生产可用性。</p>
+        </section>
+      </main>
+    </div>
+    <script src="shell.js"></script>
+    <script src="validation.js"></script>
+  </body>
+</html>

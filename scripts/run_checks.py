@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 JAVASCRIPT_FILES = (
     "app.js", "builder.js", "shell.js", "data-sources.js", "risk-radar.js",
     "evidence-intake.js", "knowledge-base.js", "action-tracker.js", "reports.js", "input-lab.js",
+    "validation.js",
 )
 
 
