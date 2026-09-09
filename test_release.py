@@ -225,6 +225,10 @@ class ReleaseTests(unittest.TestCase):
         workflow = (root / ".github/workflows/checks.yml").read_text(encoding="utf-8")
         self.assertIn("windows-latest", workflow)
         self.assertIn("ubuntu-latest", workflow)
+        self.assertIn('PYTHONUTF8: "1"', workflow)
+        self.assertIn("actions/checkout@v5", workflow)
+        self.assertIn("actions/setup-python@v6", workflow)
+        self.assertIn("actions/setup-node@v5", workflow)
         self.assertIn("python scripts/run_checks.py", workflow)
         self.assertNotIn("DEEPSEEK_API_KEY", workflow)
 
@@ -232,7 +236,8 @@ class ReleaseTests(unittest.TestCase):
         root = Path(__file__).resolve().parent
         checklist = (root / "docs/portfolio/RELEASE_CHECKLIST.md").read_text(encoding="utf-8")
         environment = (root / ".env.example").read_text(encoding="utf-8")
-        self.assertIn("尚未创建 GitHub 远程", checklist)
+        self.assertIn("已推送到私有 GitHub 仓库", checklist)
+        self.assertIn("在线 GitHub Actions 四项矩阵作业真实通过", checklist)
         self.assertIn("FEISHU_APP_SECRET=", environment)
         self.assertNotIn("FEISHU_APP_SECRET=test", environment)
 

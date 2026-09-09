@@ -4,7 +4,7 @@
 
 发布范围：本地单用户、模拟或已去标识化测试数据
 
-当前状态：本地候选，尚未创建 GitHub 远程
+当前状态：已推送到私有 GitHub 仓库，在线 Actions 四项矩阵通过
 
 ## 本地已完成
 
@@ -21,9 +21,9 @@
 
 ## 外部事项
 
-- [ ] 用户决定 GitHub 账号或组织、仓库名和私有/公开范围；
-- [ ] 创建私有远程并推送；
-- [ ] 在线 GitHub Actions 四项矩阵作业真实通过；
+- [x] 用户决定 GitHub 账号、仓库名和私有范围：`rbZhucc08/SaaSGuide`；
+- [x] 创建私有远程并推送到 `main`；
+- [x] 在线 GitHub Actions 四项矩阵作业真实通过：[checks #2](https://github.com/rbZhucc08/SaaSGuide/actions/runs/34370884534)；
 - [ ] 配置私有安全联系方式；
 - [ ] 创建 tag 和 GitHub Release；
 - [ ] 用户本人录制并检查 4–6 分钟演示；

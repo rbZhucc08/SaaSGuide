@@ -150,6 +150,7 @@ $env:DEEPSEEK_API_KEY = '你的密钥'
 
 - 186 项自动测试通过；
 - JSON、Markdown 链接、Git 跟踪文件密钥扫描和前端 JavaScript 语法检查通过；
+- GitHub Actions 已在 Windows/Linux、Python 3.11/3.12 四项矩阵中真实通过；
 - 主要页面完成桌面和 390 × 844 响应式验收；
 - 真实 DeepSeek 浏览器验收取得两次 ASK 和一次合法 PLAN；
 - 跨公司固定规则基准：TP=119、FP=4、FN=18、Precision=96.75%、Recall=86.86%。
@@ -180,7 +181,7 @@ $env:DEEPSEEK_API_KEY = '你的密钥'
 
 ## 项目状态
 
-当前版本按“本地单用户 AI 应用作品集”范围完成。仓库暂未配置 GitHub 远程，也没有公开部署。
+当前版本按“本地单用户 AI 应用作品集”范围完成。代码已推送到私有 GitHub 仓库，尚未创建 tag、GitHub Release 或公开部署。
 
 - 当前实现：[docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md)
 - 产品路线：[docs/V2_ROADMAP.md](docs/V2_ROADMAP.md)

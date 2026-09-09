@@ -7,8 +7,8 @@
 | 项目 | 当前证据 |
 |---|---|
 | 分支 | `codex/v3-development` |
-| 发布状态 | `3.0.0-portfolio-candidate` 本地候选；未配置 Git 远程 |
-| 自动检查 | 186 项测试通过；关键模块语句覆盖率 89.04% |
+| 发布状态 | `3.0.0-portfolio-candidate` 私有 GitHub 候选；尚无 tag 或 Release |
+| 自动检查 | 186 项测试通过；关键模块语句覆盖率 89.04%；GitHub Actions 四项矩阵通过 |
 | 干净环境 | VPN 保持连接，从官方 PyPI 安装锁定依赖并完整通过检查 |
 | 数据规模 | 6 家虚构公司、30 个项目、180 条任务、48 个制度版本 |
 | 规则基准 | TP=119、FP=4、FN=18、Precision=96.75%、Recall=86.86% |
@@ -32,6 +32,8 @@
 | 9 飞书 | 只读连接器、分页、幂等、错误恢复和未授权状态 | [阶段 9](../test_records/V3_PHASE9_FEISHU_CONNECTOR_TEST_RECORD_2026-09-09.md) |
 | 10 发布 | 历史审计、干净环境复现和本地发布候选 | [阶段 10](../test_records/V3_PHASE10_PORTFOLIO_RELEASE_TEST_RECORD_2026-09-09.md) |
 | 11 试点 | 协议、证据校验、描述性分析和外部证据状态 | [阶段 11](../test_records/V3_PHASE11_REAL_WORLD_VALIDATION_TEST_RECORD_2026-09-09.md) |
+
+私有仓库创建、首次 CI 失败和修复后的四项矩阵通过记录见 [V3 私有 GitHub 发布验收](../test_records/V3_PRIVATE_GITHUB_PUBLISH_TEST_RECORD_2026-09-09.md)。
 
 ## 核心实现入口
 
@@ -62,4 +64,4 @@
 - 本地稀疏词频向量不等于 Embedding 或向量数据库；
 - 飞书模拟 HTTP 合约不等于真实授权和同步；
 - 研究工具不等于已经完成真实用户验证；
-- 工作流文件存在不等于在线 GitHub Actions 已通过。
+- 当前一次在线 GitHub Actions 四项矩阵通过不等于生产稳定或长期持续通过。

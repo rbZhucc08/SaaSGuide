@@ -4,7 +4,7 @@
 
 日期：2026-09-09
 
-状态：本地发布候选，尚未发布到 GitHub
+状态：私有 GitHub 发布候选，尚未创建 tag 或 GitHub Release
 
 ## 这个版本完成了什么
 
@@ -27,6 +27,7 @@ SaaSGuide V3 将项目数据校验、确定性风险扫描、当前制度检索�
 - 关键模块语句覆盖率 89.04%；
 - 数据、类型契约、Git 跟踪文件密钥、80 个 Markdown 链接、11 个 JavaScript 文件和 Git 差异检查通过；
 - Windows 全新虚拟环境使用锁定依赖完整复现；
+- 私有仓库 `rbZhucc08/SaaSGuide` 的 Windows/Linux、Python 3.11/3.12 GitHub Actions 四项矩阵通过；
 - 各阶段保存自动测试、浏览器检查和边界记录。
 
 ## 运行
@@ -41,8 +42,6 @@ python -m venv .venv
 
 ## 发布前仍需决定
 
-- GitHub 仓库所属账号或组织、仓库名和私有/公开范围；
-- 推送后在线 Actions 的实际结果；
 - tag 与 GitHub Release；
 - 用户本人录制并检查的 4–6 分钟演示；
 - 是否公开，以及公开前对历史中两项人工复核内容的处理方式。
