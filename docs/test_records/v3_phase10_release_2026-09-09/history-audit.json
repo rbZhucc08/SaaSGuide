@@ -1,0 +1,21 @@
+{
+  "status": "review_required",
+  "reachable_text_blobs_scanned": 688,
+  "findings": [
+    {
+      "path": "docs/history/v1/PHASE4_TEST_RECORD.md",
+      "category": "windows_user_path",
+      "severity": "review"
+    },
+    {
+      "path": "test_security_governance.py",
+      "category": "china_mobile",
+      "severity": "review"
+    }
+  ],
+  "counts": {
+    "review": 2
+  },
+  "matched_values_included": false,
+  "limitations": "启发式扫描；不会证明历史绝对无密钥，二进制文件需要另行检查。"
+}
