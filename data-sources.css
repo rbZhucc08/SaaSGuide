@@ -49,6 +49,10 @@ tbody tr:hover { background: #fafbfe; }
 .security-control small { grid-column:1/-1; color:var(--muted); font-size:10px; line-height:1.5; }
 .security-control.is-ready span { color:var(--success); }.security-control.is-blocked span { color:var(--danger); }
 .security-footnote { margin:12px 0 0; color:var(--muted); font-size:10px; }
+.connector-card { border-left:4px solid var(--brand) !important; }
+.connector-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-bottom:14px; }
+.connector-grid > div { padding:13px; border:1px solid var(--line); border-radius:10px; background:var(--surface-subtle); }
+.connector-grid strong { font-size:11px; }.connector-grid p { margin:5px 0 0; color:var(--muted); font-size:10px; line-height:1.6; }
 .import-workflow { grid-template-columns:repeat(4,minmax(0,1fr)); }
 .company-workspace select { min-width:240px; padding:9px 11px; }
 .company-profile { margin-top:16px; padding:12px 14px; border:1px solid #ddd8ff; border-radius:11px; background:var(--brand-soft); color:var(--ink-soft); font-size:12px; line-height:1.7; }
@@ -78,6 +82,7 @@ tbody tr:hover { background: #fafbfe; }
   .mapping-grid { grid-template-columns: 1fr; }
   .coverage-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
   .security-control-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .connector-grid { grid-template-columns:1fr; }
 }
 @media (max-width: 700px) {
   .import-workflow { grid-template-columns:1fr 1fr; }

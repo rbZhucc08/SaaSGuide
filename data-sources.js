@@ -145,6 +145,48 @@ async function loadSecurityReadiness() {
   }
 }
 
+async function loadFeishuConnector() {
+  const summary = document.querySelector("#feishu-connector-summary");
+  const badge = document.querySelector("#feishu-connector-badge");
+  const button = document.querySelector("#feishu-sync-button");
+  try {
+    const response = await fetch("/api/connectors/feishu/status");
+    const data = await readJson(response);
+    if (!response.ok) throw new Error(data.error || "飞书连接器状态不可用");
+    if (data.configured) {
+      summary.textContent = "本机已提供连接参数；同步仍只读取飞书多维表格。";
+      badge.textContent = "已配置，待真实同步";
+      badge.className = "validation-badge is-valid";
+      button.disabled = false;
+    } else {
+      summary.textContent = "连接器底座可用；本机尚未设置飞书应用凭据和表格标识。";
+      badge.textContent = "真实授权待完成";
+      badge.className = "validation-badge is-invalid";
+      button.disabled = true;
+    }
+  } catch (error) {
+    summary.textContent = error.message || "无法读取飞书连接器状态。";
+    badge.textContent = "状态不可用";
+    badge.className = "validation-badge is-invalid";
+  }
+}
+
+document.querySelector("#feishu-sync-button").addEventListener("click", async () => {
+  const button = document.querySelector("#feishu-sync-button");
+  const result = document.querySelector("#feishu-sync-result");
+  setBusy(button, true, "正在只读同步…", "运行只读同步");
+  try {
+    const response = await fetch("/api/connectors/feishu/sync", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
+    const data = await readJson(response);
+    if (!response.ok) throw new Error(data.error || "飞书同步失败");
+    result.textContent = `同步完成：读取 ${data.fetched_count} 条，增量应用 ${data.applied_count} 条，本地保存 ${data.stored_count} 条；没有向飞书写回。`;
+  } catch (error) {
+    result.textContent = error.message || "飞书同步失败。";
+  } finally {
+    setBusy(button, false, "正在只读同步…", "运行只读同步");
+  }
+});
+
 function setMessage(text = "", type = "error") {
   message.textContent = text;
   message.classList.toggle("is-hidden", !text);
@@ -404,3 +446,4 @@ document.querySelector("#reset-company").addEventListener("click", async () => {
 document.querySelector("#clear-company").addEventListener("click", async () => { if (!confirm("清空当前公司的项目和制度？其他公司不受影响。")) return; try { renderCompany(await companyApi("/api/company-data/clear",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({confirmed:true})})); setMessage("当前公司项目和制度已清空；其他公司数据仍保留。", "info"); } catch(error) { setMessage(error.message); } });
 loadCompany();
 loadSecurityReadiness();
+loadFeishuConnector();

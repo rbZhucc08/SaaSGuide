@@ -75,6 +75,7 @@ from services.company_data.store import (
 from services.evaluation.company_benchmark import CompanyBenchmarkError, run_company_benchmark
 from services.security.governance import LocalRateLimiter, assess_sensitive_text, readiness_status
 from routes.v3_operations import create_v3_operations_blueprint
+from routes.v3_connectors import create_connector_blueprint
 from validate_data import RISK_FILE, validate_risk_data
 
 
@@ -497,6 +498,7 @@ def create_app(
         prompt_version=RISK_PROMPT_VERSION,
         protocol_version=RISK_OUTPUT_PROTOCOL_VERSION,
     ))
+    app.register_blueprint(create_connector_blueprint(output_dir=output_dir))
 
     @app.before_request
     def begin_request_trace():
