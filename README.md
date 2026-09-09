@@ -181,7 +181,7 @@ $env:DEEPSEEK_API_KEY = '你的密钥'
 
 ## 项目状态
 
-当前版本按“本地单用户 AI 应用作品集”范围完成。代码已推送到私有 GitHub 仓库，尚未创建 tag、GitHub Release 或公开部署。
+当前版本按“本地单用户 AI 应用作品集”范围完成。代码已推送到私有 GitHub 仓库，并创建 `v3.0.0-portfolio` Pre-release；尚未公开仓库或部署公网 Demo。
 
 - 当前实现：[docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md)
 - 产品路线：[docs/V2_ROADMAP.md](docs/V2_ROADMAP.md)

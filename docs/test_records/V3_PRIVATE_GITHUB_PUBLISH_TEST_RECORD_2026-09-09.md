@@ -8,7 +8,7 @@
 - 远程默认分支：`main`；
 - 本地开发分支：`codex/v3-development`，跟踪 `origin/main`。
 
-本次没有把仓库改为公开，没有创建 tag、GitHub Release 或公网 Demo。
+仓库没有改为公开，也没有创建公网 Demo。
 
 ## 首次在线运行
 
@@ -49,4 +49,8 @@ GitHub Actions [checks #2](https://github.com/rbZhucc08/SaaSGuide/actions/runs/3
 
 ## 结论
 
-私有仓库创建、代码推送和跨平台在线检查已经完成。tag、GitHub Release、公开范围和公网 Demo 仍是独立发布决定。
+私有仓库创建、代码推送和跨平台在线检查已经完成。
+
+随后在已通过线上矩阵的提交 `c83aa29` 上创建标签 `v3.0.0-portfolio`，并发布私有 [SaaSGuide V3 Portfolio Candidate Pre-release](https://github.com/rbZhucc08/SaaSGuide/releases/tag/v3.0.0-portfolio)。Release 明确保留模拟数据、真实参与者 0、飞书未真实授权、没有生产部署或商业效果证据等边界。
+
+仓库公开范围和公网 Demo 仍是独立发布决定。

@@ -4,7 +4,7 @@
 
 日期：2026-09-09
 
-状态：私有 GitHub 发布候选，尚未创建 tag 或 GitHub Release
+状态：已创建私有 GitHub Pre-release `v3.0.0-portfolio`
 
 ## 这个版本完成了什么
 
@@ -40,9 +40,8 @@ python -m venv .venv
 
 浏览器打开 `http://127.0.0.1:4173/`。
 
-## 发布前仍需决定
+## 后续仍需决定
 
-- tag 与 GitHub Release；
 - 用户本人录制并检查的 4–6 分钟演示；
 - 是否公开，以及公开前对历史中两项人工复核内容的处理方式。
 

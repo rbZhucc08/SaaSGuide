@@ -7,7 +7,7 @@
 | 项目 | 当前证据 |
 |---|---|
 | 分支 | `codex/v3-development` |
-| 发布状态 | `3.0.0-portfolio-candidate` 私有 GitHub 候选；尚无 tag 或 Release |
+| 发布状态 | 私有 GitHub Pre-release [`v3.0.0-portfolio`](https://github.com/rbZhucc08/SaaSGuide/releases/tag/v3.0.0-portfolio) |
 | 自动检查 | 186 项测试通过；关键模块语句覆盖率 89.04%；GitHub Actions 四项矩阵通过 |
 | 干净环境 | VPN 保持连接，从官方 PyPI 安装锁定依赖并完整通过检查 |
 | 数据规模 | 6 家虚构公司、30 个项目、180 条任务、48 个制度版本 |

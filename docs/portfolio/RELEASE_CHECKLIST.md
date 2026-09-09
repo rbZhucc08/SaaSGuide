@@ -25,7 +25,7 @@
 - [x] 创建私有远程并推送到 `main`；
 - [x] 在线 GitHub Actions 四项矩阵作业真实通过：[checks #2](https://github.com/rbZhucc08/SaaSGuide/actions/runs/34370884534)；
 - [ ] 配置私有安全联系方式；
-- [ ] 创建 tag 和 GitHub Release；
+- [x] 创建 `v3.0.0-portfolio` tag 和私有 [GitHub Pre-release](https://github.com/rbZhucc08/SaaSGuide/releases/tag/v3.0.0-portfolio)；
 - [ ] 用户本人录制并检查 4–6 分钟演示；
 - [ ] 通过安全复核后决定是否公开；
 - [ ] 公开在线 Demo 仍未决定，且只能使用模拟数据。
