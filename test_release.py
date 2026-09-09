@@ -218,6 +218,19 @@ class ReleaseTests(unittest.TestCase):
         self.assertIn("python scripts/run_checks.py", workflow)
         self.assertNotIn("DEEPSEEK_API_KEY", workflow)
 
+    def test_v3_release_candidate_reports_current_boundaries(self):
+        root = Path(__file__).resolve().parent
+        checklist = (root / "docs/portfolio/RELEASE_CHECKLIST.md").read_text(encoding="utf-8")
+        environment = (root / ".env.example").read_text(encoding="utf-8")
+        self.assertIn("尚未创建 GitHub 远程", checklist)
+        self.assertIn("FEISHU_APP_SECRET=", environment)
+        self.assertNotIn("FEISHU_APP_SECRET=test", environment)
+
+    def test_history_audit_is_value_redacted_and_scans_all_refs(self):
+        script = (Path(__file__).resolve().parent / "scripts/audit_git_history.py").read_text(encoding="utf-8")
+        self.assertIn('"rev-list", "--objects", "--all"', script)
+        self.assertIn('"matched_values_included": False', script)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
