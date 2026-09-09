@@ -547,7 +547,7 @@ def create_app(
 
     @app.get("/health")
     def health():
-        return jsonify({"status": "ok", "service": "saasguide-local-demo", "scope": "simulated-data-only", "version": "2.0-demo"})
+        return jsonify({"status": "ok", "service": "saasguide-local-demo", "scope": "simulated-data-only", "version": "3.0.0-portfolio-candidate"})
 
     @app.get("/")
     def dashboard():

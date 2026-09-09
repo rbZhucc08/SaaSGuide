@@ -4,7 +4,7 @@ SaaSGuide 是一个本地运行的项目风险助手。它把项目数据校验�
 
 当前版本使用 6 家虚构公司和模拟项目数据，用于展示 AI 应用设计与工程实现。它没有真实客户、企业采用记录或业务效果数据，也没有公开部署。
 
-![SaaSGuide 工作台](docs/assets/overview.png)
+![SaaSGuide 工作台](docs/assets/overview-v3.jpg)
 
 ## 三分钟体验
 
@@ -85,7 +85,7 @@ flowchart LR
 | 飞书连接器 | 多维表格只读连接器底座；真实授权与真实同步尚未完成，不向飞书写回 |
 | 业务验证 | 固定一个风险到行动子场景，提供研究协议、去标识化证据校验和描述性分析；真实访谈尚未开展 |
 
-![多公司项目数据](docs/assets/data-sources.png)
+![数据源与真实数据安全边界](docs/assets/data-sources-v3.jpg)
 
 ## AI 和 Agent 在哪里
 
@@ -101,7 +101,7 @@ flowchart LR
 
 一次风险卡 AI 调用实际运行中间三个 Skill。数据接入发生在上游，周报仍由确定性 Python 生成。详情见 [AI Agent 工作流](docs/architecture/AI_AGENT_WORKFLOW.md)。
 
-![候选风险扫描](docs/assets/risk-radar.png)
+![候选风险扫描](docs/assets/risk-radar-v3.jpg)
 
 ## 本地运行
 
@@ -185,6 +185,8 @@ $env:DEEPSEEK_API_KEY = '你的密钥'
 - 当前实现：[docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md)
 - 产品路线：[docs/V2_ROADMAP.md](docs/V2_ROADMAP.md)
 - 发布检查：[docs/portfolio/RELEASE_CHECKLIST.md](docs/portfolio/RELEASE_CHECKLIST.md)
+- V3 发布说明：[docs/portfolio/RELEASE_NOTES_V3.md](docs/portfolio/RELEASE_NOTES_V3.md)
+- 演示路线：[docs/portfolio/DEMO_GUIDE.md](docs/portfolio/DEMO_GUIDE.md)
 - 变更记录：[CHANGELOG.md](CHANGELOG.md)
 
 ## License

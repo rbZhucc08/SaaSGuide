@@ -17,6 +17,7 @@ class ReleaseTests(unittest.TestCase):
         response = self.client.get("/health")
         self.assertEqual(200, response.status_code)
         self.assertEqual("simulated-data-only", response.get_json()["scope"])
+        self.assertEqual("3.0.0-portfolio-candidate", response.get_json()["version"])
         response.close()
 
     def test_security_headers_on_html_and_api(self):
@@ -188,7 +189,8 @@ class ReleaseTests(unittest.TestCase):
             "docs/architecture/AI_AGENT_WORKFLOW.md", "docs/architecture/DATA_AND_TRUST_BOUNDARIES.md",
             "docs/portfolio/CASE_STUDY.md", "docs/portfolio/DEMO_GUIDE.md",
             "docs/portfolio/EVIDENCE_INDEX.md", "docs/portfolio/HR_PROJECT_EXPLAINER.md",
-            "docs/portfolio/RELEASE_CHECKLIST.md", "SOURCE_CODE_STUDY_GUIDE.md",
+            "docs/portfolio/RELEASE_CHECKLIST.md", "docs/portfolio/RELEASE_NOTES_V3.md",
+            "docs/portfolio/SCREENSHOT_INDEX.md", "SOURCE_CODE_STUDY_GUIDE.md",
             "docs/quality/TEST_STRATEGY.md", "docs/quality/EVALUATION_REPORT.md",
             "docs/quality/KNOWN_LIMITATIONS.md",
         )
@@ -199,6 +201,14 @@ class ReleaseTests(unittest.TestCase):
         self.assertNotIn("/D:/CodexProjects", source_guide)
         self.assertNotIn("当前 5 条模拟风险", source_guide)
         self.assertIn("HR_PROJECT_EXPLAINER.md", source_guide)
+        for relative in (
+            "docs/PROJECT_STATUS.md", "docs/portfolio/EVIDENCE_INDEX.md",
+            "docs/portfolio/DEMO_GUIDE.md", "docs/portfolio/HR_PROJECT_EXPLAINER.md",
+            "docs/product/PRD.md", "docs/quality/TEST_STRATEGY.md", "SOURCE_CODE_STUDY_GUIDE.md",
+        ):
+            current_text = (root / relative).read_text(encoding="utf-8")
+            self.assertNotIn("135 项", current_text, relative)
+            self.assertNotIn("v2-phase8-release", current_text, relative)
 
     def test_readme_reports_current_fixed_benchmark_without_claiming_business_accuracy(self):
         root = Path(__file__).resolve().parent

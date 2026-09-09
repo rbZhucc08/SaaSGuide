@@ -9,6 +9,7 @@
 ## 本地已完成
 
 - [x] README 说明 V3 功能、运行、测试和限制；
+- [x] V3 Release Notes、证据索引、4–6 分钟演示稿和截图索引；
 - [x] 分阶段规格、测试记录和浏览器截图；
 - [x] Windows/Linux、Python 3.11/3.12 Actions 工作流定义；
 - [x] 精确锁定 Python 运行依赖；

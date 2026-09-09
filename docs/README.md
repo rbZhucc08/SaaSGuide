@@ -11,6 +11,7 @@
 3. [项目案例](portfolio/CASE_STUDY.md)
 4. [演示路线](portfolio/DEMO_GUIDE.md)
 5. [可核实证据](portfolio/EVIDENCE_INDEX.md)
+6. [V3 发布说明](portfolio/RELEASE_NOTES_V3.md)
 
 读完应能回答：项目解决什么问题、AI 在哪里、作者具体做了什么、当前不能证明什么。
 
@@ -40,6 +41,7 @@
 - 当前实现以 [PROJECT_STATUS.md](PROJECT_STATUS.md) 为准；
 - 路线和未完成项以 [V2_ROADMAP.md](V2_ROADMAP.md) 为准；
 - 发布前检查见 [RELEASE_CHECKLIST.md](portfolio/RELEASE_CHECKLIST.md)；
+- 发布截图见 [SCREENSHOT_INDEX.md](portfolio/SCREENSHOT_INDEX.md)；
 - 主要变更见 [CHANGELOG.md](../CHANGELOG.md)。
 
 ## 历史资料
