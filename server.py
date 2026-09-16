@@ -502,7 +502,7 @@ def create_app(
         prompt_version=RISK_PROMPT_VERSION,
         protocol_version=RISK_OUTPUT_PROTOCOL_VERSION,
     ))
-    app.register_blueprint(create_connector_blueprint(output_dir=output_dir))
+    app.register_blueprint(create_connector_blueprint(output_dir=output_dir, database_path=database_path))
     app.register_blueprint(create_validation_blueprint(results_file=output_dir / "validation" / "pilot-results.json"))
 
     @app.before_request

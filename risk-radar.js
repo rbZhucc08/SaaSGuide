@@ -206,6 +206,11 @@ function renderAgentResult(container, result, candidate, card) {
     prefill.disabled = !card.dataset.riskDecisionId;
     prefill.title = prefill.disabled ? "请先完成风险人工确认" : "只预填，不会自动保存";
     prefill.addEventListener("click", () => {
+      // 行动的制度依据直接取自本次 AI 研判引用的当前生效制度，保证写回飞书时引用可核查。
+      const citations = JSON.parse(card.dataset.citations || "[]");
+      const policyReference = citations.length
+        ? citations.map((item) => `${item.title} v${item.version}`).join("；")
+        : "";
       const drafts = result.actions.map((item) => ({
         candidate_id: candidate.candidate_id,
         candidate_title: candidate.title,
@@ -216,6 +221,8 @@ function renderAgentResult(container, result, candidate, card) {
         title: item.action,
         owner_role: item.ownerRole,
         completion_signal: item.successSignal,
+        task_id: candidate.task_id,
+        policy_reference: policyReference,
       }));
       sessionStorage.setItem("saasguide.actionDrafts", JSON.stringify(drafts));
       location.href = "/action-tracker?draft=1";

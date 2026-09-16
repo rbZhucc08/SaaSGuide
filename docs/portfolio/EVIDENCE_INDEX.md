@@ -8,12 +8,12 @@
 |---|---|
 | 分支 | `codex/v3-development` |
 | 发布状态 | 私有 GitHub Pre-release [`v3.0.0-portfolio`](https://github.com/rbZhucc08/SaaSGuide/releases/tag/v3.0.0-portfolio) |
-| 自动检查 | 186 项测试通过；关键模块语句覆盖率 89.04%；GitHub Actions 四项矩阵通过 |
+| 自动检查 | 217 项测试通过；关键模块语句覆盖率 89.04%；已发布基线的 GitHub Actions 四项矩阵通过；本次提交仍需 CI 复核 |
 | 干净环境 | VPN 保持连接，从官方 PyPI 安装锁定依赖并完整通过检查 |
 | 数据规模 | 6 家虚构公司、30 个项目、180 条任务、48 个制度版本 |
 | 规则基准 | TP=119、FP=4、FN=18、Precision=96.75%、Recall=86.86% |
 | 模型 | DeepSeek ASK/PLAN；历史少量真实浏览器调用有独立记录 |
-| 飞书 | 多维表格只读连接器底座；真实授权与同步未完成 |
+| 飞书 | 真实租户端到端已验证（读同步 + 日期归一化 + 人工确认闸门 + 写回独立行动表）；真实授权已完成 |
 | 业务验证 | 研究与分析工具完成；真实参与者 0 |
 | 部署 | 本地 `127.0.0.1`；未公开部署 |
 
@@ -32,6 +32,9 @@
 | 9 飞书 | 只读连接器、分页、幂等、错误恢复和未授权状态 | [阶段 9](../test_records/V3_PHASE9_FEISHU_CONNECTOR_TEST_RECORD_2026-09-09.md) |
 | 10 发布 | 历史审计、干净环境复现和本地发布候选 | [阶段 10](../test_records/V3_PHASE10_PORTFOLIO_RELEASE_TEST_RECORD_2026-09-09.md) |
 | 11 试点 | 协议、证据校验、描述性分析和外部证据状态 | [阶段 11](../test_records/V3_PHASE11_REAL_WORLD_VALIDATION_TEST_RECORD_2026-09-09.md) |
+| 飞书写回 | 人工确认闸门、默认关闭开关、独立行动表目标、跨请求幂等 | [飞书写回验收](../test_records/V3_FEISHU_WRITEBACK_TEST_RECORD.md) |
+| 飞书真实链路 | 真实租户读同步、毫秒时间戳归一化、闸门拦截、写回独立表、客户原表未改 | [飞书真实端到端验收](../test_records/V3_FEISHU_LIVE_INTEGRATION_TEST_RECORD_2026-09-13.md) |
+| 飞书收尾 | 独立表强制、读写同表拒绝、缺依据跳过、诊断脱敏与当前文档统一 | [飞书代码与文档收尾](../test_records/V3_FEISHU_CODE_AND_DOC_CLOSURE_2026-09-16.md) |
 
 私有仓库创建、首次 CI 失败和修复后的四项矩阵通过记录见 [V3 私有 GitHub 发布验收](../test_records/V3_PRIVATE_GITHUB_PUBLISH_TEST_RECORD_2026-09-09.md)。
 
@@ -47,6 +50,7 @@
 | 报告 | `services/reporting/metrics.py`、`test_reporting.py` |
 | 安全治理 | `services/security/governance.py`、`test_security_governance.py` |
 | 飞书只读连接器 | `services/connectors/feishu_bitable.py`、`test_feishu_connector.py` |
+| 飞书人工确认写回 | `services/connectors/feishu_bitable.py`（`validate_actions` / `writeback_actions`）、`routes/v3_connectors.py`、`test_feishu_writeback.py` |
 | 真实试点分析 | `services/validation/pilot.py`、`test_pilot_validation.py` |
 
 ## 浏览器与截图
@@ -62,6 +66,7 @@
 - 一次合法 PLAN 不等于模型长期稳定或具有 SLA；
 - `company_id` 上下文切换不等于生产多租户；
 - 本地稀疏词频向量不等于 Embedding 或向量数据库；
-- 飞书模拟 HTTP 合约不等于真实授权和同步；
+- 飞书模拟 HTTP 合约本身不等于真实授权和同步；本项目另有一次作者自建演示数据的真实租户验收记录；
+- 人工确认写回的合约测试不等于真实写入成功，也未验证真实表的字段类型匹配；真实租户上的读同步与写回已验证，但批量上限、并发与配额仍未验证；
 - 研究工具不等于已经完成真实用户验证；
 - 当前一次在线 GitHub Actions 四项矩阵通过不等于生产稳定或长期持续通过。

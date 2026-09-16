@@ -10,7 +10,13 @@ from pathlib import Path
 
 from flask import Flask
 from routes.v3_connectors import create_connector_blueprint
-from services.connectors.feishu_bitable import FeishuBitableClient, connector_status, normalize_record, sync_snapshot
+from services.connectors.feishu_bitable import (
+    FeishuBitableClient,
+    FeishuConnectorError,
+    connector_status,
+    normalize_record,
+    sync_snapshot,
+)
 
 
 MAPPING = {"project_id":"项目编号","project_name":"项目名称","task_id":"任务编号","task_name":"任务名称","owner":"负责人","due_date":"截止日期","status":"状态","updated_at":"更新时间"}
@@ -30,7 +36,8 @@ class FakeOpener:
         if "tenant_access_token" in request.full_url:
             return FakeResponse({"code":0,"tenant_access_token":"test-token"})
         page = len([item for item in self.requests if "/records/search" in item[0].full_url])
-        record = {"record_id":f"rec-{page}","last_modified_time":1000+page,"fields":{"项目编号":"P-1","项目名称":"飞书接入","任务编号":f"T-{page}","任务名称":"只读同步","负责人":[{"name":"测试负责人"}],"截止日期":"2026-09-30","状态":"进行中","更新时间":"2026-09-09"}}
+        # 字段值与真实飞书响应一致：文本字段是对象数组，日期字段是毫秒时间戳
+        record = {"record_id":f"rec-{page}","last_modified_time":1000+page,"fields":{"项目编号":[{"text":"P-1","type":"text"}],"项目名称":[{"text":"飞书接入","type":"text"}],"任务编号":[{"text":f"T-{page}","type":"text"}],"任务名称":[{"text":"只读同步","type":"text"}],"负责人":[{"name":"测试负责人"}],"截止日期":1788192000000,"状态":[{"text":"进行中","type":"text"}],"更新时间":1789228800000}}
         return FakeResponse({"code":0,"data":{"items":[record],"has_more":page == 1,"page_token":"next" if page == 1 else ""}})
 
 
@@ -57,9 +64,50 @@ class FeishuConnectorTests(unittest.TestCase):
         self.assertEqual("POST", search_requests[0].method)
 
     def test_normalization_handles_person_field_without_extra_permissions(self):
-        result = normalize_record({"record_id":"rec-1","last_modified_time":123,"fields":{name:name for name in MAPPING.values()} | {"负责人":[{"name":"李敏"}]}}, MAPPING)
+        fields = {name: name for name in MAPPING.values()}
+        fields["负责人"] = [{"name":"李敏"}]
+        result = normalize_record({"record_id":"rec-1","last_modified_time":123,"fields":fields}, MAPPING)
         self.assertEqual("李敏", result["owner"])
         self.assertEqual("rec-1", result["source_record_id"])
+
+    def test_millisecond_date_fields_become_iso_dates(self):
+        """飞书日期字段返回毫秒时间戳；不转换会让下游日期比较全部失效。"""
+        fields = {name: name for name in MAPPING.values()}
+        fields["截止日期"] = 1788192000000
+        fields["更新时间"] = 1789228800000
+        result = normalize_record({"record_id":"rec-1","last_modified_time":1,"fields":fields}, MAPPING)
+        self.assertEqual("2026-09-01", result["due_date"])
+        self.assertEqual("2026-09-13", result["updated_at"])
+
+    def test_second_precision_timestamps_are_also_converted(self):
+        fields = {name: name for name in MAPPING.values()}
+        fields["截止日期"] = 1788192000
+        result = normalize_record({"record_id":"rec-1","last_modified_time":1,"fields":fields}, MAPPING)
+        self.assertEqual("2026-09-01", result["due_date"])
+
+    def test_existing_date_strings_pass_through_unchanged(self):
+        fields = {name: name for name in MAPPING.values()}
+        fields["截止日期"] = "2026-09-30"
+        fields["更新时间"] = "2026-09-09"
+        result = normalize_record({"record_id":"rec-1","last_modified_time":1,"fields":fields}, MAPPING)
+        self.assertEqual("2026-09-30", result["due_date"])
+        self.assertEqual("2026-09-09", result["updated_at"])
+
+    def test_text_fields_wrapped_in_objects_are_unwrapped(self):
+        fields = {name: name for name in MAPPING.values()}
+        fields["状态"] = [{"text": "阻塞", "type": "text"}]
+        fields["任务名称"] = [{"text": "设备调试", "type": "text"}]
+        result = normalize_record({"record_id":"rec-1","last_modified_time":1,"fields":fields}, MAPPING)
+        self.assertEqual("阻塞", result["status"])
+        self.assertEqual("设备调试", result["task_name"])
+
+    def test_out_of_range_timestamp_is_rejected_readably(self):
+        fields = {name: name for name in MAPPING.values()}
+        fields["截止日期"] = 99999999999999999
+        with self.assertRaises(FeishuConnectorError) as context:
+            normalize_record({"record_id":"rec-1","last_modified_time":1,"fields":fields}, MAPPING)
+        self.assertEqual("invalid_field_value", context.exception.code)
+        self.assertEqual(422, context.exception.status)
 
     def test_snapshot_is_idempotent_by_record_id_and_keeps_cursor(self):
         opener = FakeOpener()

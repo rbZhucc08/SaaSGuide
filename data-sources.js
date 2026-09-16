@@ -154,8 +154,11 @@ async function loadFeishuConnector() {
     const data = await readJson(response);
     if (!response.ok) throw new Error(data.error || "飞书连接器状态不可用");
     if (data.configured) {
-      summary.textContent = "本机已提供连接参数；同步仍只读取飞书多维表格。";
-      badge.textContent = "已配置，待真实同步";
+      const writebackNote = data.writeback_enabled
+        ? "写回已开启，但仅限人工已确认的行动写入独立行动表。"
+        : "写回未开启（默认关闭）。";
+      summary.textContent = `本机已提供连接参数；${writebackNote}`;
+      badge.textContent = data.writeback_enabled ? "已配置，写回需人工确认" : "已配置，只读";
       badge.className = "validation-badge is-valid";
       button.disabled = false;
     } else {
@@ -174,16 +177,17 @@ async function loadFeishuConnector() {
 document.querySelector("#feishu-sync-button").addEventListener("click", async () => {
   const button = document.querySelector("#feishu-sync-button");
   const result = document.querySelector("#feishu-sync-result");
-  setBusy(button, true, "正在只读同步…", "运行只读同步");
+  setBusy(button, true, "正在同步…", "运行飞书同步");
   try {
     const response = await fetch("/api/connectors/feishu/sync", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
     const data = await readJson(response);
     if (!response.ok) throw new Error(data.error || "飞书同步失败");
-    result.textContent = `同步完成：读取 ${data.fetched_count} 条，增量应用 ${data.applied_count} 条，本地保存 ${data.stored_count} 条；没有向飞书写回。`;
+    result.textContent = `同步完成：从飞书读取 ${data.fetched_count} 条，增量应用 ${data.applied_count} 条，本地保存 ${data.stored_count} 条；未向飞书写回。`;
+    if (typeof loadFeishuConnector === "function") await loadFeishuConnector();
   } catch (error) {
     result.textContent = error.message || "飞书同步失败。";
   } finally {
-    setBusy(button, false, "正在只读同步…", "运行只读同步");
+    setBusy(button, false, "正在同步…", "运行飞书同步");
   }
 });
 

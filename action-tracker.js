@@ -61,6 +61,7 @@ function applyDraft(index) {
   $("#title").value = activeDraft.title || "";
   $("#owner").value = activeDraft.owner_role || "";
   $("#signal").value = activeDraft.completion_signal || "";
+  $("#policy").value = activeDraft.policy_reference || "";
   $("#confirmed").checked = false;
 }
 
@@ -81,6 +82,22 @@ function loadDrafts() {
 }
 
 $("#refresh").onclick = load;
+$("#push-feishu").onclick = async () => {
+  const button = $("#push-feishu");
+  const result = $("#push-result");
+  button.disabled = true;
+  result.textContent = "正在推送已确认行动到飞书…";
+  try {
+    const data = await api("/api/connectors/feishu/push-local-actions", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
+    const skipped = (data.skipped_local_actions || []).length;
+    result.textContent = `已推送 ${data.written_count} 条到飞书行动表（跳过重复 ${data.skipped_count} 条${skipped ? `，本地未通过确认闸门 ${skipped} 条` : ""}）；客户原表未被修改。`;
+    load();
+  } catch (error) {
+    result.textContent = error.message || "推送失败。";
+  } finally {
+    button.disabled = false;
+  }
+};
 $("#create").onclick = async () => {
   const payload = {
     candidate_id: $("#candidate").value,
@@ -95,6 +112,8 @@ $("#create").onclick = async () => {
     risk_decision_id: activeDraft?.risk_decision_id,
     plan_run_id: activeDraft?.plan_run_id,
     plan_step: activeDraft?.plan_step,
+    task_id: activeDraft?.task_id,
+    policy_reference: $("#policy").value || activeDraft?.policy_reference || "",
   };
   try {
     await api("/api/actions", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });

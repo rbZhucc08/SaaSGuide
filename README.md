@@ -82,7 +82,7 @@ flowchart LR
 | 固定评测 | 30 个跨公司合成项目，按公司、行业、项目类型和风险类型查看 TP/FP/FN |
 | 知识检索 | 句子边界分块、关键词与本地稀疏词频向量混合排序、版本冲突拒答和精确位置引用 |
 | 安全治理 | 敏感样式提示、Office 压缩边界、进程内限流和真实数据阻断状态；不等于生产安全 |
-| 飞书连接器 | 多维表格只读连接器底座；真实授权与真实同步尚未完成，不向飞书写回 |
+| 飞书连接器 | 多维表格读同步与人工确认写回已在真实租户端到端验证；写回默认关闭，只写入独立行动表，不修改客户原表 |
 | 业务验证 | 固定一个风险到行动子场景，提供研究协议、去标识化证据校验和描述性分析；真实访谈尚未开展 |
 
 ![数据源与真实数据安全边界](docs/assets/data-sources-v3.jpg)
@@ -124,7 +124,7 @@ $env:DEEPSEEK_API_KEY = '你的密钥'
 
 密钥不要写入 `.env.example`、源码或 Git 提交。
 
-飞书多维表格只读连接器需要在本机设置四项环境变量：`FEISHU_APP_ID`、`FEISHU_APP_SECRET`、`FEISHU_BITABLE_APP_TOKEN` 和 `FEISHU_BITABLE_TABLE_ID`。当前安全闸门只允许模拟或已去标识化测试表格。
+飞书多维表格读取需要在本机设置 `FEISHU_APP_ID`、`FEISHU_APP_SECRET`、`FEISHU_BITABLE_APP_TOKEN` 和 `FEISHU_BITABLE_TABLE_ID`。写回还必须显式设置独立的 `FEISHU_BITABLE_WRITEBACK_TABLE_ID` 并开启 `FEISHU_BITABLE_WRITEBACK_ENABLED`；读写表相同时程序会拒绝写回。配置示例见 `.env.example`。当前安全闸门只允许模拟或已去标识化测试表格。
 
 主要页面：
 
@@ -146,9 +146,9 @@ $env:DEEPSEEK_API_KEY = '你的密钥'
 & '.\run_checks.ps1'
 ```
 
-截至 2026-09-09：
+截至 2026-09-16：
 
-- 186 项自动测试通过；
+- 217 项自动测试通过；
 - JSON、Markdown 链接、Git 跟踪文件密钥扫描和前端 JavaScript 语法检查通过；
 - GitHub Actions 已在 Windows/Linux、Python 3.11/3.12 四项矩阵中真实通过；
 - 主要页面完成桌面和 390 × 844 响应式验收；
@@ -174,7 +174,7 @@ $env:DEEPSEEK_API_KEY = '你的密钥'
 - 没有公开部署、TLS、生产 WSGI、分布式限流或负载测试；
 - 没有真实企业数据、真实客户采用或业务收益；
 - 没有训练或微调 DeepSeek；
-- 没有 Embedding 模型、向量数据库、多 Agent、真实 OCR 或语音识别；飞书只读连接器尚未完成真实授权验收；
+- 没有 Embedding 模型、向量数据库、多 Agent、真实 OCR 或语音识别；飞书仅以作者自建演示数据完成单租户真实链路验收，未验证生产负载；
 - AI 输出是草稿，不能自动创建正式风险或替人确认行动。
 
 完整边界见 [KNOWN_LIMITATIONS.md](docs/quality/KNOWN_LIMITATIONS.md) 和 [SECURITY.md](SECURITY.md)。

@@ -84,6 +84,8 @@ def migrate(path: Path) -> None:
             ("risk_decision_id", "TEXT"),
             ("plan_run_id", "TEXT"),
             ("plan_step", "INTEGER"),
+            ("task_id", "TEXT"),
+            ("policy_reference", "TEXT"),
         ):
             if name not in action_columns:
                 connection.execute(f"ALTER TABLE action_items ADD COLUMN {name} {definition}")
@@ -197,8 +199,8 @@ def create_action(path: Path, payload: dict[str, Any]) -> dict[str, Any]:
         connection.execute(
             """INSERT INTO action_items(
                    action_id,candidate_id,title,owner_role,due_date,completion_signal,status,
-                   created_at,updated_at,risk_decision_id,plan_run_id,plan_step
-               ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)""",
+                   created_at,updated_at,risk_decision_id,plan_run_id,plan_step,task_id,policy_reference
+               ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
             (
                 action_id,
                 values["candidate_id"],
@@ -212,6 +214,8 @@ def create_action(path: Path, payload: dict[str, Any]) -> dict[str, Any]:
                 risk_decision_id,
                 str(payload.get("plan_run_id") or "")[:120] or None,
                 int(payload.get("plan_step") or 0) or None,
+                str(payload.get("task_id") or "")[:80] or None,
+                str(payload.get("policy_reference") or "")[:300] or None,
             ),
         )
         connection.execute("INSERT INTO human_decisions VALUES(?,?,?,?,?,?,?)", (f"decision-{uuid4().hex[:12]}", "action", action_id, "create", values["actor"], str(payload.get("note", ""))[:500], stamp))
