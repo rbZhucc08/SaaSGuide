@@ -8,7 +8,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable
 from uuid import uuid4
@@ -52,6 +52,7 @@ def _field_text(value: Any) -> str:
 
 _DATE_FIELDS = ("due_date", "updated_at")
 _MILLISECOND_THRESHOLD = 100_000_000_000
+_FEISHU_BUSINESS_TIMEZONE = timezone(timedelta(hours=8))
 
 
 def _field_date(value: Any, field: str, label: str) -> str:
@@ -67,7 +68,7 @@ def _field_date(value: Any, field: str, label: str) -> str:
         if field in _DATE_FIELDS:
             seconds = number / 1000 if number >= _MILLISECOND_THRESHOLD else number
             try:
-                return datetime.fromtimestamp(seconds).date().isoformat()
+                return datetime.fromtimestamp(seconds, tz=_FEISHU_BUSINESS_TIMEZONE).date().isoformat()
             except (OverflowError, OSError, ValueError) as error:
                 raise FeishuConnectorError(f"{label} 时间戳超出可解析范围：{raw}", "invalid_field_value", 422) from error
     return raw

@@ -8,6 +8,7 @@
 - 写回表 ID 必须显式配置，不再回落到读取表；
 - 写回 Base 与表 ID 同时等于读取源时返回 `writeback_source_table_forbidden`，不发出网络请求；
 - 本地行动缺少 `task_id` 或 `policy_reference` 时明确跳过，不生成占位制度依据；
+- 日期时间戳固定按飞书业务时区 UTC+8 转换，避免 Windows 本机与 UTC Linux runner 相差一天；
 - `.env.example` 补充写回变量、默认关闭状态和独立表约束；
 - 飞书排障脚本移除硬编码 wiki token，默认隐藏 app token、table ID、record ID、访问令牌和响应正文；只有显式 `--show-identifiers` 的本机交互场景才显示配置所需资源 ID；
 - 当前状态、发布材料和限制说明统一为 217 项测试、真实租户演示链路已验证、真实参与者仍为 0；
